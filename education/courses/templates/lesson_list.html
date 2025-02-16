@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Уроки - AllSociety{% endblock %}
+
+{% block content %}
+    <h1>Уроки по теме {{ topic.name }}</h1>
+    <div class="subjects-container">
+        {% for lesson in lessons %}
+            <a href="{% url 'lesson_detail' lesson.id %}" class="button">{{ lesson.title }}</a>
+        {% endfor %}
+    </div>
+    <br>
+    <a href="{% url 'topic_list' topic.subject.id %}" class="button">Назад</a>
+{% endblock %}

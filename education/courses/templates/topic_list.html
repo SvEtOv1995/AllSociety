@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Темы - AllSociety{% endblock %}
+
+{% block content %}
+    <h1>Темы по предмету {{ subject.name }}</h1>
+    <div class="subject-container">
+        {% for topic in topics %}
+            <a href="{% url 'lesson_list' topic.id %}" class="button">
+                {{ topic.name }}
+                {% if topic.image %}
+                    <img src="{{ topic.image.url }}" alt="Иконка" class="small-icon">
+                {% endif %}
+            </a>
+        {% endfor %}
+    </div>
+
+{% endblock %}

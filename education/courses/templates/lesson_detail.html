@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lesson.title }} - AllSociety{% endblock %}
+
+{% block content %}
+    <h1>{{ lesson.title }}</h1>
+
+    {% if lesson.image %}
+        <img src="{{ lesson.image.url }}" alt="{{ lesson.title }}" class="lesson-image">
+    {% endif %}
+
+    {% if lesson.allow_latex %}
+        <div class="latex-content">
+            <p>{{ lesson.content|safe }}</p>
+        </div>
+    {% else %}
+        <p>{{ lesson.content }}</p>
+    {% endif %}
+
+    <!-- Задания -->
+    <div class="questions-section">
+        <h2>Задания</h2>
+        {% for question in lesson.questions.all %}
+            <div class="question">
+                <p>{{ question.question_text }}</p>
+
+                <!-- Варианты ответов -->
+                <form action="{% url 'check_answer' question.id %}" method="post">
+                    {% csrf_token %}
+                    {% for answer in question.answers.all %}
+                        <div>
+                            <input type="radio" id="answer_{{ answer.id }}" name="answer" value="{{ answer.id }}">
+                            <label for="answer_{{ answer.id }}">{{ answer.text }}</label>
+                        </div>
+                    {% endfor %}
+                    <button type="submit">Ответить</button>
+                </form>
+
+                <!-- Пояснение, если правильный ответ -->
+                {% if result %}
+                    <div class="result">
+                        <p>{{ result }}</p>
+                        <p><strong>Объяснение:</strong> {{ explanation }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}
+
+<style>
+    .question {
+        margin-bottom: 20px;
+    }
+
+    .question p {
+        font-size: 18px;
+    }
+
+    .question div {
+        margin-bottom: 10px;
+    }
+
+    .result {
+        margin-top: 10px;
+        font-style: italic;
+        color: green;
+    }
+
+    .lesson-image {
+        width: 100%;
+        height: auto;
+        max-width: 600px;
+        border-radius: 8px;
+    }
+</style>
