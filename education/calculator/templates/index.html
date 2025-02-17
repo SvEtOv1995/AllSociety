@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .buttons {
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            text-decoration: none;
+            color: white;
+            background-color: #007BFF;
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .content {
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .slider {
+            display: none;
+        }
+        .slider.active {
+            display: block;
+        }
+        .nav-buttons {
+            margin-top: 10px;
+        }
+        .nav-button {
+            cursor: pointer;
+            padding: 5px 10px;
+            margin: 5px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .math-block {
+            margin-top: 10px;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Добро пожаловать в калькулятор</h1>
+    <p>Выберите нужный калькулятор:</p>
+    <div class="buttons">
+        <a href="{% url 'algebra' %}" class="button">Калькулятор Алгебры</a>
+        <a href="{% url 'geometry' %}" class="button">Калькулятор Геометрии</a>
+    </div>
+    
+    <div class="content">
+        <div class="nav-buttons">
+            <button class="nav-button" onclick="showSlide(1)">Алгебра</button>
+            <button class="nav-button" onclick="showSlide(2)">Геометрия</button>
+        </div>
+        <div class="slider active" id="slide1">
+            <h2>Алгебраические операции</h2>
+            <div id="algebra-content">
+                {% for entry in entries %}
+                    {% if entry.category == "algebra" %}
+                        <div class="math-block">
+                            <h3>{{ entry.title }}</h3>
+                            <p>\({{ entry.content }}\)</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="slider" id="slide2">
+            <h2>Геометрические расчеты</h2>
+            <div id="geometry-content">
+                {% for entry in entries %}
+                    {% if entry.category == "geometry" %}
+                        <div class="math-block">
+                            <h3>{{ entry.title }}</h3>
+                            <p>\({{ entry.content }}\)</p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showSlide(slideNumber) {
+            let slides = document.querySelectorAll('.slider');
+            slides.forEach(slide => slide.classList.remove('active'));
+            document.getElementById('slide' + slideNumber).classList.add('active');
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch("get_entries?category=algebra")
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("algebra-content").innerHTML = data.map(entry => `<div class='math-block'><h3>${entry.title}</h3><p>\(${entry.content}\)</p></div>`).join('');
+                });
+            
+            fetch("get_entries?category=geometry")
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("geometry-content").innerHTML = data.map(entry => `<div class='math-block'><h3>${entry.title}</h3><p>\(${entry.content}\)</p></div>`).join('');
+                });
+        });
+    </script>
+    <script type="text/javascript" async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script type="text/javascript" async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>

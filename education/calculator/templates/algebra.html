@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #eef;
+        }
+        .calculator {
+            width: 450px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .display {
+            width: 100%;
+            height: 90px;
+            text-align: right;
+            font-size: 24px;
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        .buttons button {
+            width: 60px;
+            height: 60px;
+            font-size: 18px;
+            margin: 5px;
+            border-radius: 50%;
+            border: none;
+            background: blue;
+            color: white;
+            cursor: pointer;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .buttons button:hover {
+            background: darkblue;
+        }
+    </style>
+</head>
+<body>
+    <h1>Калькулятор</h1>
+    <div class="calculator">
+        <div id="display" class="display"></div>
+        <div class="buttons" id="buttons-container">
+            <button onclick="clearDisplay()">C</button>
+            <button onclick="appendValue('7')">7</button>
+            <button onclick="appendValue('8')">8</button>
+            <button onclick="appendValue('9')">9</button>
+            <button onclick="appendValue('+')">+</button>
+            <button onclick="appendValue('4')">4</button>
+            <button onclick="appendValue('5')">5</button>
+            <button onclick="appendValue('6')">6</button>
+            <button onclick="appendValue('-')">-</button>
+            <button onclick="appendValue('1')">1</button>
+            <button onclick="appendValue('2')">2</button>
+            <button onclick="appendValue('3')">3</button>
+            <button onclick="appendValue('*')">×</button>
+            <button onclick="appendValue('0')">0</button>
+            <button onclick="appendValue('.')">.</button>
+            <button onclick="calculate()">=</button>
+            <button onclick="appendFraction()">Дробь</button>
+            <button onclick="appendValue('√(')">√</button>
+            <button onclick="appendValue('sin(')">sin</button>
+            <button onclick="appendValue('cos(')">cos</button>
+            <button onclick="appendValue('tan(')">tg</button>
+            <button onclick="appendValue('ctg(')">ctg</button>
+            <button onclick="appendValue('x')">x</button>
+            <button onclick="appendValue('y')">y</button>
+            <button onclick="appendValue('{')">{</button>
+            <button onclick="appendValue('(')">(</button>
+            <button onclick="appendValue(')')">)</button>
+            <button onclick="solveQuadratic()">Решить уравнение (D)</button>
+            <button onclick="solveInequality()">Решить неравенство</button>
+            <button onclick="solveSystemInequalities()">Решить систему неравенств</button>
+            <button onclick="toggleAdvancedMode()">Расширенный режим</button>
+        </div>
+    </div>
+    <script>
+        let advancedMode = false;
+
+        function appendValue(value) {
+            document.getElementById("display").innerText += value;
+        }
+
+        function clearDisplay() {
+            document.getElementById("display").innerText = "";
+        }
+
+        let isEnteringNumerator = true;
+
+        function appendFraction() {
+            let display = document.getElementById("display");
+        
+            let fractionId = `fraction-${document.querySelectorAll(".fraction").length}`;
+        
+            display.innerHTML += `
+                <div class="fraction" style="display: inline-block; text-align: center; margin: 5px;">
+                    <span contenteditable="true" id="${fractionId}-numerator" style="display: block; min-width: 20px;">1</span>
+                    <span style="border-top: 2px solid black; display: block; width: 100%;"></span>
+                    <span contenteditable="true" id="${fractionId}-denominator" style="display: block; min-width: 20px;">2</span>
+                </div>
+                <span class="fraction-space" style="display: inline-block; min-width: 20px; margin-left: 10px;" contenteditable="true"></span>
+            `;
+        }
+
+        function roundNumber(num) {
+            return Math.round(num * 100) / 100;
+        }        
+        
+        function calculateFractions() {
+            let fractions = document.querySelectorAll(".fraction");
+            let results = [];
+        
+            fractions.forEach(fraction => {
+                let numerator = parseFloat(fraction.querySelector("span:nth-child(1)").innerText) || 0;
+                let denominator = parseFloat(fraction.querySelector("span:nth-child(3)").innerText) || 1;
+        
+                let value = numerator / denominator;
+                results.push(Math.round(value * 100) / 100);
+            });
+        
+            document.getElementById("display").innerHTML += `<br>Результат: ${results.join(", ")}`;
+        }
+        
+        
+        
+
+        function appendFractionValue(value) {
+            let numerator = document.getElementById("numerator");
+            let denominator = document.getElementById("denominator");
+
+            if (!numerator.innerText) {
+                numerator.innerText = value;
+            } else if (!denominator.innerText) {
+                denominator.innerText = value;
+                isEnteringNumerator = true;
+                calculateFraction(); // После ввода знаменателя сразу считаем дробь
+            } else {
+                alert("Дробь уже введена!");
+            }
+        }
+
+        function calculateFraction() {
+            let numerator = parseFloat(document.getElementById("numerator").innerText) || 0;
+            let denominator = parseFloat(document.getElementById("denominator").innerText) || 1;
+
+            let result = numerator / denominator;
+            document.getElementById("display").innerHTML += `<br>Результат: ${result.toFixed(10)}`;
+        }
+
+
+
+        function calculate() {
+            try {
+                let expression = document.getElementById("display").innerText;
+                expression = expression.replace(/√\(([^)]+)\)/g, 'Math.sqrt($1)')
+                                      .replace(/sin\(([^)]+)\)/g, 'Math.sin($1 * Math.PI / 180)')
+                                      .replace(/cos\(([^)]+)\)/g, 'Math.cos($1 * Math.PI / 180)')
+                                      .replace(/tan\(([^)]+)\)/g, 'Math.tan($1 * Math.PI / 180)')
+                                      .replace(/ctg\(([^)]+)\)/g, '(1 / Math.tan($1 * Math.PI / 180))')
+                                      .replace(/(\d)(\()/g, '$1*(')
+                                      .replace(/\^/g, '**');
+                let result = eval(expression);
+                document.getElementById("display").innerText = `Результат: ${parseFloat(result.toFixed(10))}`;
+            } catch (e) {
+                alert("Ошибка в вычислении!");
+            }
+        }
+
+        function solveQuadratic() {
+            let display = document.getElementById("display");
+        
+            display.innerHTML = `
+                <div style="font-size: 20px; margin: 5px;">
+                    <span contenteditable="true" id="a">1</span>x² 
+                    <span contenteditable="true" id="signB">+</span> 
+                    <span contenteditable="true" id="b">15</span>x 
+                    <span contenteditable="true" id="signC">-</span> 
+                    <span contenteditable="true" id="c">14</span> = 0
+                </div>
+                <button onclick="updateQuadratic()">Рассчитать</button>
+                <div id="quadraticResult"></div>
+            `;
+        }
+        
+        function updateQuadratic() {
+            let a = parseFloat(document.getElementById("a").innerText) || 1;
+            let signB = document.getElementById("signB").innerText.trim();
+            let b = parseFloat(document.getElementById("b").innerText) || 0;
+            let signC = document.getElementById("signC").innerText.trim();
+            let c = parseFloat(document.getElementById("c").innerText) || 0;
+        
+            if (signB === "-") b = -b;
+            if (signC === "-") c = -c;
+        
+            let D = b ** 2 - 4 * a * c;
+            let result;
+        
+            if (D < 0) {
+                result = `D = ${D}, нет действительных корней`;
+            } else if (D === 0) {
+                let x = (-b / (2 * a)).toFixed(5);
+                result = `x = ${x}`;
+            } else {
+                let x1 = (-b + Math.sqrt(D)) / (2 * a);
+                let x2 = (-b - Math.sqrt(D)) / (2 * a);
+                result = `x₁ = ${x1.toFixed(5)}, x₂ = ${x2.toFixed(5)}`;
+            }
+        
+            document.getElementById("quadraticResult").innerText = result;
+        }        
+        
+        
+        
+
+        function solveInequality() {
+            let display = document.getElementById("display");
+        
+            display.innerHTML = `
+                <div style="font-size: 20px; margin: 5px;">
+                    <span contenteditable="true" id="a">1</span>x 
+                    <span contenteditable="true" id="sign">+</span> 
+                    <span contenteditable="true" id="b">5</span> 
+                    <span contenteditable="true" id="ineqSign">&lt;</span> 
+                    <span contenteditable="true" id="c">10</span>
+                </div>
+                <button onclick="updateInequality()">Рассчитать</button>
+                <div id="inequalityResult"></div>
+            `;
+        }
+        
+        function updateInequality() {
+            let a = parseFloat(document.getElementById("a").innerText) || 1;
+            let sign = document.getElementById("sign").innerText.trim();
+            let b = parseFloat(document.getElementById("b").innerText) || 0;
+            let ineqSign = document.getElementById("ineqSign").innerText.trim();
+            let c = parseFloat(document.getElementById("c").innerText) || 0;
+        
+            if (sign === "-") b = -b;
+        
+            let result;
+            let x = (c - b) / a;
+        
+            result = `x ${ineqSign} ${x.toFixed(5)}`;
+        
+            document.getElementById("inequalityResult").innerText = result;
+        }
+        
+        
+
+        function solveSystemInequalities() {
+            let display = document.getElementById("display");
+        
+            display.innerHTML = `
+                <div style="display: flex; align-items: center;">
+                    <span style="font-size: 50px; margin-right: 5px;">{</span>
+                    <div>
+                        <div style="font-size: 20px;">
+                            <span contenteditable="true" id="a1">2</span>x 
+                            <span contenteditable="true" id="sign1">+</span> 
+                            <span contenteditable="true" id="b1">3</span> 
+                            <span contenteditable="true" id="ineqSign1">&lt;</span> 
+                            <span contenteditable="true" id="c1">12</span>
+                        </div>
+                        <div style="font-size: 20px;">
+                            <span contenteditable="true" id="a2">1</span>x 
+                            <span contenteditable="true" id="sign2">-</span> 
+                            <span contenteditable="true" id="b2">4</span> 
+                            <span contenteditable="true" id="ineqSign2">&gt;</span> 
+                            <span contenteditable="true" id="c2">5</span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="updateSystemInequalities()">Рассчитать</button>
+                <div id="systemInequalityResult"></div>
+            `;
+        }
+        
+        function updateSystemInequalities() {
+            let a1 = parseFloat(document.getElementById("a1").innerText) || 1;
+            let sign1 = document.getElementById("sign1").innerText.trim();
+            let b1 = parseFloat(document.getElementById("b1").innerText) || 0;
+            let ineqSign1 = document.getElementById("ineqSign1").innerText.trim();
+            let c1 = parseFloat(document.getElementById("c1").innerText) || 0;
+        
+            let a2 = parseFloat(document.getElementById("a2").innerText) || 1;
+            let sign2 = document.getElementById("sign2").innerText.trim();
+            let b2 = parseFloat(document.getElementById("b2").innerText) || 0;
+            let ineqSign2 = document.getElementById("ineqSign2").innerText.trim();
+            let c2 = parseFloat(document.getElementById("c2").innerText) || 0;
+        
+            if (sign1 === "-") b1 = -b1;
+            if (sign2 === "-") b2 = -b2;
+        
+            let x1 = roundNumber((c1 - b1) / a1);
+            let x2 = roundNumber((c2 - b2) / a2);
+        
+            let intersection = `[${Math.min(x1, x2)} ; ${Math.max(x1, x2)}]`;
+        
+            document.getElementById("systemInequalityResult").innerText = `Решение: x ∈ ${intersection}`;
+        }
+        
+        
+        
+        function formatExpression(expression) {
+            return expression.replace(/√(\d+)/g, 'Math.sqrt($1)')
+                             .replace(/sin(\d+)/g, 'Math.sin($1 * Math.PI / 180)')
+                             .replace(/cos(\d+)/g, 'Math.cos($1 * Math.PI / 180)')
+                             .replace(/tan(\d+)/g, 'Math.tan($1 * Math.PI / 180)')
+                             .replace(/ctg(\d+)/g, '(1 / Math.tan($1 * Math.PI / 180))')
+                             .replace(/(\d)(\()/g, '$1*(')
+                             .replace(/\^/g, '**');
+        }        
+
+        function solveEquation() {
+            let expression = document.getElementById("display").innerText;
+        
+            if (!expression.includes("=")) {
+                alert("Добавьте `=` для решения уравнения!");
+                return;
+            }
+        
+            let sides = expression.split("=");
+            let left = sides[0].trim();
+            let right = roundNumber(parseFloat(sides[1].trim()));
+        
+            let match = left.match(/(-?\d*)x\s*([+-]\s*\d*)?/);
+        
+            if (!match) {
+                alert("Некорректный формат уравнения!");
+                return;
+            }
+        
+            let a = parseFloat(match[1]) || 1;
+            let b = parseFloat(match[2]) || 0;
+        
+            let x = roundNumber((right - b) / a);
+            document.getElementById("display").innerText = `x = ${x}`;
+        }        
+        
+        
+    </script>
+
+    <p><a href="{% url 'index' %}">🔙 На главную</a></p>
+</body>
+</html>

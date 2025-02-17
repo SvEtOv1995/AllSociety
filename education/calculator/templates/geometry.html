@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор Геометрии</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        .calculator, .canvas-container {
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        canvas {
+            border: 2px solid black;
+            background: white;
+        }
+        input, select, button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Калькулятор Геометрии</h1>
+
+    <div class="container">
+        <div class="calculator">
+            <h2>Выберите фигуру</h2>
+            <select id="shape" onchange="showForm()">
+                <option value="triangle">Треугольник</option>
+                <option value="rectangle">Прямоугольник</option>
+                <option value="square">Квадрат</option>
+                <option value="circle">Круг</option>
+                <option value="parallelogram">Параллелограмм</option>
+                <option value="rhombus">Ромб</option>
+                <option value="trapezoid">Трапеция</option>
+            </select>
+            
+            <h2>Выберите, что вычислить</h2>
+            <select id="calculationType" onchange="showForm()">
+                <option value="area">Площадь</option>
+                <option value="perimeter">Периметр</option>
+                <option value="height">Высота</option>
+                <option value="median">Медиана</option>
+                <option value="angle">Угол</option>
+                <option value="midline">Средняя линия</option>
+            </select>
+
+            <div id="form-container"></div>
+            <button onclick="calculate()">Рассчитать</button>
+            <h3>Результат: <span id="result">-</span></h3>
+        </div>
+
+        <div class="canvas-container">
+            <h2>Графическое представление</h2>
+            <canvas id="canvas" width="300" height="300"></canvas>
+            <button onclick="toggleCalculationFields()">Показать параметры</button>
+        </div>
+    </div>
+
+    <script>
+        function showForm() {
+            const shape = document.getElementById("shape").value;
+            let formHtml = "";
+        
+            if (shape === "triangle") {
+                formHtml = `
+                    <label>Сторона a: <input type="number" id="a" value="100"></label><br>
+                    <label>Сторона b: <input type="number" id="b" value="80"></label><br>
+                    <label>Сторона c: <input type="number" id="c" value="60"></label><br>
+                    <label>Высота h: <input type="number" id="h" value="50"></label><br>
+                `;
+            } 
+            else if (shape === "rectangle") {
+                formHtml = `
+                    <label>Сторона a: <input type="number" id="a" value="120"></label><br>
+                    <label>Сторона b: <input type="number" id="b" value="60"></label><br>
+                `;
+            } 
+            else if (shape === "square") {
+                formHtml = `
+                    <label>Сторона a: <input type="number" id="a" value="100"></label><br>
+                `;
+            } 
+            else if (shape === "circle") {
+                formHtml = `
+                    <label>Радиус r: <input type="number" id="r" value="50"></label><br>
+                    <label>Диаметр d: <input type="number" id="d" value="100" readonly></label><br>
+                `;
+            } 
+            else if (shape === "parallelogram") {
+                formHtml = `
+                    <label>Сторона a: <input type="number" id="a" value="120"></label><br>
+                    <label>Сторона b: <input type="number" id="b" value="80"></label><br>
+                    <label>Угол между сторонами (°): <input type="number" id="angle" value="60"></label><br>
+                `;
+            } 
+            else if (shape === "rhombus") {
+                formHtml = `
+                    <label>Сторона a: <input type="number" id="a" value="100"></label><br>
+                    <label>Диагональ 1: <input type="number" id="d1" value="120"></label><br>
+                    <label>Диагональ 2: <input type="number" id="d2" value="80"></label><br>
+                `;
+            } 
+            else if (shape === "trapezoid") {
+                formHtml = `
+                    <label>Основание a: <input type="number" id="a" value="140"></label><br>
+                    <label>Основание b: <input type="number" id="b" value="100"></label><br>
+                    <label>Боковая сторона c: <input type="number" id="c" value="80"></label><br>
+                    <label>Боковая сторона d: <input type="number" id="d" value="80"></label><br>
+                    <label>Высота h: <input type="number" id="h" value="60"></label><br>
+                `;
+            }
+        
+            document.getElementById("form-container").innerHTML = formHtml;
+            drawShape();
+        }
+        
+
+        window.onload = showForm;
+
+        function drawCalculationFormula(shape, calculationType, values, result) {
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+    
+            // Очищаем предыдущие данные
+            ctx.clearRect(0, 250, canvas.width, 50);
+            ctx.fillStyle = "black";
+            ctx.font = "14px Arial";
+            
+            let formula = "";
+            let formulaWithValues = "";
+    
+            if (calculationType === "area") {
+                if (shape === "triangle") {
+                    formula = "S = 1/2 * a * h";
+                    formulaWithValues = `S = 1/2 * ${values.a} * ${values.h} = ${result}`;
+                } else if (shape === "rectangle" || shape === "parallelogram") {
+                    formula = "S = a * b";
+                    formulaWithValues = `S = ${values.a} * ${values.b} = ${result}`;
+                } else if (shape === "square" || shape === "rhombus") {
+                    formula = "S = a²";
+                    formulaWithValues = `S = ${values.a}² = ${result}`;
+                } else if (shape === "trapezoid") {
+                    formula = "S = (a + b) / 2 * h";
+                    formulaWithValues = `S = (${values.a} + ${values.b}) / 2 * ${values.h} = ${result}`;
+                } else if (shape === "circle") {
+                    formula = "S = π * r²";
+                    formulaWithValues = `S = 3.14 * ${values.r}² = ${result}`;
+                }
+            } else if (calculationType === "perimeter") {
+                if (shape === "triangle") {
+                    formula = "P = a + b + c";
+                    formulaWithValues = `P = ${values.a} + ${values.b} + ${values.c} = ${result}`;
+                } else if (shape === "rectangle" || shape === "parallelogram") {
+                    formula = "P = 2 * (a + b)";
+                    formulaWithValues = `P = 2 * (${values.a} + ${values.b}) = ${result}`;
+                } else if (shape === "square" || shape === "rhombus") {
+                    formula = "P = 4 * a";
+                    formulaWithValues = `P = 4 * ${values.a} = ${result}`;
+                } else if (shape === "trapezoid") {
+                    formula = "P = a + b + c + d";
+                    formulaWithValues = `P = ${values.a} + ${values.b} + ${values.c} + ${values.d} = ${result}`;
+                }
+            }
+    
+            // Рисуем формулы на канвасе
+            ctx.fillText(formula, 10, 280);
+            ctx.fillText(formulaWithValues, 10, 300);
+        }
+
+        function calculate() {
+            const shape = document.getElementById("shape").value;
+            const calculationType = document.getElementById("calculationType").value;
+            let result = "";
+            let values = {};
+    
+            if (calculationType === "area") {
+                if (shape === "triangle") {
+                    values.a = parseFloat(document.getElementById("a").value);
+                    values.h = parseFloat(document.getElementById("h").value);
+                    result = (0.5 * values.a * values.h).toFixed(2);
+                } else if (shape === "rectangle" || shape === "parallelogram") {
+                    values.a = parseFloat(document.getElementById("a").value);
+                    values.b = parseFloat(document.getElementById("b").value);
+                    result = (values.a * values.b).toFixed(2);
+                } else if (shape === "square" || shape === "rhombus") {
+                    values.a = parseFloat(document.getElementById("a").value);
+                    result = (values.a * values.a).toFixed(2);
+                } else if (shape === "trapezoid") {
+                    values.a = parseFloat(document.getElementById("a").value);
+                    values.b = parseFloat(document.getElementById("b").value);
+                    values.h = parseFloat(document.getElementById("h").value);
+                    result = (((values.a + values.b) / 2) * values.h).toFixed(2);
+                } else if (shape === "circle") {
+                    values.r = parseFloat(document.getElementById("r").value);
+                    result = (Math.PI * values.r * values.r).toFixed(2);
+                }
+            } else if (calculationType === "perimeter") {
+                if (shape === "triangle") {
+                    values.a = parseFloat(document.getElementById("a").value);
+                    values.b = parseFloat(document.getElementById("b").value);
+                    values.c = parseFloat(document.getElementById("c").value);
+                    result = (values.a + values.b + values.c).toFixed(2);
+                } else if (shape === "rectangle" || shape === "parallelogram") {
+                    values.a = parseFloat(document.getElementById("a").value);
+                    values.b = parseFloat(document.getElementById("b").value);
+                    result = (2 * (values.a + values.b)).toFixed(2);
+                } else if (shape === "square" || shape === "rhombus") {
+                    values.a = parseFloat(document.getElementById("a").value);
+                    result = (4 * values.a).toFixed(2);
+                } else if (shape === "trapezoid") {
+                    values.a = parseFloat(document.getElementById("a").value);
+                    values.b = parseFloat(document.getElementById("b").value);
+                    values.c = parseFloat(document.getElementById("c").value);
+                    values.d = parseFloat(document.getElementById("d").value);
+                    result = (values.a + values.b + values.c + values.d).toFixed(2);
+                }
+            }
+    
+            document.getElementById("result").innerText = result;
+    
+            // Отрисовка графика и формулы
+            drawShape(true);
+            drawCalculationFormula(shape, calculationType, values, result);
+        }        
+
+        function drawShape(showDetails = false) {
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 2;
+            ctx.font = "14px Arial";
+        
+            const shape = document.getElementById("shape").value;
+        
+            if (shape === "triangle") {
+                const a = parseFloat(document.getElementById("a").value) || 100;
+                const b = parseFloat(document.getElementById("b").value) || 80;
+                const angle = parseFloat(document.getElementById("angleA")?.value) || 60;
+                const h = a * Math.sin(angle * Math.PI / 180);
+                const area = 0.5 * a * h; // Площадь треугольника
+                const median = Math.sqrt(2 * (a * a + b * b) - (a - b) * (a - b)) / 2; // Медиана
+        
+                ctx.beginPath();
+                ctx.moveTo(100, 200);
+                ctx.lineTo(100 + a, 200);
+                ctx.lineTo(100 + a / 2, 200 - h);
+                ctx.closePath();
+                ctx.stroke();
+        
+                ctx.fillText("A", 95, 205);
+                ctx.fillText("B", 105 + a, 205);
+                ctx.fillText("C", 100 + a / 2, 190 - h);
+        
+                if (showDetails) {
+                    ctx.strokeStyle = "red";
+                    ctx.beginPath();
+                    ctx.moveTo(100 + a / 2, 200 - h);
+                    ctx.lineTo(100 + a / 2, 200);
+                    ctx.stroke();
+                    ctx.fillText("Высота", 110 + a / 2, 180);
+        
+                    ctx.fillText("Площадь: " + area.toFixed(2), 100, 220);
+                    ctx.fillText("Медиана: " + median.toFixed(2), 100, 240);
+                }
+            } 
+        
+            else if (shape === "rectangle" || shape === "parallelogram") {
+                const a = parseFloat(document.getElementById("a").value) || 120;
+                const b = parseFloat(document.getElementById("b").value) || 60;
+                const area = a * b; // Площадь прямоугольника/параллелограмма
+                const height = b; // Высота
+        
+                ctx.strokeRect(100, 100, a, b);
+        
+                ctx.fillText("A", 95, 105);
+                ctx.fillText("B", 105 + a, 105);
+                ctx.fillText("C", 105 + a, 105 + b);
+                ctx.fillText("D", 95, 105 + b);
+        
+                if (showDetails) {
+                    ctx.strokeStyle = "red";
+                    ctx.beginPath();
+                    ctx.moveTo(100 + a / 2, 100);
+                    ctx.lineTo(100 + a / 2, 100 + b);
+                    ctx.stroke();
+                    ctx.fillText("Высота", 110 + a / 2, 130);
+        
+                    ctx.fillText("Площадь: " + area.toFixed(2), 100, 240);
+                }
+            } 
+        
+            else if (shape === "square" || shape === "rhombus") {
+                const a = parseFloat(document.getElementById("a").value) || 100;
+                const area = a * a; // Площадь квадрата/ромба
+                const diagonal = Math.sqrt(2) * a; // Диагональ квадрата/ромба
+        
+                ctx.strokeRect(120, 120, a, a);
+        
+                ctx.fillText("A", 115, 125);
+                ctx.fillText("B", 125 + a, 125);
+                ctx.fillText("C", 125 + a, 125 + a);
+                ctx.fillText("D", 115, 125 + a);
+        
+                if (showDetails) {
+                    ctx.strokeStyle = "red";
+                    ctx.beginPath();
+                    ctx.moveTo(120, 120);
+                    ctx.lineTo(120 + a, 120 + a);
+                    ctx.stroke();
+                    ctx.fillText("Диагональ", 130, 140);
+        
+                    ctx.fillText("Площадь: " + area.toFixed(2), 100, 240);
+                    ctx.fillText("Диагональ: " + diagonal.toFixed(2), 100, 260);
+                }
+            } 
+        
+            else if (shape === "trapezoid") {
+                const a = parseFloat(document.getElementById("a").value) || 140;
+                const b = parseFloat(document.getElementById("b").value) || 100;
+                const h = parseFloat(document.getElementById("h").value) || 60;
+                const area = 0.5 * (a + b) * h; // Площадь трапеции
+        
+                ctx.beginPath();
+                ctx.moveTo(100, 200);
+                ctx.lineTo(100 + a, 200);
+                ctx.lineTo(100 + (a - b) / 2 + b, 200 - h);
+                ctx.lineTo(100 + (a - b) / 2, 200 - h);
+                ctx.closePath();
+                ctx.stroke();
+        
+                ctx.fillText("A", 95, 205);
+                ctx.fillText("B", 105 + a, 205);
+                ctx.fillText("C", 110 + (a - b) / 2 + b, 190 - h);
+                ctx.fillText("D", 95 + (a - b) / 2, 190 - h);
+        
+                if (showDetails) {
+                    ctx.strokeStyle = "red";
+                    ctx.beginPath();
+                    ctx.moveTo(100 + a / 2, 200 - h);
+                    ctx.lineTo(100 + a / 2, 200);
+                    ctx.stroke();
+                    ctx.fillText("Высота", 110 + a / 2, 180);
+        
+                    ctx.fillText("Площадь: " + area.toFixed(2), 100, 240);
+                }
+            } 
+        
+            else if (shape === "circle") {
+                const r = parseFloat(document.getElementById("r").value) || 50;
+                const area = Math.PI * r * r; // Площадь круга
+        
+                ctx.beginPath();
+                ctx.arc(200, 200, r, 0, 2 * Math.PI);
+                ctx.stroke();
+        
+                ctx.fillText("O", 195, 195);
+        
+                if (showDetails) {
+                    ctx.strokeStyle = "red";
+                    ctx.beginPath();
+                    ctx.moveTo(200, 200);
+                    ctx.lineTo(200 + r, 200);
+                    ctx.stroke();
+                    ctx.fillText("Радиус", 210, 190);
+        
+                    ctx.fillText("Площадь: " + area.toFixed(2), 100, 240);
+                }
+            }
+        }
+        
+        
+        function toggleMeasurements() {
+            alert("Функция отображения размеров в процессе разработки!");
+        }
+        document.getElementById("shape").addEventListener("change", drawShape);
+        window.onload = showForm;
+
+        function toggleCalculationFields() {
+            const calculationType = document.getElementById("calculationType").value;
+            const formContainer = document.getElementById("form-container");
+        
+            if (calculationType === "none") {
+                formContainer.innerHTML = "";  
+            } else {
+                showForm();
+            }
+        }
+
+    </script>
+
+    <p><a href="{% url 'index' %}">🔙 На главную</a></p>
+</body>
+</html>
