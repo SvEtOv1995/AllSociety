@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import Subject, Topic, Lesson, News
 from django.shortcuts import redirect
 from .models import Question, Answer
+
 def subjects_list(request):
     subjects = Subject.objects.all()
     news = News.objects.order_by('-published_at')[:5]  # Показываем 5 последних новостей

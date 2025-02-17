@@ -7,26 +7,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AllSociety{% endblock %}</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@300;400;600&display=swap');
+
         :root {
-            --bg-color: #f0f4f8;
-            --text-color: #1E3A8A;
-            --button-bg: #F97316;
-            --button-hover: #ea580c;
+            --bg-color: #ECE6CD;
+            --text-color: #3A3F58;
+            --button-bg: #EE6A59;
+            --button-hover: #F9AC67;
             --container-bg: white;
             --shadow-color: rgba(0, 0, 0, 0.2);
+            
+            /* Добавленные переменные для изменения стилей */
+            --latex-bg-color: rgba(34, 62, 188, 0.75);  /* Светло-синий фон для latex */
+            --question-bg-color: rgba(255, 255, 255, 0.9); /* Фон для вопроса */
+            --question-container-bg: rgba(255, 255, 255, 1); /* Фон для каждого контейнера вопроса */
+            --question-text-color: #333; /* Цвет текста вопросов */
         }
-
+        
         body.dark-mode {
-            --bg-color: #1e1e1e;
-            --text-color: #f0f4f8;
-            --button-bg: #F97316;
-            --button-hover: #ff8c42;
+            --bg-color: #3A3F58;
+            --text-color: #ECE6CD;
+            --button-bg: #F9AC67;
+            --button-hover: #EE6A59;
             --container-bg: #292929;
             --shadow-color: rgba(255, 255, 255, 0.1);
-        }
+            
+            /* Изменения для тёмной темы */
+            --latex-bg-color: rgba(34, 62, 188, 0.5);  /* Более прозрачный синий для latex */
+            --question-bg-color: rgba(50, 50, 50, 0.8); /* Тёмный фон для вопросов */
+            --question-container-bg: rgba(50, 50, 50, 0.9); /* Тёмный фон для контейнера вопроса */
+            --question-text-color: #ECE6CD; /* Светлый цвет для текста в тёмной теме */
+        }        
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Comic Sans MS', sans-serif;  /* Заменили на Comic Sans */
+            font-smooth: always;
+            letter-spacing: 0.5px;
             background-color: var(--bg-color);
             color: var(--text-color);
             text-align: center;
@@ -37,46 +53,44 @@
 
         header {
             background-color: var(--text-color);
-            color: white;
+            color: var(--bg-color);
             padding: 20px;
             font-size: 24px;
             font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0px 4px 6px var(--shadow-color);
         }
 
         .theme-toggle {
             cursor: pointer;
             background: var(--button-bg);
             color: white;
-            padding: 8px 15px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 20px;
+            border-radius: 30px;
             font-size: 14px;
             transition: 0.3s;
+            font-weight: bold;
         }
 
         .theme-toggle:hover {
             background: var(--button-hover);
         }
 
-        /* Добавим стили для логотипа */
-        .logo {
-            width: 50px; /* Ширина логотипа */
-            height: auto; /* Высота пропорциональная ширине */
-        }
-
         .container {
             margin: 20px auto;
             padding: 20px;
-            max-width: 800px;
+            max-width: 1250px;
             background: var(--container-bg);
             border-radius: 10px;
             box-shadow: 0px 4px 6px var(--shadow-color);
         }
 
         h1 {
+            position: relative;
+            top: -20px;
             color: var(--text-color);
         }
 
@@ -100,7 +114,6 @@
             transform: scale(1.05);
         }
 
-        /* Стили для предметов */
         .subject-container {
             display: flex;
             justify-content: center;
@@ -127,7 +140,6 @@
             margin-top: 5px;
         }
 
-        /* Стили для маленьких иконок (Topics и Lessons) */
         .small-icon {
             width: 30px;
             height: 30px;
@@ -140,14 +152,11 @@
             box-shadow: 0px 2px 4px var(--shadow-color);
         }
 
-        /* Поисковая строка */
         .search-box {
             display: flex;
             justify-content: center;
             margin-top: 20px;
             position: relative;
-
-            top: 2px;
         }
 
         .search-input {
@@ -178,7 +187,6 @@
             background: var(--button-hover);
         }
 
-        /* Результаты поиска */
         .search-results {
             position: absolute;
             top: 45px;
@@ -207,14 +215,134 @@
         .lesson-image {
             width: 550px;
         }
+
+        .svg-icon {
+            position: relative;
+            left: -690px;
+            width: 30px;
+            height: 30px;
+            fill: black;
+        }
+
+        /* Главный контейнер для всей страницы */
+
+        /* Контейнер с контентом урока (для текста и изображений) */
+        .latex-content {
+            position: relative;  /* Позиционируем относительно родительского контейнера */
+            width: 95%;         /* Ширина 95% от родительского контейнера */
+            background: rgba(34, 62, 188, 0.3);  /* Уменьшенная прозрачность (0.3) */
+            padding: 20px;       /* Отступы для текста */
+            color: #00000;         /* Цвет текста */
+            font-size: 18px;     /* Размер шрифта */
+            border-radius: 8px;  /* Закругленные углы */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Тень для выделения */
+            margin-bottom: 30px; /* Отступ снизу для расстояния между контентом */
+        }        
+
+        /* Контейнер с вопросами */
+        .question-section {
+            position: relative; /* Родительский контейнер для вопросов */
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9); /* Белый фон */
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            z-index: 1;
+            display: flex; /* Включаем флекс-контейнер */
+            flex-wrap: wrap; /* Позволяет элементам переноситься на новую строку */
+            gap: 20px; /* Добавляем расстояние между элементами */
+            justify-content: flex-start; /* Расположение элементов слева направо */
+        }
+        
+        .question-container {
+            width: 100%; /* Ширина контейнера с вопросом */
+            padding: 5px;
+            background-color: rgba(255, 255, 255, 1); /* Белый фон для вопросов */
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            color: #333; /* Темный цвет для текста вопросов */
+        }        
+
+        /* Вопросы */
+        .question {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        /* Варианты ответов */
+        .answers-container {
+            margin-bottom: 15px;
+        }
+
+        .answer-option {
+            margin-bottom: 10px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            color: #555;
+        }
+
+        /* Кнопка отправки */
+        .submit-button {
+            background-color: #007bff; /* Синий цвет */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px; /* Отступ сверху, чтобы кнопка не прилегала слишком близко */
+        }
+
+        /* Ховер для кнопки */
+        .submit-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Контейнер с результатами */
+        .result-container {
+            margin-top: 20px;
+            font-style: italic;
+            color: #28a745; /* Зеленый цвет для правильных ответов */
+            background-color: rgba(40, 167, 69, 0.1); /* Легкий зеленый фон для результатов */
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .result-text {
+            font-size: 16px;
+            color: #28a745; /* Зеленый текст для правильных ответов */
+        }
+
+        /* Контейнер с ошибками */
+        .error-result {
+            margin-top: 20px;
+            font-style: italic;
+            color: #dc3545; /* Красный цвет для неправильных ответов */
+            background-color: rgba(220, 53, 69, 0.1); /* Легкий красный фон для ошибок */
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .error-result-text {
+            font-size: 16px;
+            color: #dc3545; /* Красный текст для ошибок */
+        }    
+           
     </style>
 </head>
 <body>
 
     <header>
         <span>AllSociety</span>
-        <!-- Добавляем логотип справа -->
-        <img src="{{ MEDIA_URL }}logo.png" alt="Logo" class="logo">
+        <svg class="svg-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="20" r="10" stroke="black" stroke-width="2" fill="white"/>
+            <rect x="12" y="34" width="40" height="20" rx="5" ry="5" stroke="black" stroke-width="2" fill="white"/>
+            <line x1="12" y1="44" x2="52" y2="44" stroke="black" stroke-width="2"/>
+        </svg>
         <button class="theme-toggle" onclick="toggleTheme()">Сменить тему</button>
     </header>
 
@@ -246,17 +374,25 @@
         });
 
         // Данные для поиска (заполняются Django)
-        let searchItemsData = [
-            {% for subject in subjects %}
-                { name: "{{ subject.name }}", url: "{% url 'topic_list' subject.id %}" },
-            {% endfor %}
-            {% for topic in topics %}
-                { name: "{{ topic.name }}", url: "{% url 'lesson_list' topic.id %}" },
-            {% endfor %}
-            {% for lesson in lessons %}
-                { name: "{{ lesson.title }}", url: "{% url 'lesson_detail' lesson.id %}" },
-            {% endfor %}
-        ];
+        let searchItemsData = [];
+
+        {% for subject in subjects %}
+            searchItemsData.push({ name: "{{ subject.name }}", url: "{% url 'topic_list' subject.id %}" });
+        {% endfor %}
+
+        {% for topic in topics %}
+            searchItemsData.push({ name: "{{ topic.name }}", url: "{% url 'lesson_list' topic.id %}" });
+        {% endfor %}
+
+        {% for lesson in lessons %}
+            searchItemsData.push({ name: "{{ lesson.title }}", url: "{% url 'lesson_detail' lesson.id %}" });
+        {% endfor %}
+
+        // Функция для поиска по всему списку
+        function searchItems(query) {
+            query = query.toLowerCase().trim();
+            return searchItemsData.filter(item => item.name.toLowerCase().includes(query));
+        }
 
         // Функция поиска
         function searchItems() {
