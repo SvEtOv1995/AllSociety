@@ -15,13 +15,14 @@
             --button-bg: #EE6A59;
             --button-hover: #F9AC67;
             --container-bg: white;
-            --shadow-color: rgba(0, 0, 0, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.25); /* Средняя тень */
+            --shadow-strong: 0px 6px 20px rgba(0, 0, 0, 0.4); /* Умеренная глубина */
             
-            /* Добавленные переменные для изменения стилей */
-            --latex-bg-color: rgba(34, 62, 188, 0.75);  /* Светло-синий фон для latex */
-            --question-bg-color: rgba(255, 255, 255, 0.9); /* Фон для вопроса */
-            --question-container-bg: rgba(255, 255, 255, 1); /* Фон для каждого контейнера вопроса */
-            --question-text-color: #333; /* Цвет текста вопросов */
+            /* Добавленные переменные */
+            --latex-bg-color: rgba(34, 62, 188, 0.65);  
+            --question-bg-color: rgba(255, 255, 255, 0.85); 
+            --question-container-bg: rgba(255, 255, 255, 1); 
+            --question-text-color: #333; 
         }
         
         body.dark-mode {
@@ -30,14 +31,26 @@
             --button-bg: #F9AC67;
             --button-hover: #EE6A59;
             --container-bg: #292929;
-            --shadow-color: rgba(255, 255, 255, 0.1);
-            
+            --shadow-color: rgba(255, 255, 255, 0.2);
+            --shadow-strong: 0px 6px 25px rgba(255, 255, 255, 0.3); /* Чуть менее яркая светлая тень */
+        
             /* Изменения для тёмной темы */
-            --latex-bg-color: rgba(34, 62, 188, 0.5);  /* Более прозрачный синий для latex */
-            --question-bg-color: rgba(50, 50, 50, 0.8); /* Тёмный фон для вопросов */
-            --question-container-bg: rgba(50, 50, 50, 0.9); /* Тёмный фон для контейнера вопроса */
-            --question-text-color: #ECE6CD; /* Светлый цвет для текста в тёмной теме */
-        }        
+            --latex-bg-color: rgba(34, 62, 188, 0.45);  
+            --question-bg-color: rgba(50, 50, 50, 0.85);
+            --question-container-bg: rgba(50, 50, 50, 0.9);
+            --question-text-color: #ECE6CD;
+        }
+        
+        /* Применяем тени к контейнерам */
+        .container, .news-item, .button {
+            box-shadow: var(--shadow-strong);
+            transition: box-shadow 0.2s ease-in-out;
+        }
+        
+        /* Эффект свечения при наведении (более мягкий) */
+        .button:hover, .news-item:hover {
+            box-shadow: 0px 10px 30px rgba(255, 215, 0, 0.4); /* Светлее, но не слишком */
+        }              
 
         body {
             font-family: 'Comic Sans MS', sans-serif;  /* Заменили на Comic Sans */
@@ -90,7 +103,7 @@
 
         h1 {
             position: relative;
-            top: -20px;
+            top: 20px;
             color: var(--text-color);
         }
 
@@ -218,7 +231,7 @@
 
         .svg-icon {
             position: relative;
-            left: -690px;
+            left: -730px;
             width: 30px;
             height: 30px;
             fill: black;
@@ -331,7 +344,147 @@
             font-size: 16px;
             color: #dc3545; /* Красный текст для ошибок */
         }    
-           
+
+        .news-item {
+            width: 50%;
+            max-width: 600px;
+            background: var(--container-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px var(--shadow-color);
+            transition: transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .news-container {
+            display: flex;
+            flex-direction: row-reverse; /* Размещение элементов справа налево */
+            align-items: flex-start; /* Выравнивание элементов по верхнему краю */
+            justify-content: flex-end; /* Элементы будут выравниваться справа */
+            gap: 15px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .news-image {
+            width: 40%;
+            max-width: 500px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-toggle {
+            width: 50px;
+            height: 50px;
+            background: var(--button-bg);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 0px 4px 10px var(--shadow-color);
+        }
+        
+        .theme-toggle:hover {
+            box-shadow: 0px 6px 15px var(--shadow-color);
+        }
+        
+        /* Контейнер для иконок */
+        .icon-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Солнце */
+        .sun {
+            width: 24px;
+            height: 24px;
+            opacity: 1;
+            transition: transform 0.5s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        
+        /* Луна */
+        .moon {
+            width: 24px;
+            height: 24px;
+            opacity: 0;
+            transform: scale(0);
+            transition: transform 0.5s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        
+        /* Активный темный режим */
+        body.dark-mode .sun {
+            opacity: 0;
+            transform: scale(0);
+        }
+        
+        body.dark-mode .moon {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        /* Custom colors for sun and moon (independent of the main styles) */
+        .sun {
+            fill: orange; /* Custom color for the sun */
+            stroke: orange;
+        }
+        
+        .moon {
+            fill: #A9A9A9; /* Custom color for the moon */
+        }      
+        
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;  /* Distributes space between the buttons and topics */
+            align-items: center;  /* Vertically centers the items */
+            margin-bottom: 20px;
+        }
+        
+        .button {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .calculator-button {
+            background-color: #ffcc00; /* Yellow for Calculator */
+        }
+        
+        .notes-button {
+            background-color: #4CAF50; /* Green for Notes */
+        }
+        
+        .button:hover {
+            background-color: #ddd;
+        }
+        
+        /* Subject container styles (the topic list) */
+        .subject-container {
+            display: flex;
+            flex-wrap: wrap; /* Allows topics to wrap if the screen is small */
+            justify-content: center;  /* Centers the topics in the middle */
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .small-icon {
+            width: 20px;
+            height: 20px;
+            margin-left: 5px;
+        }
+        
     </style>
 </head>
 <body>
@@ -343,7 +496,17 @@
             <rect x="12" y="34" width="40" height="20" rx="5" ry="5" stroke="black" stroke-width="2" fill="white"/>
             <line x1="12" y1="44" x2="52" y2="44" stroke="black" stroke-width="2"/>
         </svg>
-        <button class="theme-toggle" onclick="toggleTheme()">Сменить тему</button>
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <div class="icon-container">
+                <svg class="sun" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="5" stroke="orange" stroke-width="2" fill="orange"/>
+                    <path d="M12 1V3M12 21V23M4.222 4.222L5.636 5.636M18.364 18.364L19.778 19.778M1 12H3M21 12H23M4.222 19.778L5.636 18.364M18.364 5.636L19.778 4.222" stroke="orange" stroke-width="2"/>
+                </svg>
+                <svg class="moon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C8.13 2 5 5.13 5 9C5 11.85 6.76 14.32 9.21 15.34C9.08 15.69 9 16.09 9 16.5C9 17.88 9.56 19.19 10.56 20.19C9.74 20.67 9 21 8 21C5.79 21 4 18.74 4 16C4 10.48 7.58 6 12 6C13.59 6 15.04 6.57 16.11 7.51C16.74 6.28 18.26 6 19.5 7.24C20.74 8.47 20.26 10.5 18.88 11.14C20.06 12.6 20 14.47 19.14 15.76C18.63 16.72 17.78 17.25 16.83 17.3C15.54 17.38 14.15 16.55 13.38 15.24C12.61 13.93 12 12.08 12 10.5C12 7.09 13.91 2 12 2Z" fill="#A9A9A9"/>
+                </svg>
+            </div>
+        </button>                
     </header>
 
     <!-- Поисковая строка -->
@@ -418,6 +581,12 @@
             } else {
                 resultsContainer.style.display = "none";
             }
+        }
+    </script>
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle("dark-mode");
         }
     </script>
 

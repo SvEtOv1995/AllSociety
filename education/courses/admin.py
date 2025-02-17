@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Subject, Topic, Lesson, News, Question, Answer
+from .models import Subject, SubjectCalculator, SubjectNotes
 
 # Инлайн для ответов на вопросы
 class AnswerInline(admin.TabularInline):
@@ -60,3 +61,18 @@ class AnswerAdmin(admin.ModelAdmin):
     list_display = ('text', 'question', 'is_correct')
 
 # Не нужно повторно регистрировать модели, если они уже были зарегистрированы.
+
+@admin.register(SubjectCalculator)
+class SubjectCalculatorAdmin(admin.ModelAdmin):
+    list_display = ('subject', 'html_link')
+
+    # Метод для создания ссылки на HTML-страницу
+    def html_link(self, obj):
+        return format_html('<a href="{}" target="_blank">Перейти к калькулятору</a>', obj.html_template)
+
+    html_link.short_description = 'Калькулятор'
+    
+# Регистрация модели SubjectNotes с нужными полями для отображения в админке
+@admin.register(SubjectNotes)
+class SubjectNotesAdmin(admin.ModelAdmin):
+    list_display = ('subject', 'notes_content')  # Показываем поле subject и notes_content

@@ -62,7 +62,23 @@ class AnswerSelection(models.Model):
 class News(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
+    image = models.ImageField(upload_to='news_images/', blank=True, null=True)  # Поле для фото
     published_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+
+class SubjectCalculator(models.Model):
+    subject = models.OneToOneField(Subject, on_delete=models.CASCADE)
+    html_template = models.CharField(max_length=255, help_text="Путь к HTML-шаблону или URL")
+
+    def __str__(self):
+        return f"Calculator for {self.subject.name}"
+
+# Notes model for storing a subject's notes
+class SubjectNotes(models.Model):
+    subject = models.OneToOneField(Subject, on_delete=models.CASCADE)
+    notes_content = models.TextField(blank=True, null=True)  # Detailed notes
+
+    def __str__(self):
+        return f"Notes for {self.subject.name}"

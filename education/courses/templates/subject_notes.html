@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Конспект - {{ subject.name }}{% endblock %}
+
+{% block content %}
+    <h1>Конспект по предмету {{ subject.name }}</h1>
+    
+    {% if notes %}
+        <p>{{ notes.notes_content }}</p>
+    {% else %}
+        <p>Конспект для этого предмета не найден.</p>
+    {% endif %}
+{% endblock %}

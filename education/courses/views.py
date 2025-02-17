@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import Subject, Topic, Lesson, News
 from django.shortcuts import redirect
 from .models import Question, Answer
+from .models import Subject, SubjectCalculator, SubjectNotes
 
 def subjects_list(request):
     subjects = Subject.objects.all()
@@ -47,3 +48,28 @@ def check_answer(request, question_id):
         'result': result,
         'explanation': explanation,
     })
+
+def subject_calculator(request, subject_id):
+    # Get the subject object
+    subject = get_object_or_404(Subject, id=subject_id)
+    
+    # Try to get the corresponding SubjectCalculator instance
+    try:
+        calculator = SubjectCalculator.objects.get(subject=subject)
+    except SubjectCalculator.DoesNotExist:
+        calculator = None  # Or handle the case when the calculator doesn't exist
+    
+    return render(request, 'subject_calculator.html', {'subject': subject, 'calculator': calculator})
+
+# View for Subject's Notes
+def subject_notes(request, subject_id):
+    # Get the subject object
+    subject = get_object_or_404(Subject, id=subject_id)
+    
+    # Try to get the corresponding SubjectNotes instance
+    try:
+        notes = SubjectNotes.objects.get(subject=subject)
+    except SubjectNotes.DoesNotExist:
+        notes = None  # Or handle the case when the notes don't exist
+    
+    return render(request, 'subject_notes.html', {'subject': subject, 'notes': notes})

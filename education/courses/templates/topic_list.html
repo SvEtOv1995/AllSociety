@@ -4,15 +4,29 @@
 
 {% block content %}
     <h1>Темы по предмету {{ subject.name }}</h1>
-    <div class="subject-container">
-        {% for topic in topics %}
-            <a href="{% url 'lesson_list' topic.id %}" class="button">
-                {{ topic.name }}
-                {% if topic.image %}
-                    <img src="{{ topic.image.url }}" alt="Иконка" class="small-icon">
-                {% endif %}
-            </a>
-        {% endfor %}
-    </div>
 
+    <!-- Buttons Container with Left and Right Buttons -->
+    <div class="buttons-container">
+        <!-- Left-aligned Button for Calculator -->
+        <a href="{% url 'subject_calculator' subject.id %}" class="button calculator-button">
+            Калькулятор по предмету
+        </a>
+        
+        <!-- Center-aligned Topics List -->
+        <div class="subject-container">
+            {% for topic in topics %}
+                <a href="{% url 'lesson_list' topic.id %}" class="button">
+                    {{ topic.name }}
+                    {% if topic.image %}
+                        <img src="{{ topic.image.url }}" alt="Иконка" class="small-icon">
+                    {% endif %}
+                </a>
+            {% endfor %}
+        </div>
+
+        <!-- Right-aligned Button for Notes -->
+        <a href="{% url 'subject_notes' subject.id %}" class="button notes-button">
+            Конспект по предмету
+        </a>
+    </div>
 {% endblock %}
