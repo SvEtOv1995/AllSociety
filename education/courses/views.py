@@ -23,31 +23,43 @@ def lesson_detail(request, lesson_id):
     lesson = get_object_or_404(Lesson, id=lesson_id)
     return render(request, 'lesson_detail.html', {'lesson': lesson})
 
+from django.shortcuts import get_object_or_404, render
+from .models import Question, Answer
+
 def check_answer(request, question_id):
     question = get_object_or_404(Question, id=question_id)
-    correct_answer = question.answers.filter(is_correct=True).first()  # Найдем правильный ответ
+    correct_answer = question.answers.filter(is_correct=True).first()
+
+    if "answered_questions" not in request.session:
+        request.session["answered_questions"] = {}
 
     result = ""
     explanation = ""
 
     if request.method == "POST":
-        # Получаем выбранный ответ
-        selected_answer_id = request.POST.get('answer')
+        selected_answer_id = request.POST.get("answer")
         selected_answer = get_object_or_404(Answer, id=selected_answer_id)
 
-        # Проверяем правильность ответа
         if selected_answer == correct_answer:
             result = "Правильный ответ!"
-            explanation = question.explanation  # Отображаем пояснение
+            explanation = question.explanation if question.explanation else "Нет объяснения."
         else:
             result = "Неправильный ответ!"
+            explanation = "Попробуйте еще раз."
 
-    # Отправляем результат и объяснение в шаблон
-    return render(request, 'lesson_detail.html', {
-        'lesson': question.lesson,
-        'result': result,
-        'explanation': explanation,
+        # Сохраняем ответ в сессии с корректной структурой
+        request.session["answered_questions"][str(question_id)] = {
+            "selected_answer": str(selected_answer_id),  # Приводим ID к строке
+            "result": result,  # Добавляем результат
+            "explanation": explanation,  # Добавляем объяснение
+        }
+        request.session.modified = True
+
+    return render(request, "lesson_detail.html", {
+        "lesson": question.lesson,
+        "answered_questions": request.session["answered_questions"],  # Отправляем в шаблон
     })
+
 
 def subject_calculator(request, subject_id):
     # Get the subject object

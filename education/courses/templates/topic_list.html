@@ -6,19 +6,19 @@
     <h1>Темы по предмету {{ subject.name }}</h1>
 
     <!-- Buttons Container with Left and Right Buttons -->
-    <div class="buttons-container">
+    <div class="buttons-container" style="display: flex; justify-content: space-between; align-items: center; background-color: var(--container-bg); padding: 20px;">
         <!-- Left-aligned Button for Calculator -->
         <a href="{% url 'subject_calculator' subject.id %}" class="button calculator-button">
             Калькулятор по предмету
         </a>
         
         <!-- Center-aligned Topics List -->
-        <div class="subject-container">
+        <div class="subject-container" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
             {% for topic in topics %}
-                <a href="{% url 'lesson_list' topic.id %}" class="button">
-                    {{ topic.name }}
+                <a href="{% url 'lesson_list' topic.id %}" class="button topic-button">
+                    <span>{{ topic.name }}</span>
                     {% if topic.image %}
-                        <img src="{{ topic.image.url }}" alt="Иконка" class="small-icon">
+                        <img src="{{ topic.image.url }}" alt="Иконка" class="small-icon" style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;">
                     {% endif %}
                 </a>
             {% endfor %}
@@ -29,4 +29,98 @@
             Конспект по предмету
         </a>
     </div>
+
+    <style>
+        :root {
+            --bg-color: #ECE6CD;
+            --text-color: #3A3F58;
+            --button-bg: #EE6A59;
+            --button-hover: #F9AC67;
+            --container-bg: white;
+            --shadow-color: rgba(0, 0, 0, 0.25);
+            --shadow-strong: 0px 6px 20px rgba(0, 0, 0, 0.4);
+            --latex-bg-color: rgba(34, 62, 188, 0.65);  
+            --question-bg-color: rgba(255, 255, 255, 0.85); 
+            --question-container-bg: rgba(255, 255, 255, 1); 
+            --question-text-color: #333; 
+        }
+
+        .button {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: var(--text-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow-color);
+            padding: 12px 25px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--button-bg);
+        }
+
+        .button:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .calculator-button, .notes-button {
+            background-color: var(--button-bg);
+            color: white;
+        }
+
+        .calculator-button:hover, .notes-button:hover {
+            background-color: var(--button-hover);
+        }
+
+        .topic-button {
+            padding: 12px 20px;
+            background-color: var(--button-bg);
+            color: var(--container-bg);
+            box-shadow: var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
+        .topic-button:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .subject-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .subject-container a {
+            font-size: 16px;
+        }
+
+        .subject-container .button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background-color: var(--button-bg);
+            color: var(--container-bg);
+            box-shadow: var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
+        .subject-container .button:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .small-icon {
+            width: 35px;
+            height: 35px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+    </style>
 {% endblock %}

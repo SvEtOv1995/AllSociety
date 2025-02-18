@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load custom_filters %}
+
 {% block title %}{{ lesson.title }} - AllSociety{% endblock %}
 
 {% block content %}
@@ -31,13 +33,13 @@
                         <div class="question">
                             <p>{{ question.question_text }}</p>
 
-                            <!-- Варианты ответов -->
-                            <form action="{% url 'check_answer' question.id %}" method="post">
+                            <form action="{% url 'check_answer' question.id %}" method="post" class="answer-form">
                                 {% csrf_token %}
                                 <div class="answers-container">
                                     {% for answer in question.answers.all %}
                                         <div class="answer-option">
-                                            <input type="radio" id="answer_{{ answer.id }}" name="answer" value="{{ answer.id }}">
+                                            <input type="radio" id="answer_{{ answer.id }}" name="answer" value="{{ answer.id }}"
+                                            {% if answered_questions|get_item:question.id and answered_questions|get_item:question.id.selected_answer == answer.id|stringformat:"s" %}checked{% endif %}>
                                             <label for="answer_{{ answer.id }}">{{ answer.text }}</label>
                                         </div>
                                     {% endfor %}
@@ -45,13 +47,14 @@
                                 <button type="submit" class="submit-button">Ответить</button>
                             </form>
 
-                            <!-- Пояснение, если правильный ответ -->
-                            {% if result %}
-                                <div class="result-container">
-                                    <p class="result-text">{{ result }}</p>
-                                    <p><strong>Объяснение:</strong> {{ explanation }}</p>
-                                </div>
-                            {% endif %}
+                            {% if answered_questions|get_item:question.id %}
+                            <div class="result-container">
+                                <p class="result-text">{{ answered_questions|get_item:question.id|get_item:"result" }}</p>
+                                {% if answered_questions|get_item:question.id|get_item:"explanation" %}
+                                    <p><strong>Объяснение:</strong> {{ answered_questions|get_item:question.id|get_item:"explanation" }}</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                         </div>
                     </div>
                 {% endfor %}
@@ -61,139 +64,6 @@
 
     <form id="lesson-form" action="{% url 'add_exp' 10 %}" method="POST">
         {% csrf_token %}
-        <button type="submit" id="complete-lesson-button" class="submit-button" disabled>Завершить урок</button>
+        <button type="submit" id="complete-lesson-button" class="submit-button" {% if answered_questions|length < lesson.questions.count %}disabled{% endif %}>Завершить урок</button>
     </form>    
-    
 {% endblock %}
-
-<style>
-    .lesson-container {
-        margin: 20px auto;
-        max-width: 800px;
-        padding: 20px;
-        background: var(--container-bg);
-        border-radius: 8px;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .lesson-title {
-        font-size: 28px;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    .lesson-image-container {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    .lesson-image {
-        width: 100%;
-        height: auto;
-        max-width: 600px;
-        border-radius: 8px;
-    }
-
-    .lesson-content {
-        margin-bottom: 30px;
-    }
-
-    .latex-content {
-        position: relative;
-        background-color: rgba(255, 255, 255, 0.7); 
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-        margin-bottom: 30px;
-        font-size: 18px;
-        line-height: 1.6;
-        color: var(--text-color);
-        z-index: 10; /* Позиционируем поверх других элементов */
-    }
-
-    .questions-section {
-        margin-top: 20px;
-    }
-
-    .questions-container {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .question-container {
-        background-color: #f9f9f9;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        position: relative;
-        z-index: 1;
-    }
-
-    .question {
-        margin-bottom: 20px;
-        font-size: 18px;
-        color: var(--text-color);
-    }
-
-    .answers-container {
-        margin-bottom: 15px;
-    }
-
-    .answer-option {
-        margin-bottom: 10px;
-    }
-
-    .submit-button {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .submit-button:hover {
-        background-color: #0056b3;
-    }
-
-    .result-container {
-        margin-top: 20px;
-        font-style: italic;
-        color: green;
-    }
-
-    .result-text {
-        font-size: 16px;
-        color: green;
-    }
-</style>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const completeButton = document.getElementById("complete-lesson-button");
-        const answerForms = document.querySelectorAll(".question-container form");
-        
-        function checkAllAnswers() {
-            let allAnswered = true;
-    
-            answerForms.forEach(form => {
-                const selectedAnswer = form.querySelector("input[type='radio']:checked");
-                if (!selectedAnswer) {
-                    allAnswered = false;
-                }
-            });
-    
-            completeButton.disabled = !allAnswered;
-        }
-    
-        answerForms.forEach(form => {
-            form.addEventListener("change", checkAllAnswers);
-        });
-    
-        checkAllAnswers();
-    });
-    </script>
-    
