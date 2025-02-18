@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Мой персонаж{% endblock %}
+
+{% block content %}
+    <h1>Мой персонаж</h1>
+    <div class="character-box" style="display: flex; flex-direction: column; align-items: center;">
+        <img src="{% static 'images/character_default.png' %}" id="character-img" alt="Персонаж" style="max-width: 300px; margin-bottom: 20px;">
+        
+        <!-- Информация о уровне и опыте -->
+        <p><strong>Уровень:</strong> {{ progress.level }}</p>
+        <p><strong>Опыт:</strong> {{ progress.exp }} / 50</p>
+
+        <!-- Количество пройденных уроков -->
+        <p><strong>Пройдено уроков:</strong> {{ lessons_completed }}</p>
+
+        <!-- Дополнительная информация о прогрессе -->
+        <div class="progress-info" style="text-align: center; margin-top: 20px;">
+            <p><strong>Оставшийся опыт до следующего уровня:</strong> {{ remaining_exp }}</p>
+        </div>
+
+        <!-- Кнопка "Вернуться к предметам" -->
+        <a href="{% url 'subjects_list' %}" class="button subjects-button" style="margin-top: 20px;">📚 Вернуться к предметам</a>
+    </div>
+{% endblock %}

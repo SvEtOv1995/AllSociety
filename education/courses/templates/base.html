@@ -484,6 +484,43 @@
             height: 20px;
             margin-left: 5px;
         }
+
+        .character-box {
+            text-align: center;
+            padding: 20px;
+            background: var(--container-bg);
+            border-radius: 10px;
+            box-shadow: var(--shadow-strong);
+            width: 300px;
+            margin: auto;
+        }
+
+        #character-container {
+            position: fixed;
+            bottom: 50px;
+            right: 50px;
+            width: 150px;
+            text-align: center;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        
+        #character img {
+            width: 100%;
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        #chat-bubble {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: var(--shadow-strong);
+            display: none;
+        }        
         
     </style>
 </head>
@@ -518,6 +555,14 @@
 
     <div class="container">
         {% block content %}{% endblock %}
+    </div>
+
+    <div id="character-container">
+        <div id="character">
+            <img src="{% static 'images/character_default.png' %}" id="character-img" alt="Персонаж">
+            <div id="chat-bubble">Привет! Я твой помощник 🔥</div>
+            <a href="{% url 'character_status' %}" class="button">Мой персонаж</a>
+        </div>
     </div>
 
     <script>
@@ -592,6 +637,29 @@
             }
         }
     </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const characterImg = document.getElementById("character-img");
+            const chatBubble = document.getElementById("chat-bubble");
+    
+            const messages = [
+                "Привет! Готов учиться? 😊",
+                "Ты молодец! Давай еще один урок! 🚀",
+                "Отличная работа! Пора прокачаться! 🔥",
+                "Учись больше, и я стану сильнее! 💪"
+            ];
+    
+            function showMessage() {
+                let randomIndex = Math.floor(Math.random() * messages.length);
+                chatBubble.innerText = messages[randomIndex];
+                chatBubble.style.display = "block";
+                setTimeout(() => chatBubble.style.display = "none", 3000);
+            }
+    
+            characterImg.addEventListener("click", showMessage);
+        });
+    </script>    
 
     <script>
         function toggleTheme() {
