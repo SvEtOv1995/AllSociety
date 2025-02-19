@@ -31,74 +31,27 @@
     </div>
 
     <style>
-        :root {
-            --bg-color: #ECE6CD;
-            --text-color: #3A3F58;
-            --button-bg: #EE6A59;
-            --button-hover: #F9AC67;
-            --container-bg: white;
-            --shadow-color: rgba(0, 0, 0, 0.25);
-            --shadow-strong: 0px 6px 20px rgba(0, 0, 0, 0.4);
-            --latex-bg-color: rgba(34, 62, 188, 0.65);  
-            --question-bg-color: rgba(255, 255, 255, 0.85); 
-            --question-container-bg: rgba(255, 255, 255, 1); 
-            --question-text-color: #333; 
-        }
-
-        .button {
-            font-family: 'Arial', sans-serif;
-            font-weight: bold;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-decoration: none;
-            color: var(--text-color);
-            border-radius: 8px;
-            box-shadow: var(--shadow-color);
-            padding: 12px 25px;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: var(--button-bg);
-        }
-
-        .button:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-strong);
-        }
-
-        .calculator-button, .notes-button {
-            background-color: var(--button-bg);
-            color: white;
-        }
-
-        .calculator-button:hover, .notes-button:hover {
-            background-color: var(--button-hover);
-        }
-
-        .topic-button {
-            padding: 12px 20px;
-            background-color: var(--button-bg);
-            color: var(--container-bg);
-            box-shadow: var(--shadow-color);
-            transition: all 0.3s ease;
-        }
-
-        .topic-button:hover {
-            background-color: var(--button-hover);
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-strong);
-        }
 
         .subject-container {
             display: flex;
-            flex-direction: column;
+            flex-direction: row; /* Располагаем элементы в ряд */
+            flex-wrap: wrap; /* Если места не хватает, элементы могут переноситься */
             gap: 15px;
+            padding: 10px;
+            background-color: rgba(173, 216, 230, 0.4); /* Полупрозрачный голубой фон */
+            border-radius: 10px; /* Скругленные углы */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Легкая тень */
+            backdrop-filter: blur(10px); /* Немного размытия фона за контейнером */
+            position: relative;
+            top: -2px;
         }
-
+        
         .subject-container a {
             font-size: 16px;
+            text-decoration: none;
+            color: var(--text-color); /* Цвет текста */
         }
-
+        
         .subject-container .button {
             display: flex;
             align-items: center;
@@ -106,21 +59,38 @@
             padding: 12px 20px;
             background-color: var(--button-bg);
             color: var(--container-bg);
+            border-radius: 5px; /* Скругленные углы кнопки */
             box-shadow: var(--shadow-color);
             transition: all 0.3s ease;
+            flex-direction: row-reverse
         }
-
+        
         .subject-container .button:hover {
             background-color: var(--button-hover);
             transform: translateY(-4px);
             box-shadow: var(--shadow-strong);
         }
-
+        
         .small-icon {
-            width: 35px;
-            height: 35px;
+            width: 45px;
+            height: 45px;
             object-fit: cover;
             border-radius: 50%;
+            margin-right: 10px; /* Отступ между иконкой и текстом */
+        } 
+
+        .buttons-container {
+            width: 100%;
+            padding: 20px;
+            border-radius: 15px; /* Округление углов */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Легкая тень */
+            /* Убрали background-color и backdrop-filter */
+        }              
+        
+        h1 {
+
+            top: -20px;
+
         }
 
         /* Уборка лишних с главной страницы SVG */
