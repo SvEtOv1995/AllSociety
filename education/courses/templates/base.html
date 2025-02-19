@@ -663,7 +663,6 @@
             display: none;
         }        
 
-        /* Контейнер для SVG */
         .svg-container {
             display: flex;
             justify-content: center;  /* Центрируем SVG */
@@ -671,8 +670,15 @@
             max-width: 100vw;  /* Максимальная ширина - 100% экрана */
             max-height: 100vh; /* Максимальная высота - 100% экрана */
             overflow: visible;   /* Обрезаем выходящие элементы */
-            position: relative; /* Обеспечивает позиционирование для перетаскивания */
+            position: relative; /* Позиционирование для перетаскивания */
+            z-index: 0; /* Возвращаем на слой по умолчанию */
+            pointer-events: none; /* Запрещаем взаимодействие с элементами контейнера, чтобы они не мешали кликам */
         }
+        
+        .svg-container svg {
+            pointer-events: auto; /* Разрешаем взаимодействие с самим SVG, если это нужно */
+        }
+        
 
         /* Стили для SVG */
         .animated-svg {
@@ -695,7 +701,6 @@
     </style>
 </head>
 <body>
-
     <body class="{% if dark_mode %}dark-mode{% endif %}">
         <header>
                 <span>AllSociety</span>

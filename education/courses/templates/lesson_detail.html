@@ -65,5 +65,37 @@
     <form id="lesson-form" action="{% url 'add_exp' 10 %}" method="POST">
         {% csrf_token %}
         <button type="submit" id="complete-lesson-button" class="submit-button" {% if answered_questions|length < lesson.questions.count %}disabled{% endif %}>Завершить урок</button>
-    </form>    
+    </form> 
+    
+    <style>
+
+        /* Уборка лишних с главной страницы SVG */
+        .center-line {
+            display: none;
+        }  
+
+        .title-container {
+            display: none;
+        }
+
+        .paragraph-container {
+            display: none;
+        }
+
+        .h2 {
+            display: none;
+        }
+
+        .h3 {
+            display: none;
+        }
+
+        #character-container {
+            display: none;
+        }
+
+        .svg-container {
+            display: none;
+        }
+    </style>
 {% endblock %}
