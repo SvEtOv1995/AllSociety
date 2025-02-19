@@ -88,6 +88,7 @@
 
         span {
             color: white;
+            font-size: 25px;
           }
 
           .center-line {
@@ -100,7 +101,56 @@
             height: 2px; /* Высота полосы */
             background-color: white; /* Белый цвет */
             z-index: 9999; /* Размещаем полосу выше других элементов */
-        }                                        
+        }   
+        
+        /* Контейнер для заголовка */
+        .title-container {
+            position: absolute; /* Позволяет свободно перемещать */
+            top: 20%; /* Расположение сверху (можно менять) */
+            left: 20%; /* Центрируем по горизонтали */
+            transform: translateX(-50%); /* Выравниваем по центру */
+        }
+
+        .title {
+            font-size: 25px;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Контейнер для абзаца */
+        .paragraph-container {
+            position: absolute; /* Позволяет двигать независимо от заголовка */
+            top: 30%; /* Расположение ниже заголовка (можно менять) */
+            left: 20%; /* Центрируем по горизонтали */
+            transform: translateX(-50%); /* Выравниваем по центру */
+            width: 30%; /* Ограничение ширины текста */
+        }
+
+        .paragraph {
+            font-size: 15px;
+            color: white;
+            line-height: 1.6;
+            word-wrap: break-word;
+            text-align: justify;
+        }
+
+        .h2 {
+            position: absolute; /* Позволяет свободно перемещать */
+            top: 50%; /* Расположение сверху (можно менять) */
+            left: 20%; /* Центрируем по горизонтали */
+            transform: translateX(-50%); /* Выравниваем по центру */
+        }
+
+        .h3 {
+            position: absolute; /* Позволяет двигать независимо от заголовка */
+            top: 60%; /* Расположение ниже заголовка (можно менять) */
+            left: 20%; /* Центрируем по горизонтали */
+            transform: translateX(-50%); /* Выравниваем по центру */
+            width: 30%; /* Ограничение ширины текста */
+        }
+        
         
         /* Применяем тени к контейнерам */
         .container, .news-item, .button {
@@ -659,6 +709,22 @@
         </div>
 
         <div class="center-line"></div>
+
+        <div class="title-container">
+            <h2 class="title">Наш сайт - AllSociety</h2>
+        </div>
+        
+        <div class="paragraph-container">
+            <p class="paragraph">AllSociety – это образовательная платформа с удобным интерфейсом, качественными справочными и учебными материалами. Здесь вы найдете структурированные курсы, полезные ресурсы и интуитивно понятный функционал, который сделает процесс обучения комфортным и эффективным.</p>
+        </div>  
+        
+        <div class="h2">
+            <h2 class="title">О нас:</h2>
+        </div>
+        
+        <div class="h3">
+            <p class="paragraph">Мы — команда учеников из разных школ, объединенных одной целью: сделать учебу удобнее, интереснее и доступнее для всех. Мы создаем AllSociety — платформу, где качественные материалы, интуитивный интерфейс и современные технологии помогут каждому учиться легко и с удовольствием.</p>
+        </div>  
     
         <div id="character-container">
             <div id="character">
