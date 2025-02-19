@@ -54,7 +54,7 @@
                                     <p><strong>Объяснение:</strong> {{ answered_questions|get_item:question.id|get_item:"explanation" }}</p>
                                 {% endif %}
                             </div>
-                        {% endif %}
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
@@ -68,6 +68,100 @@
     </form> 
     
     <style>
+
+        :root {
+            /* 🌞 Светлый режим */
+            --bg-light-color: #F0F4F8; /* Светло-серый фон */
+            --text-light-color: #2A2A2A; /* Тёмно-серый текст */
+            --button-light-bg: #7DE2D1; /* Светлый бирюзовый */
+            --button-light-hover: #29A0B1; /* Чуть более насыщенный */
+            --container-light-bg: rgba(255, 255, 255, 0.8); /* Полупрозрачный белый */
+            --shadow-light: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Мягкая тень */
+        
+            /* 🌙 Темный режим */
+            --bg-dark-color: #292B3A; /* Темно-синий серый */
+            --text-dark-color: #DDECE6; /* Светлый текст */
+            --button-dark-bg: #F9AC67; /* Тёплый оранжево-персиковый */
+            --button-dark-hover: #EE6A59; /* Чуть насыщеннее */
+            --container-dark-bg: rgba(42, 42, 42, 0.8); /* Полупрозрачный темный */
+            --shadow-dark: 0px 4px 10px rgba(255, 255, 255, 0.15); /* Светлая тень */
+        }
+        
+        /* 🌞 Светлый режим */
+        body {
+            background-color: var(--bg-light-color);
+            color: var(--text-light-color);
+            font-family: Arial, sans-serif;
+        }
+        
+        .lesson-container {
+            background-color: var(--container-light-bg);
+            border-radius: 40px;
+            padding: 30px;
+            box-shadow: var(--shadow-light);
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        
+        .lesson-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-light-color);
+            margin-bottom: 20px;
+        }
+        
+        .lesson-content {
+            font-size: 1.2rem;
+            color: var(--text-light-color);
+            line-height: 1.6;
+        }
+        
+        .button {
+            padding: 12px 20px;
+            background-color: var(--button-light-bg);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+        
+        .button:hover {
+            background-color: var(--button-light-hover);
+            transform: translateY(-2px);
+        }
+        
+        /* 🌙 Темный режим */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: var(--bg-dark-color);
+                color: var(--text-dark-color);
+            }
+        
+            .lesson-container {
+                background-color: var(--container-dark-bg);
+                box-shadow: var(--shadow-dark);
+            }
+        
+            .lesson-title {
+                color: var(--text-dark-color);
+                position: relative;
+                top: -20px;
+                right: 40%;
+            }
+        
+            .lesson-content {
+                color: var(--text-dark-color);
+            }
+        
+            .button {
+                background-color: var(--button-dark-bg);
+            }
+        
+            .button:hover {
+                background-color: var(--button-dark-hover);
+            }
+        }        
 
         /* Уборка лишних с главной страницы SVG */
         .center-line {

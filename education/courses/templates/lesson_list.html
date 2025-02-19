@@ -4,15 +4,52 @@
 
 {% block content %}
     <h1>Уроки по теме {{ topic.name }}</h1>
-    <div class="subjects-container">
+    <div class="subjects-container" style="display: flex; flex-direction: column; gap: 15px;">
         {% for lesson in lessons %}
-            <a href="{% url 'lesson_detail' lesson.id %}" class="button">{{ lesson.title }}</a>
+            <a href="{% url 'lesson_detail' lesson.id %}" class="button" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background-color: rgba(173, 216, 230, 0.6); border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+                {{ lesson.title }}
+            </a>
         {% endfor %}
     </div>
+    
     <br>
-    <a href="{% url 'topic_list' topic.subject.id %}" class="button">Назад</a>
+    
+    <a href="{% url 'topic_list' topic.subject.id %}" class="button" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background-color: rgba(173, 216, 230, 0.6); border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
+        Назад
+    </a>
 
     <style>
+
+        .subjects-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+    
+        .subjects-container .button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background-color: rgba(173, 216, 230, 0.6); /* Прозрачный голубой цвет */
+            border-radius: 15px; /* Округление углов */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Легкая тень */
+            transition: all 0.3s ease;
+        }
+    
+        .subjects-container .button:hover {
+            background-color: rgba(173, 216, 230, 0.8); /* Более интенсивный голубой при наведении */
+            transform: translateY(-4px);
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+
+            position: relative;
+            top: -10px;
+
+        }
 
         /* Уборка лишних с главной страницы SVG */
         .center-line {
