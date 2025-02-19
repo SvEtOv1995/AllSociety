@@ -51,13 +51,12 @@
 
     .news-title {
         font-size: 22px;
-        color: var(--text-color);
         margin-bottom: 10px;
     }
 
     /* Контейнер для новостей */
     .news-container {
-        display: flex;
+        display: none;
         flex-direction: column;
         align-items: center;
         gap: 15px;
@@ -68,15 +67,14 @@
     .news-item {
         width: 100%;
         max-width: 600px;
-        background: var(--container-bg);
         padding: 20px;
         border-radius: 8px;
-        box-shadow: 0px 4px 6px var(--shadow-color);
+        background: transparent; /* Make the container background invisible */
         transition: transform 0.2s ease;
         display: flex;
         flex-direction: row-reverse;
         align-items: flex-start;
-        flex-wrap: wrap
+        flex-wrap: wrap;
     }
 
     .news-item:hover {
@@ -92,11 +90,9 @@
     .news-content {
         margin-top: 15px;
         font-size: 16px;
-        color: var(--text-color);
     }
 
     /* Контейнер для предметов */
-    /* Контейнер для всех элементов */
     .subject-container {
         display: flex;
         flex-wrap: wrap;
@@ -109,7 +105,6 @@
     .subject-item {
         width: 100%;
         max-width: 250px; /* Максимальная ширина */
-        background: var(--container-bg, #f9f9f9); /* Фон для контейнера */
         padding: 20px; /* Внутренний отступ */
         border-radius: 12px; /* Скругленные углы */
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Тень */
@@ -118,7 +113,6 @@
         margin: 10px; /* Отступы вокруг элементов */
     }
 
-    /* Эффект при наведении на элемент */
     .subject-item:hover {
         transform: scale(1.05); /* Легкое увеличение */
         box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* Усиленная тень */
@@ -138,25 +132,6 @@
         margin-top: 10px; /* Отступ сверху */
         font-size: 18px; /* Размер шрифта */
         font-weight: bold; /* Полужирный шрифт */
-        color: var(--text-color, #333); /* Цвет текста */
-    }
-
-    /* Стили для кнопки */
-    .button {
-        display: inline-block;
-        margin-top: 15px; /* Отступ сверху */
-        padding: 12px 25px; /* Размеры кнопки */
-        background-color: var(--button-bg, #007bff); /* Цвет фона кнопки */
-        color: white; /* Цвет текста на кнопке */
-        text-decoration: none; /* Убираем подчеркивание */
-        border-radius: 5px; /* Скругленные углы */
-        font-weight: bold; /* Полужирный шрифт */
-        transition: background-color 0.3s ease; /* Плавный переход фона */
-    }
-
-    /* Эффект при наведении на кнопку */
-    .button:hover {
-        background-color: var(--button-bg-hover, #0056b3); /* Цвет кнопки при наведении */
     }
 
 </style>

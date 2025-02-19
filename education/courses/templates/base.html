@@ -10,36 +10,97 @@
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@300;400;600&display=swap');
 
         :root {
-            --bg-color: #ECE6CD;
-            --text-color: #3A3F58;
-            --button-bg: #EE6A59;
-            --button-hover: #F9AC67;
-            --container-bg: white;
-            --shadow-color: rgba(0, 0, 0, 0.25); /* Средняя тень */
-            --shadow-strong: 0px 6px 20px rgba(0, 0, 0, 0.4); /* Умеренная глубина */
+            --bg-color: #ECE6CD; /* Light mode background */
+            --text-color: #3A3F58; /* Text color */
+            --button-bg: #7DE2D1; /* Light mode button background */
+            --button-hover: #29A0B1; /* Light mode button hover */
+            --container-bg: white; /* Light container background */
+            --shadow-color: rgba(0, 0, 0, 0.25);
+            --shadow-strong: 0px 6px 20px rgba(0, 0, 0, 0.4);
             
-            /* Добавленные переменные */
-            --latex-bg-color: rgba(34, 62, 188, 0.65);  
-            --question-bg-color: rgba(255, 255, 255, 0.85); 
-            --question-container-bg: rgba(255, 255, 255, 1); 
-            --question-text-color: #333; 
+            --bg-dark-color: #3A3F58; /* Dark mode background */
+            --text-dark-color: #ECE6CD; /* Dark text color */
+            --button-dark-bg: #F9AC67; /* Dark mode button background */
+            --button-dark-hover: #EE6A59; /* Dark mode button hover */
+            --container-dark-bg: #292929; /* Dark mode container background */
+            --shadow-dark-color: rgba(255, 255, 255, 0.2);
+            --shadow-dark-strong: 0px 6px 25px rgba(255, 255, 255, 0.3);
         }
         
+        html, body {
+            font-family: 'Comic Sans MS', sans-serif;
+            letter-spacing: 0.5px;
+            background-color: var(--bg-color);
+            background-image: url('{% static "background-light.svg" %}'); /* Light mode background */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-color);
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        /* Dark Mode */
         body.dark-mode {
-            --bg-color: #3A3F58;
-            --text-color: #ECE6CD;
-            --button-bg: #F9AC67;
-            --button-hover: #EE6A59;
-            --container-bg: #292929;
-            --shadow-color: rgba(255, 255, 255, 0.2);
-            --shadow-strong: 0px 6px 25px rgba(255, 255, 255, 0.3); /* Чуть менее яркая светлая тень */
-        
-            /* Изменения для тёмной темы */
-            --latex-bg-color: rgba(34, 62, 188, 0.45);  
-            --question-bg-color: rgba(50, 50, 50, 0.85);
-            --question-container-bg: rgba(50, 50, 50, 0.9);
-            --question-text-color: #ECE6CD;
+            background-color: var(--bg-dark-color);
+            background-image: url('{% static "background-dark.svg" %}'); /* Dark mode background */
+            color: var(--text-dark-color);
+            
+            --bg-color: var(--bg-dark-color);
+            --text-color: var(--text-dark-color);
+            --button-bg: var(--button-dark-bg);
+            --button-hover: var(--button-dark-hover);
+            --container-bg: var(--container-dark-bg);
+            --shadow-color: var(--shadow-dark-color);
+            --shadow-strong: var(--shadow-dark-strong);
         }
+        
+        /* Styling for the button */
+        button {
+            background-color: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 10px var(--shadow-color);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: var(--button-hover);
+            box-shadow: var(--shadow-strong);
+        }
+        
+        /* Ensure the layout doesn't "escape" */
+        * {
+            box-sizing: border-box; /* Makes sure padding doesn't affect width/height */
+            margin: 0;
+            padding: 0;
+        }
+
+        span {
+            color: white;
+          }
+
+          .center-line {
+            position: fixed; /* Закрепляем полосу относительно окна */
+            top: 50%; /* Центрируем по вертикали */
+            left: 50%; /* Центрируем по горизонтали */
+            transform: translate(-50%, -50%) rotate(90deg); /* Переворачиваем и центрируем */
+            width: 60vw; /* Ширина полосы 60% от ширины экрана */
+            max-width: 700px; /* Максимальная ширина полосы */
+            height: 2px; /* Высота полосы */
+            background-color: white; /* Белый цвет */
+            z-index: 9999; /* Размещаем полосу выше других элементов */
+        }                                        
         
         /* Применяем тени к контейнерам */
         .container, .news-item, .button {
@@ -52,18 +113,6 @@
             box-shadow: 0px 10px 30px rgba(255, 215, 0, 0.4); /* Светлее, но не слишком */
         }              
 
-        body {
-            font-family: 'Comic Sans MS', sans-serif;  /* Заменили на Comic Sans */
-            font-smooth: always;
-            letter-spacing: 0.5px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
         header {
             background-color: var(--text-color);
             color: var(--bg-color);
@@ -73,10 +122,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0px 4px 6px var(--shadow-color);
+            box-shadow: none; /* Remove shadow */
+            background: transparent; /* Make background transparent */
+            border-radius: 10px; /* Add rounded corners */
+            max-width: 1250px; /* Limit the width of the header */
+            margin: 20px auto; /* Center the header horizontally */
+            padding: 20px; /* Ensure consistent padding */
         }
+        
 
         .theme-toggle {
+            position: fixed;
             cursor: pointer;
             background: var(--button-bg);
             color: white;
@@ -96,36 +152,25 @@
             margin: 20px auto;
             padding: 20px;
             max-width: 1250px;
-            background: var(--container-bg);
+            background: transparent; /* Делаем контейнер прозрачным */
             border-radius: 10px;
-            box-shadow: 0px 4px 6px var(--shadow-color);
+            box-shadow: none; /* Убираем тень */
+        }
+        
+        /* Если хочешь, чтобы контейнер оставался, но без фона, можно так */
+        .container.dark-mode {
+            background: transparent;
         }
 
         h1 {
             position: relative;
-            top: 20px;
             color: var(--text-color);
+            display: flex;
+            justify-content: flex-end;
+            left: 14%;
+
         }
 
-        .button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px 20px;
-            margin: 5px;
-            background-color: var(--button-bg);
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            text-decoration: none;
-            border-radius: 50px;
-            transition: transform 0.2s ease, background 0.3s ease;
-        }
-
-        .button:hover {
-            background-color: var(--button-hover);
-            transform: scale(1.05);
-        }
 
         .subject-container {
             display: flex;
@@ -140,6 +185,8 @@
         }
 
         .subject-image {
+            position: relative;
+            top: -20px;
             width: 100px;
             height: 100px;
             border-radius: 50%;
@@ -148,10 +195,25 @@
         }
 
         .subject-name {
+            position: relative;
+            top: -20px;
             font-size: 16px;
             font-weight: bold;
             margin-top: 5px;
         }
+
+        .news-wrapper {
+            position: fixed; /* Используем fixed, чтобы блок всегда оставался на экране */
+            top: 610px; /* Отступ сверху */
+            right: 3%; /* Располагаем блок справа */
+            width: 30%; /* Ширина блока */
+            min-width: 200px; /* Минимальная ширина */
+            display: flex;
+            flex-direction: column;
+            margin-right: 0; /* Убираем дополнительные отступы */
+        }
+        
+        
 
         .small-icon {
             width: 30px;
@@ -166,11 +228,20 @@
         }
 
         .search-box {
+            position: fixed;
+            top: 50px; /* Смещаем вниз */
+            right: 3%; /* Адаптивный отступ справа */
             display: flex;
             justify-content: center;
-            margin-top: 20px;
-            position: relative;
-        }
+            align-items: center;
+            width: 12vw; /* Процент от ширины экрана */
+            max-width: 150px; /* Ограничиваем максимальную ширину */
+            height: 25px;
+            padding: 3px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            min-width: 100px; /* Минимальный размер */
+        }        
 
         .search-input {
             padding: 10px;
@@ -231,8 +302,8 @@
 
         .svg-icon {
             position: relative;
-            left: -730px;
-            width: 30px;
+            left: -500px;
+            width: 20px;
             height: 30px;
             fill: black;
         }
@@ -346,17 +417,17 @@
         }    
 
         .news-item {
-            width: 50%;
+            width: 100%;
             max-width: 600px;
-            background: var(--container-bg);
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0px 4px 6px var(--shadow-color);
+            border: 1px solid rgba(0, 0, 0, 0.05); /* Subtle border, barely visible */
             transition: transform 0.2s ease;
             display: flex;
-            flex-direction: column;
+            flex-direction: column; /* Items still aligned like before */
             align-items: flex-start;
-        }
+            flex-wrap: wrap;
+        }        
 
         .news-container {
             display: flex;
@@ -450,13 +521,26 @@
         
         .button {
             padding: 10px 20px;
-            border: 1px solid #ddd;
-            background-color: #f0f0f0;
-            border-radius: 5px;
-            text-decoration: none;
-            color: #333;
+            border: 2px solid #29A0B1; /* Border color */
+            background-color: transparent; /* Transparent background */
+            color: #000000; /* Text color */
             font-weight: bold;
+            border-radius: 70px; /* Maximum roundness */
+            text-decoration: none;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            opacity: 0.5; /* Slightly transparent button */
+            display: inline-block;
         }
+        
+        .button:hover {
+            background-color: #29A0B1; /* Background fill on hover */
+            color: white; /* White text color when hovered */
+            border-color: #29A0B1; /* Keep border color same */
+            opacity: 1; /* Full opacity on hover */
+        }
+        
         
         .calculator-button {
             background-color: #ffcc00; /* Yellow for Calculator */
@@ -472,9 +556,11 @@
         
         /* Subject container styles (the topic list) */
         .subject-container {
+            position: relative;
+            left: 15%;
             display: flex;
             flex-wrap: wrap; /* Allows topics to wrap if the screen is small */
-            justify-content: center;  /* Centers the topics in the middle */
+            justify-content: flex-end;  /* Centers the topics in the middle */
             gap: 10px;
             flex: 1;
         }
@@ -496,14 +582,15 @@
         }
 
         #character-container {
-            position: fixed;
-            bottom: 50px;
-            right: 50px;
-            width: 150px;
+            position: absolute;
+            top: 420px;
+            right: 10%; /* Сделаем отступ слева в % */
+            width: 10vw; /* Процент от ширины экрана */
+            max-width: 150px;
             text-align: center;
             cursor: pointer;
             z-index: 1000;
-        }
+        }       
         
         #character img {
             width: 100%;
@@ -526,44 +613,84 @@
 </head>
 <body>
 
-    <header>
-        <span>AllSociety</span>
-        <svg class="svg-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="32" cy="20" r="10" stroke="black" stroke-width="2" fill="white"/>
-            <rect x="12" y="34" width="40" height="20" rx="5" ry="5" stroke="black" stroke-width="2" fill="white"/>
-            <line x1="12" y1="44" x2="52" y2="44" stroke="black" stroke-width="2"/>
-        </svg>
-        <button class="theme-toggle" onclick="toggleTheme()">
-            <div class="icon-container">
-                <svg class="sun" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="12" cy="12" r="5" stroke="orange" stroke-width="2" fill="orange"/>
-                    <path d="M12 1V3M12 21V23M4.222 4.222L5.636 5.636M18.364 18.364L19.778 19.778M1 12H3M21 12H23M4.222 19.778L5.636 18.364M18.364 5.636L19.778 4.222" stroke="orange" stroke-width="2"/>
-                </svg>
-                <svg class="moon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C8.13 2 5 5.13 5 9C5 11.85 6.76 14.32 9.21 15.34C9.08 15.69 9 16.09 9 16.5C9 17.88 9.56 19.19 10.56 20.19C9.74 20.67 9 21 8 21C5.79 21 4 18.74 4 16C4 10.48 7.58 6 12 6C13.59 6 15.04 6.57 16.11 7.51C16.74 6.28 18.26 6 19.5 7.24C20.74 8.47 20.26 10.5 18.88 11.14C20.06 12.6 20 14.47 19.14 15.76C18.63 16.72 17.78 17.25 16.83 17.3C15.54 17.38 14.15 16.55 13.38 15.24C12.61 13.93 12 12.08 12 10.5C12 7.09 13.91 2 12 2Z" fill="#A9A9A9"/>
-                </svg>
-            </div>
-        </button>                
-    </header>
-
-    <!-- Поисковая строка -->
-    <div class="search-box">
-        <input type="text" class="search-input" placeholder="Поиск..." onkeyup="searchItems()">
-        <button class="search-button">🔍</button>
-        <div class="search-results" id="search-results"></div>
-    </div>
-
-    <div class="container">
-        {% block content %}{% endblock %}
-    </div>
-
-    <div id="character-container">
-        <div id="character">
-            <img src="{% static 'images/character_default.png' %}" id="character-img" alt="Персонаж">
-            <div id="chat-bubble">Привет! Я твой помощник 🔥</div>
-            <a href="{% url 'character_status' %}" class="button">Мой персонаж</a>
+    <body class="{% if dark_mode %}dark-mode{% endif %}">
+        <header>
+                <span>AllSociety</span>
+            <svg class="svg-icon" width="220" height="120" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                <!-- Голова -->
+                <circle cx="32" cy="18" r="10" stroke="black" stroke-width="2" fill="white"/>
+                
+                <!-- Прическа -->
+                <path d="M22 16 q10 -8 20 0 q-2 -8 -10 -8 q-8 0 -10 8" fill="black"/>
+                
+                <!-- Очки -->
+                <circle cx="27" cy="18" r="4" stroke="black" stroke-width="2" fill="white"/>
+                <circle cx="37" cy="18" r="4" stroke="black" stroke-width="2" fill="white"/>
+                <line x1="31" y1="18" x2="33" y2="18" stroke="black" stroke-width="2"/>
+                
+                <!-- Большая книга -->
+                <rect x="14" y="30" width="36" height="26" rx="2" ry="2" stroke="black" stroke-width="2" fill="white"/>
+                <line x1="32" y1="30" x2="32" y2="56" stroke="black" stroke-width="2"/>
+                <line x1="18" y1="34" x2="30" y2="34" stroke="black" stroke-width="2"/>
+                <line x1="34" y1="34" x2="46" y2="34" stroke="black" stroke-width="2"/>
+            </svg>                       
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <div class="icon-container">
+                    <svg class="sun" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="5" stroke="orange" stroke-width="2" fill="orange"/>
+                        <path d="M12 1V3M12 21V23M4.222 4.222L5.636 5.636M18.364 18.364L19.778 19.778M1 12H3M21 12H23M4.222 19.778L5.636 18.364M18.364 5.636L19.778 4.222" stroke="orange" stroke-width="2"/>
+                    </svg>
+                    <svg class="moon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C8.13 2 5 5.13 5 9C5 11.85 6.76 14.32 9.21 15.34C9.08 15.69 9 16.09 9 16.5C9 17.88 9.56 19.19 10.56 20.19C9.74 20.67 9 21 8 21C5.79 21 4 18.74 4 16C4 10.48 7.58 6 12 6C13.59 6 15.04 6.57 16.11 7.51C16.74 6.28 18.26 6 19.5 7.24C20.74 8.47 20.26 10.5 18.88 11.14C20.06 12.6 20 14.47 19.14 15.76C18.63 16.72 17.78 17.25 16.83 17.3C15.54 17.38 14.15 16.55 13.38 15.24C12.61 13.93 12 12.08 12 10.5C12 7.09 13.91 2 12 2Z" fill="#A9A9A9"/>
+                    </svg>
+                </div>
+            </button>                
+        </header>
+    
+        <!-- Поисковая строка -->
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Поиск..." onkeyup="searchItems()">
+            <button class="search-button">🔍</button>
+            <div class="search-results" id="search-results"></div>
         </div>
-    </div>
+    
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+
+        <div class="center-line"></div>
+    
+        <div id="character-container">
+            <div id="character">
+                <div id="chat-bubble">Привет! Я твой помощник 🔥</div>
+                <a href="{% url 'character_status' %}" class="button">
+                    <svg width="100px" height="100px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    
+                        <title>spe-bubble-female</title>
+                        <desc>Created with Sketch.</desc>
+                        <defs>
+                    
+                    </defs>
+                        <g id="64px-Line" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="spe-bubble-female">
+                    
+                    </g>
+                            <path d="M20,24 L25,24 C25.379,24 25.725,23.786 25.895,23.447 L27,21.236 L28.105,23.447 C28.281,23.798 28.633,24 29.001,24 C29.151,24 29.304,23.966 29.447,23.895 C29.941,23.648 30.141,23.047 29.894,22.553 L27.894,18.553 C27.554,17.875 26.445,17.875 26.105,18.553 L24.382,22 L20.069,22 C20.488,18.525 23.052,14.822 27.484,14.117 C28.029,14.03 28.401,13.518 28.314,12.972 C28.227,12.427 27.725,12.051 27.169,12.142 C21.214,13.09 18,18.443 18,23 L18,25 C18,30.47 16.104,31.777 15.087,32.479 C14.603,32.813 14,33.229 14,34 C14,36.479 22.736,38 29,38 C35.131,38 44,36.575 44,34 C44,33.204 43.406,32.789 42.882,32.423 C42.273,31.997 41.439,31.415 40.822,30 C40.601,29.495 40.012,29.262 39.506,29.482 C39,29.703 38.768,30.292 38.988,30.798 C39.781,32.616 40.884,33.462 41.606,33.97 C40.486,34.532 37.766,35.315 34.042,35.725 C34.713,34.974 35.305,34.053 35.798,32.931 C36.021,32.426 35.791,31.835 35.285,31.614 C34.778,31.39 34.188,31.621 33.968,32.127 C32.806,34.77 31.228,36 29,36 C27.112,36 24.434,35.252 22.976,28.78 C22.873,28.324 22.468,28 22,28 C21.033,28 20,27.475 20,26 L20,24 L20,24 Z M21.195,29.933 C21.838,32.452 22.763,34.378 23.955,35.721 C20.229,35.3 17.599,34.496 16.46,33.961 C17.388,33.304 18.808,32.114 19.534,29.226 C20.006,29.572 20.561,29.823 21.195,29.933 L21.195,29.933 Z" id="Shape" fill="#000000">
+                    
+                    </path>
+                            <path d="M35.438,38.338 C35.37,38.331 35.306,38.35 35.239,38.349 C35.211,38.351 35.185,38.342 35.156,38.346 C35.148,38.347 35.142,38.353 35.134,38.354 C34.371,38.391 33.672,38.83 33.369,39.544 C31.834,43.167 29.689,45.914 29.01,45.999 C28.315,45.912 26.17,43.163 24.634,39.544 C24.333,38.834 23.636,38.396 22.873,38.356 C22.864,38.354 22.857,38.348 22.848,38.346 C22.815,38.341 22.785,38.351 22.752,38.349 C22.687,38.349 22.625,38.331 22.56,38.338 C12.539,39.518 5.942,42.181 4.021,51.804 C4.008,51.868 4.001,51.934 4.001,51.999 C4.001,54.737 7.302,56.393 13.813,56.92 C16.556,59.771 26.05,60 29,60 C31.95,60 41.444,59.771 44.188,56.921 C50.7,56.394 54,54.738 54,52 C54,51.935 53.993,51.868 53.98,51.804 C52.057,42.182 45.461,39.518 35.438,38.338 L35.438,38.338 Z M34.682,41.474 L35.753,47.657 L31.434,46.578 C32.813,45.104 34.023,42.841 34.682,41.474 L34.682,41.474 Z M26.569,46.577 L22.248,47.657 L23.32,41.473 C23.98,42.84 25.19,45.103 26.569,46.577 L26.569,46.577 Z M43.617,54.959 C43.313,54.98 43.035,55.141 42.863,55.393 C41.696,57.104 35.006,58 29,58 C22.994,58 16.304,57.104 15.137,55.393 C14.965,55.141 14.687,54.981 14.383,54.959 C9.388,54.6 6.127,53.476 6.004,52.082 C7.64,44.111 12.924,41.663 21.459,40.499 L20.015,48.829 C19.957,49.162 20.072,49.502 20.32,49.732 C20.507,49.906 20.75,50 21,50 C21.081,50 21.162,49.99 21.242,49.97 L29,48.032 L36.758,49.97 C37.086,50.054 37.432,49.963 37.681,49.733 C37.929,49.504 38.043,49.164 37.986,48.83 L36.544,40.499 C45.076,41.663 50.359,44.114 51.997,52.083 C51.873,53.476 48.612,54.6 43.617,54.959 L43.617,54.959 Z" id="Shape" fill="#000000">
+                    
+                    </path>
+                            <path d="M45,4 C36.729,4 30,9.383 30,16 C30,18.696 31.13,21.309 33.194,23.413 L32.023,28.787 C31.938,29.174 32.089,29.573 32.41,29.808 C32.585,29.936 32.792,30 33,30 C33.172,30 33.344,29.956 33.499,29.866 L38.671,26.887 C40.656,27.626 42.782,28 45,28 C53.271,28 60,22.617 60,16 C60,9.383 53.271,4 45,4 L45,4 Z M45,26 C42.897,26 40.811,25.604 38.964,24.854 C38.679,24.739 38.356,24.76 38.089,24.915 L34.458,27.007 L35.262,23.324 C35.317,23.099 35.294,22.856 35.185,22.637 C35.124,22.516 35.041,22.411 34.944,22.327 C33.045,20.545 32,18.299 32,16 C32,10.486 37.832,6 45,6 C52.168,6 58,10.486 58,16 C58,21.514 52.168,26 45,26 L45,26 Z" id="Shape" fill="#000000">
+                    
+                    </path>
+                        </g>
+                    </svg>
+                    <span>Мой персонаж</span>
+                </a>                
+            </div>
+        </div>
+    </body>    
 
     <script>
         // Функция переключения темы
