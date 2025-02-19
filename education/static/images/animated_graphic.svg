@@ -1,0 +1,110 @@
+<svg class="animated-svg" viewBox="0 0 20 10" xmlns="http://www.w3.org/2000/svg">
+    <!-- Градиентный фон -->
+    <defs>
+        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#29A0B1"/>
+            <stop offset="100%" stop-color="#15616D"/>
+        </linearGradient>
+    </defs>
+    <rect width="20" height="10" fill="url(#bgGradient)"/>
+
+    <!-- Выходящие линии -->
+    <line x1="0" y1="5" x2="-2" y2="5" stroke="white" stroke-width="0.5" opacity="0.5"/>
+    <line x1="20" y1="5" x2="22" y2="5" stroke="white" stroke-width="0.5" opacity="0.5"/>
+    <line x1="10" y1="0" x2="10" y2="-2" stroke="white" stroke-width="0.5" opacity="0.5"/>
+    <line x1="10" y1="10" x2="10" y2="12" stroke="white" stroke-width="0.5" opacity="0.5"/>
+
+    <!-- Вращающийся атом -->
+    <g id="atom" transform="translate(4,3)">
+        <circle r="1.5" stroke="white" stroke-width="0.2" fill="none"/>
+        <circle cx="-1" cy="-1" r="0.3" fill="white"/>
+        <circle cx="1" cy="-1" r="0.3" fill="white"/>
+        <circle cx="-1" cy="1" r="0.3" fill="white"/>
+        <circle cx="1" cy="1" r="0.3" fill="white"/>
+        <line x1="-1" y1="-1" x2="1" y2="1" stroke="white" stroke-width="0.2"/>
+        <line x1="1" y1="-1" x2="-1" y2="1" stroke="white" stroke-width="0.2"/>
+        
+        <!-- Анимация вращения атома -->
+        <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="6s" repeatCount="indefinite"/>
+    </g>
+
+    <!-- Взлетающая ракета (детализированная) -->
+    <g id="rocket">
+        <!-- Основное тело ракеты -->
+        <polygon points="9,7 11,7 10,5.5" fill="white" opacity="0.8"/>
+        <rect x="9.3" y="7" width="1.4" height="2" fill="white" opacity="0.8"/>
+        <polygon points="9.3,9 10.7,9 10,9.5" fill="orange" opacity="0.8"/>
+
+        <!-- Детали ракеты -->
+        <circle cx="10" cy="7.5" r="0.3" fill="gray" opacity="0.7"/>
+        <line x1="9.7" y1="7.8" x2="9.7" y2="8.2" stroke="white" stroke-width="0.1" opacity="0.7"/>
+        <line x1="10.3" y1="7.8" x2="10.3" y2="8.2" stroke="white" stroke-width="0.1" opacity="0.7"/>
+
+        <!-- Огонь из ракеты -->
+        <polygon points="9.3,9 9.5,9.5 9.2,9.7" fill="yellow" opacity="0.6"/>
+        <polygon points="10.7,9 10.5,9.5 10.8,9.7" fill="yellow" opacity="0.6"/>
+
+        <!-- Дым от ракеты -->
+        <g id="smoke">
+            <circle cx="10" cy="10" r="0.5" fill="gray" opacity="0.4">
+                <animate attributeName="cy" from="10" to="12" dur="3s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" from="0.7" to="0" dur="3s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="9.5" cy="10.5" r="0.4" fill="gray" opacity="0.4">
+                <animate attributeName="cy" from="10.5" to="12.5" dur="3s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" from="0.6" to="0" dur="3s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="10.5" cy="10.7" r="0.3" fill="gray" opacity="0.4">
+                <animate attributeName="cy" from="10.7" to="12.7" dur="3s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" from="0.5" to="0" dur="3s" repeatCount="indefinite"/>
+            </circle>
+        </g>
+        
+        <!-- Анимация взлета -->
+        <animateTransform attributeName="transform" type="translate" from="0 0" to="0 -5" dur="4s" repeatCount="indefinite"/>
+    </g>
+
+    <!-- Физическая и геометрическая деталь -->
+    <g id="geometric-details" opacity="0.4">
+        <!-- Прямоугольник с вращением -->
+        <rect x="15" y="4" width="2" height="1" stroke="white" stroke-width="0.1" fill="none">
+            <animateTransform attributeName="transform" type="rotate" from="0 15 4.5" to="360 15 4.5" dur="6s" repeatCount="indefinite"/>
+        </rect>
+
+        <!-- Линии, как физические формулы -->
+        <line x1="16" y1="2" x2="16" y2="6" stroke="white" stroke-width="0.2"/>
+        <line x1="17" y1="3" x2="17" y2="7" stroke="white" stroke-width="0.2"/>
+        <line x1="15" y1="3" x2="15.5" y2="4" stroke="white" stroke-width="0.2"/>
+        <line x1="15" y1="4" x2="15.5" y2="5" stroke="white" stroke-width="0.2"/>
+    </g>
+
+    <!-- Дополнительные геометрические элементы -->
+    <g id="more-geometric">
+        <!-- Равносторонний треугольник -->
+        <polygon points="4,8 6,8 5,6" fill="white" opacity="0.3"/>
+        
+        <!-- Круги, как орбиты -->
+        <circle cx="13" cy="4" r="1.5" stroke="white" stroke-width="0.2" fill="none" opacity="0.4"/>
+        <circle cx="13" cy="4" r="2.5" stroke="white" stroke-width="0.2" fill="none" opacity="0.4"/>
+        <circle cx="13" cy="4" r="3.5" stroke="white" stroke-width="0.2" fill="none" opacity="0.4"/>
+
+        <!-- Спираль -->
+        <path d="M2,5 C3,5.5, 4,5, 5,5 C6,4.5, 7,4, 8,3" stroke="white" stroke-width="0.2" fill="none" opacity="0.4"/>
+    </g>
+
+    <!-- Надпись -->
+    <text x="2" y="8" font-family="Arial" font-size="1.5" font-weight="bold" fill="white" opacity="0.8">
+        Дальше
+    </text>
+    <text x="3" y="9" font-family="Arial" font-size="1.5" font-weight="bold" fill="white" opacity="0.8">
+        Больше
+    </text>
+
+    <!-- Математические и физические формулы -->
+    <text x="12" y="2" font-family="Arial" font-size="1" fill="white" opacity="0.5">
+        E = mc²
+    </text>
+    <text x="12" y="3" font-family="Arial" font-size="1" fill="white" opacity="0.5">
+        F = ma
+    </text>
+</svg>

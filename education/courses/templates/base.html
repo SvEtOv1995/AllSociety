@@ -11,7 +11,7 @@
 
         :root {
             --bg-color: #ECE6CD; /* Light mode background */
-            --text-color: #3A3F58; /* Text color */
+            --text-color: #ddece6; /* Text color */
             --button-bg: #7DE2D1; /* Light mode button background */
             --button-hover: #29A0B1; /* Light mode button hover */
             --container-bg: white; /* Light container background */
@@ -19,7 +19,7 @@
             --shadow-strong: 0px 6px 20px rgba(0, 0, 0, 0.4);
             
             --bg-dark-color: #3A3F58; /* Dark mode background */
-            --text-dark-color: #ECE6CD; /* Dark text color */
+            --text-dark-color: #ddece6; /* Dark text color */
             --button-dark-bg: #F9AC67; /* Dark mode button background */
             --button-dark-hover: #EE6A59; /* Dark mode button hover */
             --container-dark-bg: #292929; /* Dark mode container background */
@@ -106,8 +106,8 @@
         /* Контейнер для заголовка */
         .title-container {
             position: absolute; /* Позволяет свободно перемещать */
-            top: 20%; /* Расположение сверху (можно менять) */
-            left: 20%; /* Центрируем по горизонтали */
+            top: 15%; /* Расположение сверху (можно менять) */
+            left: 25%; /* Центрируем по горизонтали */
             transform: translateX(-50%); /* Выравниваем по центру */
         }
 
@@ -122,8 +122,8 @@
         /* Контейнер для абзаца */
         .paragraph-container {
             position: absolute; /* Позволяет двигать независимо от заголовка */
-            top: 30%; /* Расположение ниже заголовка (можно менять) */
-            left: 20%; /* Центрируем по горизонтали */
+            top: 20%; /* Расположение ниже заголовка (можно менять) */
+            left: 25%; /* Центрируем по горизонтали */
             transform: translateX(-50%); /* Выравниваем по центру */
             width: 30%; /* Ограничение ширины текста */
         }
@@ -138,15 +138,15 @@
 
         .h2 {
             position: absolute; /* Позволяет свободно перемещать */
-            top: 50%; /* Расположение сверху (можно менять) */
-            left: 20%; /* Центрируем по горизонтали */
+            top: 40%; /* Расположение сверху (можно менять) */
+            left: 25%; /* Центрируем по горизонтали */
             transform: translateX(-50%); /* Выравниваем по центру */
         }
 
         .h3 {
             position: absolute; /* Позволяет двигать независимо от заголовка */
-            top: 60%; /* Расположение ниже заголовка (можно менять) */
-            left: 20%; /* Центрируем по горизонтали */
+            top: 45%; /* Расположение ниже заголовка (можно менять) */
+            left: 25%; /* Центрируем по горизонтали */
             transform: translateX(-50%); /* Выравниваем по центру */
             width: 30%; /* Ограничение ширины текста */
         }
@@ -217,7 +217,8 @@
             color: var(--text-color);
             display: flex;
             justify-content: flex-end;
-            left: 14%;
+            right: 7%;
+            top: 170px;
 
         }
 
@@ -228,6 +229,7 @@
             flex-wrap: wrap;
             gap: 20px;
             margin-top: 30px;
+            top: 180px;
         }
 
         .subject-item {
@@ -255,7 +257,7 @@
         .news-wrapper {
             position: fixed; /* Используем fixed, чтобы блок всегда оставался на экране */
             top: 610px; /* Отступ сверху */
-            right: 3%; /* Располагаем блок справа */
+            right: 10%; /* Располагаем блок справа */
             width: 30%; /* Ширина блока */
             min-width: 200px; /* Минимальная ширина */
             display: flex;
@@ -352,9 +354,9 @@
 
         .svg-icon {
             position: relative;
-            left: -500px;
-            width: 20px;
-            height: 30px;
+            right: 56%;
+            width: 100px;
+            height: 40px;
             fill: black;
         }
 
@@ -468,9 +470,9 @@
 
         .news-item {
             width: 100%;
-            max-width: 600px;
+            max-width: 450px;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 30px;
             border: 1px solid rgba(0, 0, 0, 0.05); /* Subtle border, barely visible */
             transition: transform 0.2s ease;
             display: flex;
@@ -573,7 +575,7 @@
             padding: 10px 20px;
             border: 2px solid #29A0B1; /* Border color */
             background-color: transparent; /* Transparent background */
-            color: #000000; /* Text color */
+            color: #ffffff; /* Text color */
             font-weight: bold;
             border-radius: 70px; /* Maximum roundness */
             text-decoration: none;
@@ -607,7 +609,7 @@
         /* Subject container styles (the topic list) */
         .subject-container {
             position: relative;
-            left: 15%;
+            left: none;
             display: flex;
             flex-wrap: wrap; /* Allows topics to wrap if the screen is small */
             justify-content: flex-end;  /* Centers the topics in the middle */
@@ -624,17 +626,19 @@
         .character-box {
             text-align: center;
             padding: 20px;
-            background: var(--container-bg);
+            background: rgba(41, 160, 177, 0.2); /* Полупрозрачный цвет */
             border-radius: 10px;
-            box-shadow: var(--shadow-strong);
+            box-shadow: 0 4px 10px rgba(41, 160, 177, 0.3); /* Мягкая тень */
             width: 300px;
             margin: auto;
-        }
+            backdrop-filter: blur(10px); /* Лёгкий эффект размытия */
+            border: 1px solid rgba(41, 160, 177, 0.5); /* Едва заметная граница */
+        }        
 
         #character-container {
             position: absolute;
-            top: 200px;
-            right: 30%; /* Сделаем отступ слева в % */
+            top: 100px;
+            right: 21%; /* Сделаем отступ слева в % */
             width: 10vw; /* Процент от ширины экрана */
             max-width: 150px;
             text-align: center;
@@ -658,6 +662,35 @@
             box-shadow: var(--shadow-strong);
             display: none;
         }        
+
+        /* Контейнер для SVG */
+        .svg-container {
+            display: flex;
+            justify-content: center;  /* Центрируем SVG */
+            align-items: center;
+            max-width: 100vw;  /* Максимальная ширина - 100% экрана */
+            max-height: 100vh; /* Максимальная высота - 100% экрана */
+            overflow: visible;   /* Обрезаем выходящие элементы */
+            position: relative; /* Обеспечивает позиционирование для перетаскивания */
+        }
+
+        /* Стили для SVG */
+        .animated-svg {
+            width: 30%;  /* Можно изменять ширину */
+            height: auto;  /* Автоматическая высота */
+            max-width: 90%; /* Чтобы SVG не выходил за границы экрана */
+            max-height: 50vh; /* Ограничение по высоте */
+            filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.7)); /* Эффект свечения */
+            position: relative; /* Для возможности перемещения */
+            cursor: grab; /* Курсор в виде руки для перетаскивания */
+            top: 160px;
+            right: 25%;
+        }
+
+        /* Когда элемент захвачен для перетаскивания */
+        .animated-svg:active {
+            cursor: grabbing; /* Курсор в виде захваченной руки */
+}
         
     </style>
 </head>
@@ -712,6 +745,10 @@
 
         <div class="title-container">
             <h2 class="title">Наш сайт - AllSociety</h2>
+        </div>
+
+        <div class="svg-container">
+            <img src="static/images/animated_graphic.svg" alt="SVG Анимация" class="animated-svg">
         </div>
         
         <div class="paragraph-container">
