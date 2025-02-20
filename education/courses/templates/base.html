@@ -88,7 +88,8 @@
 
         span {
             color: white;
-            font-size: 25px;
+            font-size: 30px;
+            font-family: "Bradley Hand", cursive;
           }
 
           .center-line {
@@ -149,6 +150,7 @@
             left: 25%; /* Центрируем по горизонтали */
             transform: translateX(-50%); /* Выравниваем по центру */
             width: 30%; /* Ограничение ширины текста */
+            font-size; 20px;
         }
         
         
@@ -244,7 +246,14 @@
             border-radius: 50%;
             object-fit: cover;
             box-shadow: 0px 4px 6px var(--shadow-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+        
+        .subject-image:hover {
+            transform: scale(1.1); /* Легкое увеличение при наведении */
+            box-shadow: 0px 6px 8px var(--shadow-color);
+        }
+        
 
         .subject-name {
             position: relative;
@@ -471,25 +480,39 @@
         .news-item {
             width: 100%;
             max-width: 450px;
+            min-height: 250px; /* Устанавливаем минимальную высоту */
             padding: 20px;
             border-radius: 30px;
-            border: 1px solid rgba(0, 0, 0, 0.05); /* Subtle border, barely visible */
+            border: 1px solid rgba(0, 0, 0, 0.05);
             transition: transform 0.2s ease;
             display: flex;
-            flex-direction: column; /* Items still aligned like before */
+            flex-direction: column;
             align-items: flex-start;
             flex-wrap: wrap;
-        }        
-
+            justify-content: space-between; /* Равномерное распределение контента */
+            overflow: hidden;
+        }
+        
         .news-container {
             display: flex;
-            flex-direction: row-reverse; /* Размещение элементов справа налево */
-            align-items: flex-start; /* Выравнивание элементов по верхнему краю */
-            justify-content: flex-end; /* Элементы будут выравниваться справа */
+            flex-direction: row-reverse;
+            align-items: flex-start;
+            justify-content: flex-end;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 15px;
             width: 100%;
+            flex-wrap: nowrap /* Чтобы контент не выходил за пределы контейнера */
         }
+        
+        .news-item p {
+            flex-grow: 1; /* Контент будет равномерно заполнять пространство */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Если текст слишком длинный, обрезаем */
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* Оставляем максимум 3 строки */
+            -webkit-box-orient: vertical;
+        }
+        
 
         .news-image {
             width: 40%;
@@ -497,6 +520,11 @@
             border-radius: 8px;
             margin-bottom: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .news-content {
+            margin-top: -10px;
+            font-size: 14px;
         }
 
         .theme-toggle {
@@ -637,8 +665,8 @@
         
         #character-container {
             position: absolute;
-            top: 100px;
-            right: 21%;
+            top: 110px;
+            right: 20%;
             width: 10vw;
             max-width: 150px;
             text-align: center;
@@ -831,7 +859,7 @@
                     </path>
                         </g>
                     </svg>
-                    <span>Мой персонаж</span>
+                    <h2>Мой персонаж</h2>
                 </a>                
             </div>
         </div>

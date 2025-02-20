@@ -8,13 +8,15 @@
         {% for subject in subjects %}
             <div class="subject-item">
                 {% if subject.image %}
-                    <img src="{{ subject.image.url }}" alt="{{ subject.name }}" class="subject-image">
+                    <a href="{% url 'topic_list' subject.id %}">
+                        <img src="{{ subject.image.url }}" alt="{{ subject.name }}" class="subject-image">
+                    </a>
                 {% endif %}
                 <p class="subject-name">{{ subject.name }}</p>
-                <a href="{% url 'topic_list' subject.id %}" class="button">Перейти</a>
             </div>
         {% endfor %}
     </div>
+    
 
     <!-- Блок новостей -->
     <div class="news-wrapper">
@@ -66,7 +68,7 @@
     }
 
     .news-item {
-        width: 100%;
+        width: 80%;
         max-width: 600px;
         padding: 20px;
         border-radius: 8px;
@@ -90,7 +92,7 @@
 
     .news-content {
         margin-top: 15px;
-        font-size: 16px;
+        font-size: 15px;
     }
 
     /* Контейнер для предметов */
