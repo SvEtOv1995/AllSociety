@@ -6,19 +6,19 @@
     <h1>Темы по предмету {{ subject.name }}</h1>
 
     <!-- Buttons Container with Left and Right Buttons -->
-    <div class="buttons-container" style="display: flex; justify-content: space-between; align-items: center; background-color: var(--container-bg); padding: 20px;">
+    <div class="buttons-container" style="display: contents; justify-content: space-between; align-items: center; background-color: var(--container-bg); padding: 20px;">
         <!-- Left-aligned Button for Calculator -->
         <a href="{% url 'subject_calculator' subject.id %}" class="button calculator-button">
             Калькулятор по предмету
         </a>
         
         <!-- Center-aligned Topics List -->
-        <div class="subject-container" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+        <div class="subject-container" style="display: flex; flex-direction: column; gap: 25px; margin-top: 20px; align-content: center;">
             {% for topic in topics %}
                 <a href="{% url 'lesson_list' topic.id %}" class="button topic-button">
                     <span>{{ topic.name }}</span>
                     {% if topic.image %}
-                        <img src="{{ topic.image.url }}" alt="Иконка" class="small-icon" style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;">
+                        <img src="{{ topic.image.url }}" alt="Иконка" class="small-icon" style="width: 40px; height: 40px; object-fit: cover; border-radius: 40%;">
                     {% endif %}
                 </a>
             {% endfor %}
@@ -30,6 +30,12 @@
         </a>
     </div>
 
+    <br>
+    
+    <a href="{% url 'subjects_list' %}" class="button" style=" position: relative; left: 35%; display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background-color: rgba(173, 216, 230, 0.6); border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; width: 30%;">
+        Назад
+    </a>
+
     <style>
 
         .subject-container {
@@ -38,10 +44,7 @@
             flex-wrap: wrap; /* Если места не хватает, элементы могут переноситься */
             gap: 15px;
             padding: 10px;
-            background-color: rgba(173, 216, 230, 0.4); /* Полупрозрачный голубой фон */
             border-radius: 10px; /* Скругленные углы */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Легкая тень */
-            backdrop-filter: blur(10px); /* Немного размытия фона за контейнером */
             position: relative;
             top: -2px;
         }
@@ -59,10 +62,10 @@
             padding: 12px 20px;
             background-color: var(--button-bg);
             color: var(--container-bg);
-            border-radius: 5px; /* Скругленные углы кнопки */
+            border-radius: 30px; /* Скругленные углы кнопки */
             box-shadow: var(--shadow-color);
             transition: all 0.3s ease;
-            flex-direction: row-reverse
+            flex-direction: row;
         }
         
         .subject-container .button:hover {
@@ -90,6 +93,7 @@
         h1 {
 
             top: -20px;
+            right: 27%;
 
         }
 
