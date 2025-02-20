@@ -627,25 +627,52 @@
             text-align: center;
             padding: 20px;
             background: rgba(41, 160, 177, 0.2); /* Полупрозрачный цвет */
-            border-radius: 10px;
             box-shadow: 0 4px 10px rgba(41, 160, 177, 0.3); /* Мягкая тень */
             width: 300px;
             margin: auto;
             backdrop-filter: blur(10px); /* Лёгкий эффект размытия */
             border: 1px solid rgba(41, 160, 177, 0.5); /* Едва заметная граница */
-        }        
-
+            border-radius: 0; /* Прямоугольная форма */
+        }
+        
         #character-container {
             position: absolute;
             top: 100px;
-            right: 21%; /* Сделаем отступ слева в % */
-            width: 10vw; /* Процент от ширины экрана */
+            right: 21%;
+            width: 10vw;
             max-width: 150px;
             text-align: center;
             cursor: pointer;
             z-index: 1000;
-        }       
+        }
         
+        /* Полностью убираем фон, границы и размер кнопки */
+        #character-container .button {
+            display: contents; /* Убираем сам контейнер кнопки, оставляя только ее содержимое */
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+            width: auto;
+            height: auto;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* Гарантируем, что текст и иконка остаются видимыми */
+        #character-container .button * {
+            color: inherit; /* Наследуем цвет текста и иконки */
+            visibility: visible; /* Делаем элементы всегда видимыми */
+            display: inline-block;
+        }
+
+        /* Добавляем эффект нажатия, если нужно */
+        #character-container .button:active {
+            transform: scale(0.95);
+        }
+
+
+                 
         #character img {
             width: 100%;
             transition: transform 0.3s ease-in-out;
