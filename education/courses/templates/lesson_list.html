@@ -31,12 +31,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 20px;
+            padding: 12px 10px; /* Уменьшены боковые отступы */
             background-color: rgba(173, 216, 230, 0.6); /* Прозрачный голубой цвет */
             border-radius: 15px; /* Округление углов */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Легкая тень */
             transition: all 0.3s ease;
-        }
+            width: 40%; /* Если нужно, можно задать фиксированную ширину, например: width: 150px; */
+        }        
     
         .subjects-container .button:hover {
             background-color: rgba(173, 216, 230, 0.8); /* Более интенсивный голубой при наведении */
@@ -44,10 +45,17 @@
             box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
         }
 
+        .button {
+
+            width: 40%;
+
+        }
+
         h1 {
 
             position: relative;
             top: -10px;
+            right: 65%;
 
         }
 
