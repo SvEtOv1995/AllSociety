@@ -246,10 +246,17 @@
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            object-fit: cover;
-            box-shadow: 0px 4px 6px var(--shadow-color);
+            object-fit: contain; /* Чтобы изображение не обрезалось */
+            padding: 5px; /* Добавляем отступ внутри контейнера */
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+        
+        .subject-image img {
+            width: 85%; /* Уменьшаем изображение внутри */
+            height: 85%;
+            display: block;
+            margin: auto;
+        }        
         
         .subject-image:hover {
             transform: scale(1.1); /* Легкое увеличение при наведении */
