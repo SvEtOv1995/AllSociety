@@ -10,42 +10,32 @@
     </div>
     
     <div class="content">
-        <div class="nav-buttons">
-            <button class="nav-button" onclick="showSlide(1)">Алгебра</button>
-            <button class="nav-button" onclick="showSlide(2)">Геометрия</button>
-        </div>
-        <div class="slider active" id="slide1">
-            <h2>Алгебраические операции</h2>
-            <div id="algebra-content">
-                {% for entry in entries %}
-                    {% if entry.category == "algebra" %}
-                        <div class="math-block">
-                            <h3>{{ entry.title }}</h3>
-                            <p>\({{ entry.content }}\)</p>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-        
-        <div class="slider" id="slide2">
-            <h2>Геометрические расчеты</h2>
-            <div id="geometry-content">
-                {% for entry in entries %}
-                    {% if entry.category == "geometry" %}
-                        <div class="math-block">
-                            <h3>{{ entry.title }}</h3>
-                            <p>\({{ entry.content }}\)</p>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
 
         <a href="{% url 'subjects_list' %}" class="button subjects-button" style="margin-top: 20px;">📚 Вернуться к предметам</a>
         
     </div>
     <style>
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .buttons button {
+            width: 150px; /* ширина кнопки */
+            height: 50px; /* высота кнопки */
+            font-size: 14px; /* размер шрифта */
+        }
+
+        p {
+
+            font-size: 25px;
+            color: #1f5d5e;
+
+        }
 
         /* Уборка лишних с главной страницы SVG */
         .center-line {
