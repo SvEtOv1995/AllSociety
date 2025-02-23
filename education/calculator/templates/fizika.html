@@ -3,68 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор по физике</title>
+    <title>Физический калькулятор</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex justify-center items-center h-screen">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 class="text-xl font-bold text-center mb-4">Физический калькулятор</h2>
-        <label class="block mb-2">Выберите формулу:</label>
-        <select id="formula" class="w-full p-2 border rounded mb-4" onchange="updateFields()">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
+        <h2 class="text-3xl font-bold text-center mb-6">Физический калькулятор</h2>
+
+        <label class="block mb-4 text-lg">Выберите формулу:</label>
+        <select id="formula" class="w-full p-3 border rounded mb-4 text-lg" onchange="updateFields()">
             <option value="f_ma">F = m * a</option>
             <option value="e_mgh">E = m * g * h</option>
             <option value="v_st">V = S / t</option>
+            <option value="p_w">P = W / t</option>
+            <option value="a_v">a = (v - v0) / t</option>
+            <option value="v_u">V = u + a * t</option>
+            <option value="f_g">F = G * (m1 * m2) / r²</option>
+            <option value="k_e">E = 0.5 * k * x²</option>
+            <option value="q_ohm">I = U / R</option>
+            <option value="w_m">W = m * g * h</option>
+            <option value="a_c">a_c = v² / r</option>
+            <option value="v_c">V = √(2 * g * h)</option>
+            <option value="e_ph">E = h * f</option>
         </select>
-        <div id="inputs" class="mb-4"></div>
-        <button onclick="calculate()" class="w-full bg-blue-500 text-white p-2 rounded">Рассчитать</button>
-        <div id="result" class="mt-4 text-center text-lg font-semibold"></div>
 
-        <p><a href="{% url 'index' %}">🔙 На главную</a></p>
+        <div id="inputs" class="mb-4"></div>
+        <div id="formulaDescription" class="text-sm mb-6 text-gray-700"></div>
+        
+        <button onclick="calculate()" class="w-full bg-blue-500 text-white p-3 rounded text-xl">Рассчитать</button>
+        <div id="result" class="mt-4 text-center text-xl font-semibold"></div>
+
+        <p class="mt-4 text-center text-gray-600"><a href="{% url 'index' %}" class="text-blue-500">🔙 На главную</a></p>
     </div>
 
-
     <script>
+        // Описание для каждой формулы
+        const formulaDescriptions = {
+            'f_ma': {
+                description: "Сила (F) равна массе (m), умноженной на ускорение (a). Это основной закон Ньютона.",
+                variables: {
+                    'm': 'масса объекта в килограммах (кг)',
+                    'a': 'ускорение объекта в метрах на секунду в квадрате (м/с²)',
+                    'F': 'сила в Ньютонах (Н)'
+                }
+            },
+            'e_mgh': {
+                description: "Энергия (E) равна массе (m), умноженной на ускорение свободного падения (g) и высоту (h).",
+                variables: {
+                    'm': 'масса объекта в килограммах (кг)',
+                    'g': 'ускорение свободного падения, примерно 9.81 м/с² на Земле',
+                    'h': 'высота, на которой находится объект, в метрах (м)',
+                    'E': 'потенциальная энергия в Джоулях (Дж)'
+                }
+            },
+            'v_st': {
+                description: "Скорость (V) равна расстоянию (S), деленному на время (t).",
+                variables: {
+                    'S': 'расстояние в метрах (м)',
+                    't': 'время в секундах (с)',
+                    'V': 'скорость в метрах на секунду (м/с)'
+                }
+            },
+            'p_w': {
+                description: "Мощность (P) равна работе (W), деленной на время (t).",
+                variables: {
+                    'W': 'работа в Джоулях (Дж)',
+                    't': 'время в секундах (с)',
+                    'P': 'мощность в ваттах (Вт)'
+                }
+            },
+            'a_v': {
+                description: "Ускорение (a) равняется разнице скоростей (v - v0), деленной на время (t).",
+                variables: {
+                    'v': 'конечная скорость в метрах на секунду (м/с)',
+                    'v0': 'начальная скорость в метрах на секунду (м/с)',
+                    't': 'время, за которое произошло изменение скорости (с)',
+                    'a': 'ускорение в метрах на секунду в квадрате (м/с²)'
+                }
+            },
+            'v_u': {
+                description: "Скорость (V) равна начальной скорости (u) плюс ускорение (a) умноженное на время (t).",
+                variables: {
+                    'u': 'начальная скорость в метрах на секунду (м/с)',
+                    'a': 'ускорение в метрах на секунду в квадрате (м/с²)',
+                    't': 'время в секундах (с)',
+                    'V': 'конечная скорость в метрах на секунду (м/с)'
+                }
+            },
+            'f_g': {
+                description: "Сила тяжести между двумя объектами (F) равна гравитационной постоянной (G), умноженной на произведение масс (m1 * m2) и деленной на квадрат расстояния (r²).",
+                variables: {
+                    'G': 'гравитационная постоянная, 6.674 × 10⁻¹¹ Н·м²/кг²',
+                    'm1': 'масса первого объекта в килограммах (кг)',
+                    'm2': 'масса второго объекта в килограммах (кг)',
+                    'r': 'расстояние между центрами масс объектов в метрах (м)',
+                    'F': 'сила тяжести в Ньютонах (Н)'
+                }
+            },
+            'k_e': {
+                description: "Энергия упругости (E) равна 0.5, умноженной на коэффициент упругости (k) и квадрат смещения (x).",
+                variables: {
+                    'k': 'коэффициент упругости пружины в Н/м',
+                    'x': 'смещение от равновесного положения в метрах (м)',
+                    'E': 'упругая энергия в Джоулях (Дж)'
+                }
+            },
+            'q_ohm': {
+                description: "Ток (I) равен напряжению (U), деленному на сопротивление (R), по закону Ома.",
+                variables: {
+                    'U': 'напряжение в вольтах (В)',
+                    'R': 'сопротивление в омах (Ω)',
+                    'I': 'ток в амперах (А)'
+                }
+            },
+            'w_m': {
+                description: "Работа (W) равна массе (m), умноженной на ускорение свободного падения (g) и высоту (h).",
+                variables: {
+                    'm': 'масса объекта в килограммах (кг)',
+                    'g': 'ускорение свободного падения в м/с²',
+                    'h': 'высота в метрах (м)',
+                    'W': 'работа в Джоулях (Дж)'
+                }
+            },
+            'a_c': {
+                description: "Центростремительное ускорение (a_c) равно квадрату скорости (v²), деленному на радиус (r).",
+                variables: {
+                    'v': 'скорость в метрах на секунду (м/с)',
+                    'r': 'радиус кругового движения в метрах (м)',
+                    'a_c': 'центростремительное ускорение в метрах на секунду в квадрате (м/с²)'
+                }
+            },
+            'v_c': {
+                description: "Скорость тела (V) на высоте (h) равна квадратному корню из произведения 2 * g * h.",
+                variables: {
+                    'g': 'ускорение свободного падения в м/с²',
+                    'h': 'высота, с которой падает объект в метрах (м)',
+                    'V': 'скорость при падении в метрах на секунду (м/с)'
+                }
+            },
+            'e_ph': {
+                description: "Энергия фотона (E) равна произведению постоянной Планка (h) и частоты (f).",
+                variables: {
+                    'h': 'постоянная Планка, 6.626 × 10⁻³⁴ Дж·с',
+                    'f': 'частота света в герцах (Гц)',
+                    'E': 'энергия фотона в Джоулях (Дж)'
+                }
+            }
+        };
+
+        // Функция для обновления полей ввода
         function updateFields() {
             const formula = document.getElementById('formula').value;
             const inputsDiv = document.getElementById('inputs');
+            const descriptionDiv = document.getElementById('formulaDescription');
             inputsDiv.innerHTML = '';
+            descriptionDiv.innerHTML = '';
             let fields = [];
             
-            if (formula === 'f_ma') {
-                fields = ['m', 'a'];
-            } else if (formula === 'e_mgh') {
-                fields = ['m', 'g', 'h'];
-            } else if (formula === 'v_st') {
-                fields = ['S', 't'];
-            }
-            
+            // Включаем описание для выбранной формулы
+            const description = formulaDescriptions[formula];
+            descriptionDiv.innerHTML = `<strong>Описание формулы:</strong> ${description.description}`;
+
+            // Добавляем поля ввода
+            fields = Object.keys(description.variables);
+
             fields.forEach(field => {
-                inputsDiv.innerHTML += `<label class='block'>${field}: <input type='number' id='${field}' class='w-full p-2 border rounded mb-2'></label>`;
+                inputsDiv.innerHTML += `<label class='block'>${field} (${description.variables[field]}): <input type='number' id='${field}' class='w-full p-3 border rounded mb-3' required></label>`;
             });
         }
         
+        // Функция для вычисления результата
         function calculate() {
             const formula = document.getElementById('formula').value;
             let result = 0;
-            
-            if (formula === 'f_ma') {
-                let m = parseFloat(document.getElementById('m').value);
-                let a = parseFloat(document.getElementById('a').value);
-                result = m * a;
-            } else if (formula === 'e_mgh') {
-                let m = parseFloat(document.getElementById('m').value);
-                let g = parseFloat(document.getElementById('g').value);
-                let h = parseFloat(document.getElementById('h').value);
-                result = m * g * h;
-            } else if (formula === 'v_st') {
-                let S = parseFloat(document.getElementById('S').value);
-                let t = parseFloat(document.getElementById('t').value);
-                result = S / t;
+            const inputs = formulaDescriptions[formula].variables;
+
+            // Получаем значения с полей ввода и проводим вычисления
+            let inputValues = {};
+            let allFilled = true;
+
+            Object.keys(inputs).forEach(variable => {
+                let value = parseFloat(document.getElementById(variable).value);
+                if (isNaN(value) || value === '') {
+                    allFilled = false;
+                } else {
+                    inputValues[variable] = value;
+                }
+            });
+
+            if (!allFilled) {
+                alert('Пожалуйста, заполните все поля.');
+                return;
             }
-            
+
+            // Формулы для расчетов
+            if (formula === 'f_ma') {
+                result = inputValues['m'] * inputValues['a'];
+            } else if (formula === 'e_mgh') {
+                result = inputValues['m'] * inputValues['g'] * inputValues['h'];
+            } else if (formula === 'v_st') {
+                result = inputValues['S'] / inputValues['t'];
+            } else if (formula === 'p_w') {
+                result = inputValues['W'] / inputValues['t'];
+            } else if (formula === 'a_v') {
+                result = (inputValues['v'] - inputValues['v0']) / inputValues['t'];
+            } else if (formula === 'v_u') {
+                result = inputValues['u'] + inputValues['a'] * inputValues['t'];
+            } else if (formula === 'f_g') {
+                result = inputValues['G'] * (inputValues['m1'] * inputValues['m2']) / (inputValues['r'] ** 2);
+            } else if (formula === 'k_e') {
+                result = 0.5 * inputValues['k'] * (inputValues['x'] ** 2);
+            } else if (formula === 'q_ohm') {
+                result = inputValues['U'] / inputValues['R'];
+            } else if (formula === 'w_m') {
+                result = inputValues['m'] * inputValues['g'] * inputValues['h'];
+            } else if (formula === 'a_c') {
+                result = (inputValues['v'] ** 2) / inputValues['r'];
+            } else if (formula === 'v_c') {
+                result = Math.sqrt(2 * inputValues['g'] * inputValues['h']);
+            } else if (formula === 'e_ph') {
+                result = inputValues['h'] * inputValues['f'];
+            }
+
+            // Вывод результата
             document.getElementById('result').innerText = `Результат: ${result}`;
         }
-        
+
         updateFields();
     </script>
 </body>
