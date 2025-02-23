@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивная карта звёздного неба</title>
+    <script src="https://cdn.jsdelivr.net/npm/celestial/celestial.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/celestial/celestial.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+        }
+        #celestial-map {
+            width: 100vw;
+            height: 100vh;
+        }
+        #controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        button {
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div id="celestial-map"></div>
+
+    <div id="controls">
+        <button onclick="Celestial.toggle('constellations')">Созвездия</button>
+        <button onclick="Celestial.toggle('planets')">Планеты</button>
+        <button onclick="Celestial.toggle('stars')">Звёзды</button>
+        <button onclick="Celestial.toggle('grid')">Сетка</button>
+        <button onclick="resetView()">Сбросить вид</button>
+    </div>
+
+    <script>
+        // Инициализация карты
+        Celestial.display({
+            container: "celestial-map",
+            projection: "airy",
+            datapath: "https://cdn.jsdelivr.net/npm/celestial/data/",
+            lang: "ru",
+            stars: {
+                show: true,
+                colors: true,
+                limit: 6
+            },
+            constellations: {
+                show: true,
+                names: true,
+                lines: true,
+                bounds: true
+            },
+            planets: {
+                show: true
+            },
+            grid: {
+                show: true
+            },
+            location: true,
+            form: false,
+            zoom: 1
+        });
+
+        // Функция сброса вида
+        function resetView() {
+            Celestial.zoomBy(1);
+            Celestial.rotate({ center: [0, 0] });
+        }
+    </script>
+</body>
+</html>

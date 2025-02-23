@@ -56,6 +56,9 @@ def fizika_view(request):
 
     return render(request, 'fizika.html', {'form': form, 'result': result})
 
+def sky_map(request):
+    return render(request, 'astronomy.html')
+
 def index(request):
     return render(request, 'index.html')
 
