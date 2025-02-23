@@ -15,6 +15,16 @@ class GeometryCalculation(models.Model):
 
     def __str__(self):
         return f"{self.shape} ({self.dimension}) = {self.result}"
+    
+class PhysicsCalculation(models.Model):
+    formula = models.CharField(max_length=50)
+    value1 = models.FloatField()
+    value2 = models.FloatField(null=True, blank=True)
+    result = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.formula}: {self.result}"
 
 class MathEntry(models.Model):
     CATEGORY_CHOICES = [

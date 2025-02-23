@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор по физике</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 class="text-xl font-bold text-center mb-4">Физический калькулятор</h2>
+        <label class="block mb-2">Выберите формулу:</label>
+        <select id="formula" class="w-full p-2 border rounded mb-4" onchange="updateFields()">
+            <option value="f_ma">F = m * a</option>
+            <option value="e_mgh">E = m * g * h</option>
+            <option value="v_st">V = S / t</option>
+        </select>
+        <div id="inputs" class="mb-4"></div>
+        <button onclick="calculate()" class="w-full bg-blue-500 text-white p-2 rounded">Рассчитать</button>
+        <div id="result" class="mt-4 text-center text-lg font-semibold"></div>
+
+        <p><a href="{% url 'index' %}">🔙 На главную</a></p>
+    </div>
+
+
+    <script>
+        function updateFields() {
+            const formula = document.getElementById('formula').value;
+            const inputsDiv = document.getElementById('inputs');
+            inputsDiv.innerHTML = '';
+            let fields = [];
+            
+            if (formula === 'f_ma') {
+                fields = ['m', 'a'];
+            } else if (formula === 'e_mgh') {
+                fields = ['m', 'g', 'h'];
+            } else if (formula === 'v_st') {
+                fields = ['S', 't'];
+            }
+            
+            fields.forEach(field => {
+                inputsDiv.innerHTML += `<label class='block'>${field}: <input type='number' id='${field}' class='w-full p-2 border rounded mb-2'></label>`;
+            });
+        }
+        
+        function calculate() {
+            const formula = document.getElementById('formula').value;
+            let result = 0;
+            
+            if (formula === 'f_ma') {
+                let m = parseFloat(document.getElementById('m').value);
+                let a = parseFloat(document.getElementById('a').value);
+                result = m * a;
+            } else if (formula === 'e_mgh') {
+                let m = parseFloat(document.getElementById('m').value);
+                let g = parseFloat(document.getElementById('g').value);
+                let h = parseFloat(document.getElementById('h').value);
+                result = m * g * h;
+            } else if (formula === 'v_st') {
+                let S = parseFloat(document.getElementById('S').value);
+                let t = parseFloat(document.getElementById('t').value);
+                result = S / t;
+            }
+            
+            document.getElementById('result').innerText = `Результат: ${result}`;
+        }
+        
+        updateFields();
+    </script>
+</body>
+</html>

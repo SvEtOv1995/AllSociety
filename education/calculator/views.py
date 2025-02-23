@@ -4,6 +4,8 @@ from .models import AlgebraCalculation, GeometryCalculation
 from .models import MathEntry
 from django.http import JsonResponse
 from courses.models import SubjectCalculator, Subject  # Импорт моделей
+from .forms import PhysicsForm
+from .models import PhysicsCalculation
 
 # Функция для вычислений в алгебре
 import sympy as sp
@@ -36,6 +38,23 @@ def geometry_view(request):
             result = dimension ** 2  # Площадь квадрата
         GeometryCalculation.objects.create(shape=shape, dimension=dimension, result=result)
     return render(request, 'geometry.html', {'form': form, 'result': result})
+
+def fizika_view(request):
+    form = PhysicsForm(request.POST or None)
+    result = None
+    if form.is_valid():
+        formula = form.cleaned_data['formula'].lower()
+        value1 = form.cleaned_data['value1']
+        value2 = form.cleaned_data.get('value2', None)
+
+        if formula == 'kinetic_energy' and value2 is not None:
+            result = 0.5 * value1 * (value2 ** 2)  # Кинетическая энергия: 0.5 * m * v^2
+        elif formula == 'force' and value2 is not None:
+            result = value1 * value2  # Сила: F = m * a
+
+        PhysicsCalculation.objects.create(formula=formula, value1=value1, value2=value2, result=result)
+
+    return render(request, 'fizika.html', {'form': form, 'result': result})
 
 def index(request):
     return render(request, 'index.html')
