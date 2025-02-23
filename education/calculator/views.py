@@ -1,8 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .forms import AlgebraForm, GeometryForm
 from .models import AlgebraCalculation, GeometryCalculation
 from .models import MathEntry
 from django.http import JsonResponse
+from courses.models import SubjectCalculator, Subject  # Импорт моделей
 
 # Функция для вычислений в алгебре
 import sympy as sp
@@ -52,3 +53,13 @@ def get_entries(request):
     data = [{'title': entry.title, 'content': entry.content} for entry in entries]
     
     return JsonResponse(data, safe=False)
+
+
+def subject_calculator_view(request, subject_id):
+    subject = get_object_or_404(Subject, id=subject_id)
+    calculator = SubjectCalculator.objects.filter(subject=subject).first()
+
+    return render(request, "index.html", {
+        "subject": subject,
+        "calculator": calculator
+    })

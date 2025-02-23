@@ -1,73 +1,6 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        .buttons {
-            margin: 20px 0;
-        }
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin: 10px;
-            text-decoration: none;
-            color: white;
-            background-color: #007BFF;
-            border-radius: 20px;
-            transition: background 0.3s;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-        .content {
-            width: 80%;
-            max-width: 600px;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: left;
-        }
-        .slider {
-            display: none;
-        }
-        .slider.active {
-            display: block;
-        }
-        .nav-buttons {
-            margin-top: 10px;
-        }
-        .nav-button {
-            cursor: pointer;
-            padding: 5px 10px;
-            margin: 5px;
-            background: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        .math-block {
-            margin-top: 10px;
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-        }
-    </style>
-</head>
-<body>
-    <h1>Добро пожаловать в калькулятор</h1>
+{% extends "base.html" %}
+
+{% block content %}
     <p>Выберите нужный калькулятор:</p>
     <div class="buttons">
         <a href="{% url 'algebra' %}" class="button">Калькулятор Алгебры</a>
@@ -106,8 +39,42 @@
                 {% endfor %}
             </div>
         </div>
+
+        <a href="{% url 'subjects_list' %}" class="button subjects-button" style="margin-top: 20px;">📚 Вернуться к предметам</a>
+        
     </div>
-    
+    <style>
+
+        /* Уборка лишних с главной страницы SVG */
+        .center-line {
+            display: none;
+        }  
+
+        .title-container {
+            display: none;
+        }
+
+        .paragraph-container {
+            display: none;
+        }
+
+        .h2 {
+            display: none;
+        }
+
+        .h3 {
+            display: none;
+        }
+
+        #character-container {
+            display: none;
+        }
+
+        .svg-container {
+            display: none;
+        }
+
+    </style>
     <script>
         function showSlide(slideNumber) {
             let slides = document.querySelectorAll('.slider');
@@ -129,7 +96,4 @@
                 });
         });
     </script>
-    <script type="text/javascript" async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script type="text/javascript" async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-</body>
-</html>
+{% endblock %}

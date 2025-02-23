@@ -64,13 +64,7 @@ class AnswerAdmin(admin.ModelAdmin):
 
 @admin.register(SubjectCalculator)
 class SubjectCalculatorAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'html_link')
-
-    # Метод для создания ссылки на HTML-страницу
-    def html_link(self, obj):
-        return format_html('<a href="{}" target="_blank">Перейти к калькулятору</a>', obj.html_template)
-
-    html_link.short_description = 'Калькулятор'
+    list_display = ("subject", "html_template")
     
 # Регистрация модели SubjectNotes с нужными полями для отображения в админке
 @admin.register(SubjectNotes)
