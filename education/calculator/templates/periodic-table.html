@@ -1,0 +1,2244 @@
+{% block content %}
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Периодическая таблица Менделеева</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f6f6f6;
+            display: flex;
+            flex-direction: row;
+        }
+        .main-content {
+            flex: 1;
+        }
+        .table {
+            position: relative;
+            top: 80px;
+            display: grid;
+            grid-template-columns: repeat(18, 60px);
+            grid-template-rows: repeat(10, auto);
+            gap: 5px;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+        .element {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .element:hover {
+            transform: scale(1.05);
+        }
+        .alkali-metal { background-color: #ffcccb; }
+        .alkaline-earth-metal { background-color: #add8e6; }
+        .transition-metal { background-color: #d3d3d3; }
+        .post-transition-metal { background-color: #f0e68c; }
+        .metalloid { background-color: #98fb98; }
+        .non-metal { background-color: #dda0dd; }
+        .halogen { background-color: #ffb6c1; }
+        .noble-gas { background-color: #b0e0e6; }
+        .lanthanide { background-color: #ffc0cb; }
+        .actinide { background-color: #ffdead; }
+        .metal { background-color: #c0c0c0; }
+        .unknown { background-color: #87cefa; }
+
+        .legend {
+            position: relative;
+            top: -650px;
+            left: 60px;
+            width: 200px; /* Фиксированная ширина */
+            max-width: 800px;
+            height: 250px; /* Автоматическая высота */
+            max-height: 250px; /* Ограничение высоты */
+            overflow-y: auto; /* Включаем вертикальную прокрутку */
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+
+        .legend-container {
+            max-height: 200px; /* Ограничиваем высоту */
+            overflow-y: auto; /* Включаем прокрутку */
+            padding-right: 10px; /* Оставляем место для скроллбара */
+        }
+
+        .legend ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .legend ul li {
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-weight: bold; /* Делаем текст жирным */
+            font-size: 16px; /* Увеличиваем размер шрифта */
+            white-space: nowrap; /* Запрещаем перенос текста */
+            overflow: hidden; /* Прячем текст, если он не влезает */
+            text-overflow: ellipsis; /* Добавляем "..." если текст не влезает */
+        }
+
+        .legend ul li:hover {
+            background: rgba(0, 0, 0, 0.1);
+            text-decoration: underline;
+            transform: scale(1.05);
+        }
+        
+        .description-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: sticky;
+            top: 20px;
+            margin-left: 20px;
+        }
+        .description, .additional-text {
+            width: 250px;
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .legend ul li:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .legend ul li:hover ~ .table .alkali-metal,
+        .legend ul li:nth-child(1):hover .alkali-metal {
+            background-color: #ff9999 !important;
+        }
+        .legend ul li:nth-child(2):hover ~ .table .alkaline-earth-metal {
+            background-color: #88c1e6 !important;
+        }
+
+        .custom-button {
+            background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .custom-button:hover {
+            background: linear-gradient(to bottom, #66BB6A, #388E3C);
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        }
+        
+        .custom-button:active {
+            transform: translateY(1px);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .lanthanide-row {
+            grid-column: 3 / span 15;
+            grid-row: 9;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .actinide-row {
+            grid-column: 3 / span 15;
+            grid-row: 10;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .lanthanide-row, .actinide-row {
+            margin-top: 15px;
+            border-top: 2px solid black;
+            padding-top: 10px;
+        }
+        
+        
+        /* Добавьте аналогичные правила для других категорий */
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <h1 style="text-align: center;">Периодическая таблица Менделеева</h1>
+        <div>
+            <label for="temperature">Температура (°C): </label>
+            <input type="range" id="temperature" min="-273" max="5000" step="10" value="20" oninput="updateTemperature(this.value)">
+            <span id="temperature-value">20°C</span>
+        </div>
+        <div class="table">
+            <div class="element alkali-metal" style="grid-column: 1; grid-row: 1;" data-symbol="H" onclick="showDescription({
+                name: 'Hydrogen',
+                symbol: 'H',
+                number: 1,
+                state: 'Газ',
+                weight: '1.008',
+                energyLevel: '1s1',
+                electronegativity: '2.20',
+                meltingPoint: '-259.1',
+                boilingPoint: '-252.9',
+                electronAffinity: '72.8',
+                radius: '53'
+            })">
+                H<br><small>1</small><br><span>1.008</span>
+            </div>
+            <div class="element noble-gas" style="grid-column: 18; grid-row: 1;" data-symbol="He" onclick="showDescription({
+                name: 'Helium',
+                symbol: 'He',
+                number: 2,
+                state: 'Газ',
+                weight: '4.0026',
+                energyLevel: '1s2',
+                electronegativity: 'N/A',
+                meltingPoint: '-272.2',
+                boilingPoint: '-268.9',
+                electronAffinity: 'N/A',
+                radius: '31'
+            })">
+                He<br><small>2</small><br><span>4.0026</span>
+            </div>
+
+            <div class="element alkali-metal" style="grid-column: 1; grid-row: 2;" data-symbol="Li" onclick="showDescription({
+                name: 'Lithium',
+                symbol: 'Li',
+                number: 3,
+                state: 'Твердый',
+                weight: '6.94',
+                energyLevel: '[He] 2s1',
+                electronegativity: '0.98',
+                meltingPoint: '180.5',
+                boilingPoint: '1342',
+                electronAffinity: '59.6',
+                radius: '167'
+            })">
+                Li<br><small>3</small><br><span>6.94</span>
+            </div>
+
+            <div class="element alkali-metal" style="grid-column: 2; grid-row: 2;" data-symbol="Be" onclick="showDescription({
+                            name: 'Beryllium',
+                            symbol: 'Be',
+                            number: 4,
+                            state: 'Твердый',
+                            weight: '9.0122',
+                            energyLevel: '[He] 2s2',
+                            electronegativity: '1.57',
+                            meltingPoint: '1287',
+                            boilingPoint: '2471',
+                            electronAffinity: '0',
+                            radius: '112'
+                        })">
+                            Be<br><small>4</small><br><span>9.0122</span>
+                        </div>
+
+            <div class="element alkali-metal" style="grid-column: 13; grid-row: 2;" data-symbol="B" onclick="showDescription({
+                            name: 'Boron',
+                            symbol: 'B',
+                            number: 5,
+                            state: 'Твердый',
+                            weight: '10.81',
+                            energyLevel: '[He] 2s2 2p1',
+                            electronegativity: '2.04',
+                            meltingPoint: '2076',
+                            boilingPoint: '3927',
+                            electronAffinity: '26.7',
+                            radius: '87'
+                        })">
+                            B<br><small>5</small><br><span>10.81</span>
+                        </div>
+
+            <div class="element alkali-metal" style="grid-column: 14; grid-row: 2;" data-symbol="C" onclick="showDescription({
+                            name: 'Carbon',
+                            symbol: 'C',
+                            number: 6,
+                            state: 'Твердый',
+                            weight: '12.011',
+                            energyLevel: '[He] 2s2 2p2',
+                            electronegativity: '2.55',
+                            meltingPoint: '3550',
+                            boilingPoint: '4827',
+                            electronAffinity: '121.8',
+                            radius: '67'
+                        })">
+                            C<br><small>6</small><br><span>12.011</span>
+                        </div>
+
+            <div class="element alkali-metal" style="grid-column: 15; grid-row: 2;" data-symbol="N" onclick="showDescription({
+                            name: 'Nitrogen',
+                            symbol: 'N',
+                            number: 7,
+                            state: 'Газ',
+                            weight: '14.007',
+                            energyLevel: '[He] 2s2 2p3',
+                            electronegativity: '3.04',
+                            meltingPoint: '-210.0',
+                            boilingPoint: '-195.8',
+                            electronAffinity: '-7',
+                            radius: '56'
+                        })">
+                            N<br><small>7</small><br><span>14.007</span>
+                        </div>
+
+            <div class="element alkali-metal" style="grid-column: 16; grid-row: 2;" data-symbol="O" onclick="showDescription({
+                            name: 'Oxygen',
+                            symbol: 'O',
+                            number: 8,
+                            state: 'Газ',
+                            weight: '15.999',
+                            energyLevel: '[He] 2s2 2p4',
+                            electronegativity: '3.44',
+                            meltingPoint: '-218.8',
+                            boilingPoint: '-183.0',
+                            electronAffinity: '141.0',
+                            radius: '48'
+                        })">
+                            O<br><small>8</small><br><span>15.999</span>
+                        </div>
+
+            <div class="element alkali-metal" style="grid-column: 17; grid-row: 2;" data-symbol="F" onclick="showDescription({
+                            name: 'Fluorine',
+                            symbol: 'F',
+                            number: 9,
+                            state: 'Газ',
+                            weight: '18.998',
+                            energyLevel: '[He] 2s2 2p5',
+                            electronegativity: '3.98',
+                            meltingPoint: '-219.6',
+                            boilingPoint: '-188.1',
+                            electronAffinity: '328.0',
+                            radius: '42'
+                        })">
+                            F<br><small>9</small><br><span>18.998</span>
+                        </div>
+
+            <div class="element alkali-metal" style="grid-column: 18; grid-row: 2;" data-symbol="Ne" onclick="showDescription({
+                            name: 'Neon',
+                            symbol: 'Ne',
+                            number: 10,
+                            state: 'Газ',
+                            weight: '20.180',
+                            energyLevel: '[He] 2s2 2p6',
+                            electronegativity: '—',
+                            meltingPoint: '-248.6',
+                            boilingPoint: '-246.1',
+                            electronAffinity: '0',
+                            radius: '38'
+                        })">
+                            Ne<br><small>10</small><br><span>20.180</span>
+                        </div>
+
+            <div class="element alkali-metal" style="grid-column: 1; grid-row: 3;" data-symbol="Na" onclick="showDescription({
+                            name: 'Sodium',
+                            symbol: 'Na',
+                            number: 11,
+                            state: 'Твердый',
+                            weight: '22.990',
+                            energyLevel: '[Ne] 3s1',
+                            electronegativity: '0.93',
+                            meltingPoint: '97.8',
+                            boilingPoint: '883',
+                            electronAffinity: '52.8',
+                            radius: '190'
+                        })">
+                            Na<br><small>11</small><br><span>22.990</span>
+                        </div>
+
+                        <div class="element alkaline-earth-metal" style="grid-column: 2; grid-row: 3;" data-symbol="Mg" onclick="showDescription({
+                            name: 'Magnesium',
+                            symbol: 'Mg',
+                            number: 12,
+                            state: 'Твердый',
+                            weight: '24.305',
+                            energyLevel: '[Ne] 3s2',
+                            electronegativity: '1.31',
+                            meltingPoint: '650',
+                            boilingPoint: '1090',
+                            electronAffinity: '0',
+                            radius: '145'
+                        })">
+                            Mg<br><small>12</small><br><span>24.305</span>
+                        </div>
+            
+            <div class="element metalloid" style="grid-column: 13; grid-row: 3;" data-symbol="Al" onclick="showDescription({
+                            name: 'Aluminum',
+                            symbol: 'Al',
+                            number: 13,
+                            state: 'Твердый',
+                            weight: '26.982',
+                            energyLevel: '[Ne] 3s2 3p1',
+                            electronegativity: '1.61',
+                            meltingPoint: '660.3',
+                            boilingPoint: '2470',
+                            electronAffinity: '42.5',
+                            radius: '118'
+                        })">
+                            Al<br><small>13</small><br><span>26.982</span>
+                        </div>
+            
+            <div class="element metalloid" style="grid-column: 14; grid-row: 3;" data-symbol="Si" onclick="showDescription({
+                            name: 'Silicon',
+                            symbol: 'Si',
+                            number: 14,
+                            state: 'Твердый',
+                            weight: '28.085',
+                            energyLevel: '[Ne] 3s2 3p2',
+                            electronegativity: '1.90',
+                            meltingPoint: '1414',
+                            boilingPoint: '3265',
+                            electronAffinity: '133.6',
+                            radius: '111'
+                        })">
+                            Si<br><small>14</small><br><span>28.085</span>
+                        </div>
+            
+            <div class="element non-metal" style="grid-column: 15; grid-row: 3;" data-symbol="P" onclick="showDescription({
+                            name: 'Phosphorus',
+                            symbol: 'P',
+                            number: 15,
+                            state: 'Твердый',
+                            weight: '30.974',
+                            energyLevel: '[Ne] 3s2 3p3',
+                            electronegativity: '2.19',
+                            meltingPoint: '44.2',
+                            boilingPoint: '280.5',
+                            electronAffinity: '72.0',
+                            radius: '98'
+                        })">
+                            P<br><small>15</small><br><span>30.974</span>
+                        </div>
+            
+            <div class="element non-metal" style="grid-column: 16; grid-row: 3;" data-symbol="S" onclick="showDescription({
+                            name: 'Sulfur',
+                            symbol: 'S',
+                            number: 16,
+                            state: 'Твердый',
+                            weight: '32.06',
+                            energyLevel: '[Ne] 3s2 3p4',
+                            electronegativity: '2.58',
+                            meltingPoint: '115.2',
+                            boilingPoint: '444.6',
+                            electronAffinity: '200.4',
+                            radius: '88'
+                        })">
+                            S<br><small>16</small><br><span>32.06</span>
+                        </div>
+            
+            <div class="element halogen" style="grid-column: 17; grid-row: 3;" data-symbol="Cl" onclick="showDescription({
+                            name: 'Chlorine',
+                            symbol: 'Cl',
+                            number: 17,
+                            state: 'Газ',
+                            weight: '35.45',
+                            energyLevel: '[Ne] 3s2 3p5',
+                            electronegativity: '3.16',
+                            meltingPoint: '-101.5',
+                            boilingPoint: '-34.0',
+                            electronAffinity: '349.0',
+                            radius: '79'
+                        })">
+                            Cl<br><small>17</small><br><span>35.45</span>
+                        </div>
+            
+            <div class="element noble-gas" style="grid-column: 18; grid-row: 3;" data-symbol="Ar" onclick="showDescription({
+                            name: 'Argon',
+                            symbol: 'Ar',
+                            number: 18,
+                            state: 'Газ',
+                            weight: '39.948',
+                            energyLevel: '[Ne] 3s2 3p6',
+                            electronegativity: '—',
+                            meltingPoint: '-189.3',
+                            boilingPoint: '-185.8',
+                            electronAffinity: '0',
+                            radius: '71'
+                        })">
+                            Ar<br><small>18</small><br><span>39.948</span>
+                        </div>
+            
+            <div class="element alkali-metal" style="grid-column: 1; grid-row: 4;" data-symbol="K" onclick="showDescription({
+                            name: 'Potassium',
+                            symbol: 'K',
+                            number: 19,
+                            state: 'Твердый',
+                            weight: '39.098',
+                            energyLevel: '[Ar] 4s1',
+                            electronegativity: '0.82',
+                            meltingPoint: '63.5',
+                            boilingPoint: '759',
+                            electronAffinity: '48.4',
+                            radius: '243'
+                        })">
+                            K<br><small>19</small><br><span>39.098</span>
+                        </div>
+            
+            <div class="element alkaline-earth-metal" style="grid-column: 2; grid-row: 4;" data-symbol="Ca" onclick="showDescription({
+                            name: 'Calcium',
+                            symbol: 'Ca',
+                            number: 20,
+                            state: 'Твердый',
+                            weight: '40.078',
+                            energyLevel: '[Ar] 4s2',
+                            electronegativity: '1.00',
+                            meltingPoint: '842',
+                            boilingPoint: '1484',
+                            electronAffinity: '2.37',
+                            radius: '194'
+                        })">
+                            Ca<br><small>20</small><br><span>40.078</span>
+                        </div>
+            
+            <div class="element transition-metal" style="grid-column: 3; grid-row: 4;" data-symbol="Sc" onclick="showDescription({
+                            name: 'Scandium',
+                            symbol: 'Sc',
+                            number: 21,
+                            state: 'Твердый',
+                            weight: '44.956',
+                            energyLevel: '[Ar] 3d1 4s2',
+                            electronegativity: '1.36',
+                            meltingPoint: '1541',
+                            boilingPoint: '2836',
+                            electronAffinity: '18.1',
+                            radius: '184'
+                        })">
+                            Sc<br><small>21</small><br><span>44.956</span>
+                        </div>
+            
+            <div class="element transition-metal" style="grid-column: 4; grid-row: 4;" data-symbol="Ti" onclick="showDescription({
+                            name: 'Titanium',
+                            symbol: 'Ti',
+                            number: 22,
+                            state: 'Твердый',
+                            weight: '47.867',
+                            energyLevel: '[Ar] 3d2 4s2',
+                            electronegativity: '1.54',
+                            meltingPoint: '1668',
+                            boilingPoint: '3287',
+                            electronAffinity: '7.6',
+                            radius: '176'
+                        })">
+                            Ti<br><small>22</small><br><span>47.867</span>
+                        </div>
+            
+            <div class="element transition-metal" style="grid-column: 5; grid-row: 4;" data-symbol="V" onclick="showDescription({
+                            name: 'Vanadium',
+                            symbol: 'V',
+                            number: 23,
+                            state: 'Твердый',
+                            weight: '50.942',
+                            energyLevel: '[Ar] 3d3 4s2',
+                            electronegativity: '1.63',
+                            meltingPoint: '1910',
+                            boilingPoint: '3407',
+                            electronAffinity: '50.6',
+                            radius: '171'
+                        })">
+                            V<br><small>23</small><br><span>50.942</span>
+                        </div>
+            
+            <div class="element transition-metal" style="grid-column: 6; grid-row: 4;" data-symbol="Cr" onclick="showDescription({
+                            name: 'Chromium',
+                            symbol: 'Cr',
+                            number: 24,
+                            state: 'Твердый',
+                            weight: '51.996',
+                            energyLevel: '[Ar] 3d5 4s1',
+                            electronegativity: '1.66',
+                            meltingPoint: '1907',
+                            boilingPoint: '2671',
+                            electronAffinity: '64.3',
+                            radius: '166'
+                        })">
+                            Cr<br><small>24</small><br><span>51.996</span>
+                        </div>
+            
+            <div class="element transition-metal" style="grid-column: 7; grid-row: 4;" data-symbol="Mn" onclick="showDescription({
+                            name: 'Manganese',
+                            symbol: 'Mn',
+                            number: 25,
+                            state: 'Твердый',
+                            weight: '54.938',
+                            energyLevel: '[Ar] 3d5 4s2',
+                            electronegativity: '1.55',
+                            meltingPoint: '1246',
+                            boilingPoint: '2061',
+                            electronAffinity: '0',
+                            radius: '161'
+                        })">
+                            Mn<br><small>25</small><br><span>54.938</span>
+                        </div>
+            
+            <div class="element transition-metal" style="grid-column: 8; grid-row: 4;" data-symbol="Fe" onclick="showDescription({
+                            name: 'Iron',
+                            symbol: 'Fe',
+                            number: 26,
+                            state: 'Твердый',
+                            weight: '55.845',
+                            energyLevel: '[Ar] 3d6 4s2',
+                            electronegativity: '1.83',
+                            meltingPoint: '1538',
+                            boilingPoint: '2862',
+                            electronAffinity: '15.7',
+                            radius: '156'
+                        })">
+                            Fe<br><small>26</small><br><span>55.845</span>
+                        </div>
+            
+            <div class="element transition-metal" style="grid-column: 9; grid-row: 4;" data-symbol="Co" onclick="showDescription({
+                            name: 'Cobalt',
+                            symbol: 'Co',
+                            number: 27,
+                            state: 'Твердый',
+                            weight: '58.933',
+                            energyLevel: '[Ar] 3d7 4s2',
+                            electronegativity: '1.88',
+                            meltingPoint: '1495',
+                            boilingPoint: '2927',
+                            electronAffinity: '63.7',
+                            radius: '152'
+                        })">
+                            Co<br><small>27</small><br><span>58.933</span>
+                        </div>
+            
+            <div class="element transition-metal" style="grid-column: 10; grid-row: 4;" data-symbol="Ni" onclick="showDescription({
+                            name: 'Nickel',
+                            symbol: 'Ni',
+                            number: 28,
+                            state: 'Твердый',
+                            weight: '58.693',
+                            energyLevel: '[Ar] 3d8 4s2',
+                            electronegativity: '1.91',
+                            meltingPoint: '1455',
+                            boilingPoint: '2913',
+                            electronAffinity: '112.0',
+                            radius: '149'
+                        })">
+                            Ni<br><small>28</small><br><span>58.693</span>
+                        </div>
+            
+            <div class="element transition-metal" style="grid-column: 11; grid-row: 4;" data-symbol="Cu" onclick="showDescription({
+                            name: 'Copper',
+                            symbol: 'Cu',
+                            number: 29,
+                            state: 'Твердый',
+                            weight: '63.546',
+                            energyLevel: '[Ar] 3d10 4s1',
+                            electronegativity: '1.90',
+                            meltingPoint: '1085',
+                            boilingPoint: '2562',
+                            electronAffinity: '118.4',
+                            radius: '145'
+                        })">
+                            Cu<br><small>29</small><br><span>63.546</span>
+                        </div>
+            
+            <div class="element transition-metal" style="grid-column: 12; grid-row: 4;" data-symbol="Zn" onclick="showDescription({
+                            name: 'Zinc',
+                            symbol: 'Zn',
+                            number: 30,
+                            state: 'Твердый',
+                            weight: '65.38',
+                            energyLevel: '[Ar] 3d10 4s2',
+                            electronegativity: '1.65',
+                            meltingPoint: '419.5',
+                            boilingPoint: '907',
+                            electronAffinity: '0',
+                            radius: '142'
+                        })">
+                            Zn<br><small>30</small><br><span>65.38</span>
+                        </div>
+
+                        <div class="element transition-metal" style="grid-column: 13; grid-row: 4;" data-symbol="Ga" onclick="showDescription({
+                            name: 'Gallium',
+                            symbol: 'Ga',
+                            number: 31,
+                            state: 'Твердый',
+                            weight: '69.72',
+                            energyLevel: '[Ar] 3d10 4s2 4p1',
+                            electronegativity: '1.81',
+                            meltingPoint: '29.76',
+                            boilingPoint: '2204',
+                            electronAffinity: '0.3',
+                            radius: '136'
+                        })">
+                            Ga<br><small>31</small><br><span>69.72</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 14; grid-row: 4;" data-symbol="Ge" onclick="showDescription({
+                            name: 'Germanium',
+                            symbol: 'Ge',
+                            number: 32,
+                            state: 'Твердый',
+                            weight: '72.63',
+                            energyLevel: '[Ar] 3d10 4s2 4p2',
+                            electronegativity: '2.01',
+                            meltingPoint: '938.3',
+                            boilingPoint: '2833',
+                            electronAffinity: '1.35',
+                            radius: '125'
+                        })">
+                            Ge<br><small>32</small><br><span>72.63</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 15; grid-row: 4;" data-symbol="As" onclick="showDescription({
+                            name: 'Arsenic',
+                            symbol: 'As',
+                            number: 33,
+                            state: 'Твердый',
+                            weight: '74.92',
+                            energyLevel: '[Ar] 3d10 4s2 4p3',
+                            electronegativity: '2.18',
+                            meltingPoint: '817',
+                            boilingPoint: '614',
+                            electronAffinity: '0.81',
+                            radius: '114'
+                        })">
+                            As<br><small>33</small><br><span>74.92</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 16; grid-row: 4;" data-symbol="Se" onclick="showDescription({
+                            name: 'Selenium',
+                            symbol: 'Se',
+                            number: 34,
+                            state: 'Твердый',
+                            weight: '78.96',
+                            energyLevel: '[Ar] 3d10 4s2 4p4',
+                            electronegativity: '2.55',
+                            meltingPoint: '221',
+                            boilingPoint: '685',
+                            electronAffinity: '2.02',
+                            radius: '103'
+                        })">
+                            Se<br><small>34</small><br><span>78.96</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 17; grid-row: 4;" data-symbol="Br" onclick="showDescription({
+                            name: 'Bromine',
+                            symbol: 'Br',
+                            number: 35,
+                            state: 'Жидкость',
+                            weight: '79.90',
+                            energyLevel: '[Ar] 3d10 4s2 4p5',
+                            electronegativity: '2.96',
+                            meltingPoint: '-7.2',
+                            boilingPoint: '58.8',
+                            electronAffinity: '3.36',
+                            radius: '94'
+                        })">
+                            Br<br><small>35</small><br><span>79.90</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 18; grid-row: 4;" data-symbol="Kr" onclick="showDescription({
+                            name: 'Krypton',
+                            symbol: 'Kr',
+                            number: 36,
+                            state: 'Газ',
+                            weight: '83.80',
+                            energyLevel: '[Ar] 3d10 4s2 4p6',
+                            electronegativity: '3.00',
+                            meltingPoint: '-157.4',
+                            boilingPoint: '-153.2',
+                            electronAffinity: '0',
+                            radius: '88'
+                        })">
+                            Kr<br><small>36</small><br><span>83.80</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 1; grid-row: 5;" data-symbol="Rb" onclick="showDescription({
+                            name: 'Rubidium',
+                            symbol: 'Rb',
+                            number: 37,
+                            state: 'Твердый',
+                            weight: '85.47',
+                            energyLevel: '[Kr] 5s1',
+                            electronegativity: '0.82',
+                            meltingPoint: '39.3',
+                            boilingPoint: '688',
+                            electronAffinity: '0.48',
+                            radius: '265'
+                        })">
+                            Rb<br><small>37</small><br><span>85.47</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 2; grid-row: 5;" data-symbol="Sr" onclick="showDescription({
+                            name: 'Strontium',
+                            symbol: 'Sr',
+                            number: 38,
+                            state: 'Твердый',
+                            weight: '87.62',
+                            energyLevel: '[Kr] 5s2',
+                            electronegativity: '0.95',
+                            meltingPoint: '777',
+                            boilingPoint: '1382',
+                            electronAffinity: '0.05',
+                            radius: '219'
+                        })">
+                            Sr<br><small>38</small><br><span>87.62</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 3; grid-row: 5;" data-symbol="Y" onclick="showDescription({
+                            name: 'Yttrium',
+                            symbol: 'Y',
+                            number: 39,
+                            state: 'Твердый',
+                            weight: '88.91',
+                            energyLevel: '[Kr] 4d1 5s2',
+                            electronegativity: '1.22',
+                            meltingPoint: '1526',
+                            boilingPoint: '3345',
+                            electronAffinity: '0.31',
+                            radius: '212'
+                        })">
+                            Y<br><small>39</small><br><span>88.91</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 4; grid-row: 5;" data-symbol="Zr" onclick="showDescription({
+                            name: 'Zirconium',
+                            symbol: 'Zr',
+                            number: 40,
+                            state: 'Твердый',
+                            weight: '91.22',
+                            energyLevel: '[Kr] 4d2 5s2',
+                            electronegativity: '1.33',
+                            meltingPoint: '1855',
+                            boilingPoint: '4409',
+                            electronAffinity: '0.42',
+                            radius: '206'
+                        })">
+                            Zr<br><small>40</small><br><span>91.22</span>
+                        </div>
+
+                        <div class="element transition-metal" style="grid-column: 5; grid-row: 5;" data-symbol="Nb" onclick="showDescription({
+                            name: 'Niobium',
+                            symbol: 'Nb',
+                            number: 41,
+                            state: 'Твердый',
+                            weight: '92.91',
+                            energyLevel: '[Kr] 4d4 5s1',
+                            electronegativity: '1.6',
+                            meltingPoint: '2477',
+                            boilingPoint: '4744',
+                            electronAffinity: '0.89',
+                            radius: '198'
+                        })">
+                            Nb<br><small>41</small><br><span>92.91</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 6; grid-row: 5;" data-symbol="Mo" onclick="showDescription({
+                            name: 'Molybdenum',
+                            symbol: 'Mo',
+                            number: 42,
+                            state: 'Твердый',
+                            weight: '95.95',
+                            energyLevel: '[Kr] 4d5 5s1',
+                            electronegativity: '2.16',
+                            meltingPoint: '2623',
+                            boilingPoint: '4639',
+                            electronAffinity: '0.75',
+                            radius: '190'
+                        })">
+                            Mo<br><small>42</small><br><span>95.95</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 7; grid-row: 5;" data-symbol="Tc" onclick="showDescription({
+                            name: 'Technetium',
+                            symbol: 'Tc',
+                            number: 43,
+                            state: 'Твердый',
+                            weight: '[98]',
+                            energyLevel: '[Kr] 4d5 5s2',
+                            electronegativity: '1.9',
+                            meltingPoint: '2157',
+                            boilingPoint: '4265',
+                            electronAffinity: '0.55',
+                            radius: '183'
+                        })">
+                            Tc<br><small>43</small><br><span>[98]</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 8; grid-row: 5;" data-symbol="Ru" onclick="showDescription({
+                            name: 'Ruthenium',
+                            symbol: 'Ru',
+                            number: 44,
+                            state: 'Твердый',
+                            weight: '101.07',
+                            energyLevel: '[Kr] 4d7 5s1',
+                            electronegativity: '2.2',
+                            meltingPoint: '2334',
+                            boilingPoint: '4150',
+                            electronAffinity: '1.05',
+                            radius: '178'
+                        })">
+                            Ru<br><small>44</small><br><span>101.07</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 9; grid-row: 5;" data-symbol="Rh" onclick="showDescription({
+                            name: 'Rhodium',
+                            symbol: 'Rh',
+                            number: 45,
+                            state: 'Твердый',
+                            weight: '102.91',
+                            energyLevel: '[Kr] 4d8 5s1',
+                            electronegativity: '2.28',
+                            meltingPoint: '1964',
+                            boilingPoint: '3695',
+                            electronAffinity: '1.14',
+                            radius: '173'
+                        })">
+                            Rh<br><small>45</small><br><span>102.91</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 10; grid-row: 5;" data-symbol="Pd" onclick="showDescription({
+                            name: 'Palladium',
+                            symbol: 'Pd',
+                            number: 46,
+                            state: 'Твердый',
+                            weight: '106.42',
+                            energyLevel: '[Kr] 4d10',
+                            electronegativity: '2.2',
+                            meltingPoint: '1554.9',
+                            boilingPoint: '2963',
+                            electronAffinity: '0.56',
+                            radius: '169'
+                        })">
+                            Pd<br><small>46</small><br><span>106.42</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 11; grid-row: 5;" data-symbol="Ag" onclick="showDescription({
+                            name: 'Silver',
+                            symbol: 'Ag',
+                            number: 47,
+                            state: 'Твердый',
+                            weight: '107.87',
+                            energyLevel: '[Kr] 4d10 5s1',
+                            electronegativity: '1.93',
+                            meltingPoint: '961.8',
+                            boilingPoint: '2162',
+                            electronAffinity: '1.3',
+                            radius: '165'
+                        })">
+                            Ag<br><small>47</small><br><span>107.87</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 12; grid-row: 5;" data-symbol="Cd" onclick="showDescription({
+                            name: 'Cadmium',
+                            symbol: 'Cd',
+                            number: 48,
+                            state: 'Твердый',
+                            weight: '112.41',
+                            energyLevel: '[Kr] 4d10 5s2',
+                            electronegativity: '1.69',
+                            meltingPoint: '321.1',
+                            boilingPoint: '767',
+                            electronAffinity: '0',
+                            radius: '161'
+                        })">
+                            Cd<br><small>48</small><br><span>112.41</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 13; grid-row: 5;" data-symbol="In" onclick="showDescription({
+                            name: 'Indium',
+                            symbol: 'In',
+                            number: 49,
+                            state: 'Твердый',
+                            weight: '114.82',
+                            energyLevel: '[Kr] 4d10 5s2 5p1',
+                            electronegativity: '1.78',
+                            meltingPoint: '156.6',
+                            boilingPoint: '2072',
+                            electronAffinity: '0.3',
+                            radius: '156'
+                        })">
+                            In<br><small>49</small><br><span>114.82</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 14; grid-row: 5;" data-symbol="Sn" onclick="showDescription({
+                            name: 'Tin',
+                            symbol: 'Sn',
+                            number: 50,
+                            state: 'Твердый',
+                            weight: '118.71',
+                            energyLevel: '[Kr] 4d10 5s2 5p2',
+                            electronegativity: '1.96',
+                            meltingPoint: '231.9',
+                            boilingPoint: '2602',
+                            electronAffinity: '1.11',
+                            radius: '145'
+                        })">
+                            Sn<br><small>50</small><br><span>118.71</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 15; grid-row: 5;" data-symbol="Sb" onclick="showDescription({
+                            name: 'Antimony',
+                            symbol: 'Sb',
+                            number: 51,
+                            state: 'Твердый',
+                            weight: '121.76',
+                            energyLevel: '[Kr] 4d10 5s2 5p3',
+                            electronegativity: '2.05',
+                            meltingPoint: '630.6',
+                            boilingPoint: '1587',
+                            electronAffinity: '1.07',
+                            radius: '133'
+                        })">
+                            Sb<br><small>51</small><br><span>121.76</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 16; grid-row: 5;" data-symbol="Te" onclick="showDescription({
+                            name: 'Tellurium',
+                            symbol: 'Te',
+                            number: 52,
+                            state: 'Твердый',
+                            weight: '127.60',
+                            energyLevel: '[Kr] 4d10 5s2 5p4',
+                            electronegativity: '2.1',
+                            meltingPoint: '449.5',
+                            boilingPoint: '988',
+                            electronAffinity: '1.97',
+                            radius: '123'
+                        })">
+                            Te<br><small>52</small><br><span>127.60</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 17; grid-row: 5;" data-symbol="I" onclick="showDescription({
+                            name: 'Iodine',
+                            symbol: 'I',
+                            number: 53,
+                            state: 'Твердый',
+                            weight: '126.90',
+                            energyLevel: '[Kr] 4d10 5s2 5p5',
+                            electronegativity: '2.66',
+                            meltingPoint: '113.7',
+                            boilingPoint: '184.3',
+                            electronAffinity: '3.06',
+                            radius: '115'
+                        })">
+                            I<br><small>53</small><br><span>126.90</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 18; grid-row: 5;" data-symbol="Xe" onclick="showDescription({
+                            name: 'Xenon',
+                            symbol: 'Xe',
+                            number: 54,
+                            state: 'Газ',
+                            weight: '131.29',
+                            energyLevel: '[Kr] 4d10 5s2 5p6',
+                            electronegativity: '2.6',
+                            meltingPoint: '-111.8',
+                            boilingPoint: '-108.1',
+                            electronAffinity: '0',
+                            radius: '108'
+                        })">
+                            Xe<br><small>54</small><br><span>131.29</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 1; grid-row: 6;" data-symbol="Cs" onclick="showDescription({
+                            name: 'Cesium',
+                            symbol: 'Cs',
+                            number: 55,
+                            state: 'Твердый',
+                            weight: '132.91',
+                            energyLevel: '[Xe] 6s1',
+                            electronegativity: '0.79',
+                            meltingPoint: '28.5',
+                            boilingPoint: '671',
+                            electronAffinity: '0.47',
+                            radius: '298'
+                        })">
+                            Cs<br><small>55</small><br><span>132.91</span>
+                        </div>
+
+                        <div class="element transition-metal" style="grid-column: 2; grid-row: 6;" data-symbol="Ba" onclick="showDescription({
+                            name: 'Barium',
+                            symbol: 'Ba',
+                            number: 56,
+                            state: 'Твердый',
+                            weight: '137.33',
+                            energyLevel: '[Xe] 6s2',
+                            electronegativity: '0.89',
+                            meltingPoint: '727',
+                            boilingPoint: '1897',
+                            electronAffinity: '0.14',
+                            radius: '253'
+                        })">
+                            Ba<br><small>56</small><br><span>137.33</span>
+                        </div>
+                        
+                        <div class="element lanthanide" style="grid-column: 3; grid-row: 9;" data-symbol="La" onclick="showDescription({
+                            name: 'Lanthanum',
+                            symbol: 'La',
+                            number: 57,
+                            state: 'Твердый',
+                            weight: '138.91',
+                            energyLevel: '[Xe] 5d1 6s2',
+                            electronegativity: '1.10',
+                            meltingPoint: '920',
+                            boilingPoint: '3464',
+                            electronAffinity: '0.47',
+                            radius: '195'
+                        })">
+                            La<br><small>57</small><br><span>138.91</span>
+                        </div>
+                        
+                        <div class="element lanthanide" style="grid-column: 4; grid-row: 9;" data-symbol="Ce" onclick="showDescription({
+                            name: 'Cerium',
+                            symbol: 'Ce',
+                            number: 58,
+                            state: 'Твердый',
+                            weight: '140.12',
+                            energyLevel: '[Xe] 4f1 5d1 6s2',
+                            electronegativity: '1.12',
+                            meltingPoint: '795',
+                            boilingPoint: '3443',
+                            electronAffinity: '0.48',
+                            radius: '185'
+                        })">
+                            Ce<br><small>58</small><br><span>140.12</span>
+                        </div>
+                        
+                        <div class="element lanthanide" style="grid-column: 5; grid-row: 9;" data-symbol="Pr" onclick="showDescription({
+                            name: 'Praseodymium',
+                            symbol: 'Pr',
+                            number: 59,
+                            state: 'Твердый',
+                            weight: '140.91',
+                            energyLevel: '[Xe] 4f3 6s2',
+                            electronegativity: '1.13',
+                            meltingPoint: '931',
+                            boilingPoint: '3520',
+                            electronAffinity: '0.50',
+                            radius: '185'
+                        })">
+                            Pr<br><small>59</small><br><span>140.91</span>
+                        </div>
+                        
+                        <div class="element lanthanide" style="grid-column: 6; grid-row: 9;" data-symbol="Nd" onclick="showDescription({
+                            name: 'Neodymium',
+                            symbol: 'Nd',
+                            number: 60,
+                            state: 'Твердый',
+                            weight: '144.24',
+                            energyLevel: '[Xe] 4f4 6s2',
+                            electronegativity: '1.14',
+                            meltingPoint: '1021',
+                            boilingPoint: '3074',
+                            electronAffinity: '0.50',
+                            radius: '185'
+                        })">
+                            Nd<br><small>60</small><br><span>144.24</span>
+                        </div>
+
+                        <div class="element lanthanide" style="grid-column: 7; grid-row: 9;" data-symbol="Pm" onclick="showDescription({
+                            name: 'Promethium',
+                            symbol: 'Pm',
+                            number: 61,
+                            state: 'Твердый',
+                            weight: '145',
+                            energyLevel: '[Xe] 4f5 6s2',
+                            electronegativity: '—',
+                            meltingPoint: '1100',
+                            boilingPoint: '3000',
+                            electronAffinity: '—',
+                            radius: '183'
+                        })">
+                            Pm<br><small>61</small><br><span>145</span>
+                        </div>
+
+                        <div class="element lanthanide" style="grid-column: 8; grid-row: 9;" data-symbol="Sm" onclick="showDescription({
+                                                    name: 'Samarium',
+                                                    symbol: 'Sm',
+                                                    number: 62,
+                                                    state: 'Твердый',
+                                                    weight: '150.36',
+                                                    energyLevel: '[Xe] 4f6 6s2',
+                                                    electronegativity: '1.17',
+                                                    meltingPoint: '1072',
+                                                    boilingPoint: '1900',
+                                                    electronAffinity: '0.23',
+                                                    radius: '180'
+                                                })">
+                                                    Sm<br><small>62</small><br><span>150.36</span>
+                        </div>
+
+                        <div class="element lanthanide" style="grid-column: 9; grid-row: 9;" data-symbol="Eu" onclick="showDescription({
+                                                    name: 'Europium',
+                                                    symbol: 'Eu',
+                                                    number: 63,
+                                                    state: 'Твердый',
+                                                    weight: '151.96',
+                                                    energyLevel: '[Xe] 4f7 6s2',
+                                                    electronegativity: '1.2',
+                                                    meltingPoint: '822',
+                                                    boilingPoint: '1529',
+                                                    electronAffinity: '—',
+                                                    radius: '199'
+                                                })">
+                                                    Eu<br><small>63</small><br><span>151.96</span>
+                        </div>
+
+                        <div class="element lanthanide" style="grid-column: 10; grid-row: 9;" data-symbol="Gd" onclick="showDescription({
+                                                    name: 'Gadolinium',
+                                                    symbol: 'Gd',
+                                                    number: 64,
+                                                    state: 'Твердый',
+                                                    weight: '157.25',
+                                                    energyLevel: '[Xe] 4f7 5d1 6s2',
+                                                    electronegativity: '1.2',
+                                                    meltingPoint: '1313',
+                                                    boilingPoint: '3273',
+                                                    electronAffinity: '—',
+                                                    radius: '180'
+                                                })">
+                                                    Gd<br><small>64</small><br><span>157.25</span>
+                        </div>
+
+                        <div class="element lanthanide" style="grid-column: 11; grid-row: 9;" data-symbol="Tb" onclick="showDescription({
+                                                    name: 'Terbium',
+                                                    symbol: 'Tb',
+                                                    number: 65,
+                                                    state: 'Твердый',
+                                                    weight: '158.93',
+                                                    energyLevel: '[Xe] 4f9 6s2',
+                                                    electronegativity: '1.1',
+                                                    meltingPoint: '1356',
+                                                    boilingPoint: '3230',
+                                                    electronAffinity: '—',
+                                                    radius: '177'
+                                                })">
+                                                    Tb<br><small>65</small><br><span>158.93</span>
+                        </div>
+
+                        <div class="element lanthanide" style="grid-column: 12; grid-row: 9;" data-symbol="Dy" onclick="showDescription({
+                                                    name: 'Dysprosium',
+                                                    symbol: 'Dy',
+                                                    number: 66,
+                                                    state: 'Твердый',
+                                                    weight: '162.50',
+                                                    energyLevel: '[Xe] 4f10 6s2',
+                                                    electronegativity: '1.22',
+                                                    meltingPoint: '1412',
+                                                    boilingPoint: '2567',
+                                                    electronAffinity: '—',
+                                                    radius: '175'
+                                                })">
+                                                    Dy<br><small>66</small><br><span>162.50</span>
+                        </div>
+
+                        <div class="element lanthanide" style="grid-column: 13; grid-row: 9;" data-symbol="Ho" onclick="showDescription({
+                                                    name: 'Holmium',
+                                                    symbol: 'Ho',
+                                                    number: 67,
+                                                    state: 'Твердый',
+                                                    weight: '164.93',
+                                                    energyLevel: '[Xe] 4f11 6s2',
+                                                    electronegativity: '1.23',
+                                                    meltingPoint: '1474',
+                                                    boilingPoint: '2700',
+                                                    electronAffinity: '—',
+                                                    radius: '174'
+                                                })">
+                                                    Ho<br><small>67</small><br><span>164.93</span>
+                        </div>
+
+                        <div class="element lanthanide" style="grid-column: 14; grid-row: 9;" data-symbol="Er" onclick="showDescription({
+                                                    name: 'Erbium',
+                                                    symbol: 'Er',
+                                                    number: 68,
+                                                    state: 'Твердый',
+                                                    weight: '167.26',
+                                                    energyLevel: '[Xe] 4f12 6s2',
+                                                    electronegativity: '1.24',
+                                                    meltingPoint: '1497',
+                                                    boilingPoint: '2868',
+                                                    electronAffinity: '—',
+                                                    radius: '173'
+                                                })">
+                                                    Er<br><small>68</small><br><span>167.26</span>
+                        </div>
+
+                        <div class="element lanthanide" style="grid-column: 15; grid-row: 9;" data-symbol="Tm" onclick="showDescription({
+                                                    name: 'Thulium',
+                                                    symbol: 'Tm',
+                                                    number: 69,
+                                                    state: 'Твердый',
+                                                    weight: '168.93',
+                                                    energyLevel: '[Xe] 4f13 6s2',
+                                                    electronegativity: '1.25',
+                                                    meltingPoint: '1545',
+                                                    boilingPoint: '1950',
+                                                    electronAffinity: '—',
+                                                    radius: '172'
+                                                })">
+                                                    Tm<br><small>69</small><br><span>168.93</span>
+                        </div>
+
+                        <div class="element lanthanide" style="grid-column: 16; grid-row: 9;" data-symbol="Yb" onclick="showDescription({
+                                                    name: 'Ytterbium',
+                                                    symbol: 'Yb',
+                                                    number: 70,
+                                                    state: 'Твердый',
+                                                    weight: '173.04',
+                                                    energyLevel: '[Xe] 4f14 6s2',
+                                                    electronegativity: '1.1',
+                                                    meltingPoint: '824',
+                                                    boilingPoint: '1196',
+                                                    electronAffinity: '—',
+                                                    radius: '170'
+                                                })">
+                                                    Yb<br><small>70</small><br><span>173.04</span>
+                        </div>  
+                        
+                        
+                        <div class="element transition-metal" style="grid-column: 17; grid-row: 9;" data-symbol="Lu" onclick="showDescription({
+                            name: 'Lutetium',
+                            symbol: 'Lu',
+                            number: 71,
+                            state: 'Твердый',
+                            weight: '174.97',
+                            energyLevel: '[Xe] 4f14 5d1 6s2',
+                            electronegativity: '1.27',
+                            meltingPoint: '1663',
+                            boilingPoint: '3402',
+                            electronAffinity: '—',
+                            radius: '160'
+                        })">
+                            Lu<br><small>71</small><br><span>174.97</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 4; grid-row: 6;" data-symbol="Hf" onclick="showDescription({
+                            name: 'Hafnium',
+                            symbol: 'Hf',
+                            number: 72,
+                            state: 'Твердый',
+                            weight: '178.49',
+                            energyLevel: '[Xe] 4f14 5d2 6s2',
+                            electronegativity: '1.3',
+                            meltingPoint: '2233',
+                            boilingPoint: '4603',
+                            electronAffinity: '0.00',
+                            radius: '150'
+                        })">
+                            Hf<br><small>72</small><br><span>178.49</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 5; grid-row: 6;" data-symbol="Ta" onclick="showDescription({
+                            name: 'Tantalum',
+                            symbol: 'Ta',
+                            number: 73,
+                            state: 'Твердый',
+                            weight: '180.95',
+                            energyLevel: '[Xe] 4f14 5d3 6s2',
+                            electronegativity: '1.5',
+                            meltingPoint: '3017',
+                            boilingPoint: '5458',
+                            electronAffinity: '0.32',
+                            radius: '138'
+                        })">
+                            Ta<br><small>73</small><br><span>180.95</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 6; grid-row: 6;" data-symbol="W" onclick="showDescription({
+                            name: 'Tungsten',
+                            symbol: 'W',
+                            number: 74,
+                            state: 'Твердый',
+                            weight: '183.84',
+                            energyLevel: '[Xe] 4f14 5d4 6s2',
+                            electronegativity: '2.36',
+                            meltingPoint: '3422',
+                            boilingPoint: '5555',
+                            electronAffinity: '0.82',
+                            radius: '135'
+                        })">
+                            W<br><small>74</small><br><span>183.84</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 7; grid-row: 6;" data-symbol="Re" onclick="showDescription({
+                            name: 'Rhenium',
+                            symbol: 'Re',
+                            number: 75,
+                            state: 'Твердый',
+                            weight: '186.21',
+                            energyLevel: '[Xe] 4f14 5d5 6s2',
+                            electronegativity: '1.9',
+                            meltingPoint: '3186',
+                            boilingPoint: '5869',
+                            electronAffinity: '0.15',
+                            radius: '130'
+                        })">
+                            Re<br><small>75</small><br><span>186.21</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 8; grid-row: 6;" data-symbol="Os" onclick="showDescription({
+                            name: 'Osmium',
+                            symbol: 'Os',
+                            number: 76,
+                            state: 'Твердый',
+                            weight: '190.23',
+                            energyLevel: '[Xe] 4f14 5d6 6s2',
+                            electronegativity: '2.2',
+                            meltingPoint: '3033',
+                            boilingPoint: '5012',
+                            electronAffinity: '1.1',
+                            radius: '130'
+                        })">
+                            Os<br><small>76</small><br><span>190.23</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 9; grid-row: 6;" data-symbol="Ir" onclick="showDescription({
+                            name: 'Iridium',
+                            symbol: 'Ir',
+                            number: 77,
+                            state: 'Твердый',
+                            weight: '192.22',
+                            energyLevel: '[Xe] 4f14 5d7 6s2',
+                            electronegativity: '2.2',
+                            meltingPoint: '2466',
+                            boilingPoint: '4428',
+                            electronAffinity: '1.56',
+                            radius: '135'
+                        })">
+                            Ir<br><small>77</small><br><span>192.22</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 10; grid-row: 6;" data-symbol="Pt" onclick="showDescription({
+                            name: 'Platinum',
+                            symbol: 'Pt',
+                            number: 78,
+                            state: 'Твердый',
+                            weight: '195.08',
+                            energyLevel: '[Xe] 4f14 5d9 6s1',
+                            electronegativity: '2.28',
+                            meltingPoint: '1768',
+                            boilingPoint: '3825',
+                            electronAffinity: '2.13',
+                            radius: '135'
+                        })">
+                            Pt<br><small>78</small><br><span>195.08</span>
+                        </div>
+                        
+                        <div class="element transition-metal" style="grid-column: 11; grid-row: 6;" data-symbol="Au" onclick="showDescription({
+                            name: 'Gold',
+                            symbol: 'Au',
+                            number: 79,
+                            state: 'Твердый',
+                            weight: '196.97',
+                            energyLevel: '[Xe] 4f14 5d10 6s1',
+                            electronegativity: '2.54',
+                            meltingPoint: '1064',
+                            boilingPoint: '2970',
+                            electronAffinity: '2.31',
+                            radius: '135'
+                        })">
+                            Au<br><small>79</small><br><span>196.97</span>
+                        </div>
+                        
+                        <div class="element post-transition-metal" style="grid-column: 12; grid-row: 6;" data-symbol="Hg" onclick="showDescription({
+                            name: 'Mercury',
+                            symbol: 'Hg',
+                            number: 80,
+                            state: 'Жидкий',
+                            weight: '200.59',
+                            energyLevel: '[Xe] 4f14 5d10 6s2',
+                            electronegativity: '2.00',
+                            meltingPoint: '-39',
+                            boilingPoint: '357',
+                            electronAffinity: '0.00',
+                            radius: '150'
+                        })">
+                            Hg<br><small>80</small><br><span>200.59</span>
+                        </div>
+                        
+                        <div class="element post-transition-metal" style="grid-column: 13; grid-row: 6;" data-symbol="Tl" onclick="showDescription({
+                            name: 'Thallium',
+                            symbol: 'Tl',
+                            number: 81,
+                            state: 'Твердый',
+                            weight: '204.38',
+                            energyLevel: '[Xe] 4f14 5d10 6s2 6p1',
+                            electronegativity: '1.62',
+                            meltingPoint: '303',
+                            boilingPoint: '1457',
+                            electronAffinity: '0.20',
+                            radius: '170'
+                        })">
+                            Tl<br><small>81</small><br><span>204.38</span>
+                        </div>
+                        
+                        <div class="element post-transition-metal" style="grid-column: 14; grid-row: 6;" data-symbol="Pb" onclick="showDescription({
+                            name: 'Lead',
+                            symbol: 'Pb',
+                            number: 82,
+                            state: 'Твердый',
+                            weight: '207.2',
+                            energyLevel: '[Xe] 4f14 5d10 6s2 6p2',
+                            electronegativity: '2.33',
+                            meltingPoint: '327',
+                            boilingPoint: '1749',
+                            electronAffinity: '0.36',
+                            radius: '175'
+                        })">
+                            Pb<br><small>82</small><br><span>207.2</span>
+                        </div>
+                        
+                        <div class="element post-transition-metal" style="grid-column: 15; grid-row: 6;" data-symbol="Bi" onclick="showDescription({
+                            name: 'Bismuth',
+                            symbol: 'Bi',
+                            number: 83,
+                            state: 'Твердый',
+                            weight: '208.98',
+                            energyLevel: '[Xe] 4f14 5d10 6s2 6p3',
+                            electronegativity: '2.02',
+                            meltingPoint: '271',
+                            boilingPoint: '1564',
+                            electronAffinity: '0.94',
+                            radius: '160'
+                        })">
+                            Bi<br><small>83</small><br><span>208.98</span>
+                        </div>
+                        
+                        <div class="element metalloid" style="grid-column: 16; grid-row: 6;" data-symbol="Po" onclick="showDescription({
+                            name: 'Polonium',
+                            symbol: 'Po',
+                            number: 84,
+                            state: 'Твердый',
+                            weight: '[209]',
+                            energyLevel: '[Xe] 4f14 5d10 6s2 6p4',
+                            electronegativity: '2.0',
+                            meltingPoint: '254',
+                            boilingPoint: '962',
+                            electronAffinity: '1.90',
+                            radius: '150'
+                        })">
+                            Po<br><small>84</small><br><span>[209]</span>
+                        </div>
+                        
+                        <div class="element halogen" style="grid-column: 17; grid-row: 6;" data-symbol="At" onclick="showDescription({
+                            name: 'Astatine',
+                            symbol: 'At',
+                            number: 85,
+                            state: 'Твердый',
+                            weight: '[210]',
+                            energyLevel: '[Xe] 4f14 5d10 6s2 6p5',
+                            electronegativity: '2.2',
+                            meltingPoint: '302',
+                            boilingPoint: '337',
+                            electronAffinity: '2.8',
+                            radius: '150'
+                        })">
+                            At<br><small>85</small><br><span>[210]</span>
+                        </div>
+
+                        <div class="element noble-gas" style="grid-column: 18; grid-row: 6;" data-symbol="Rn" onclick="showDescription({
+                            name: 'Radon',
+                            symbol: 'Rn',
+                            number: 86,
+                            state: 'Газ',
+                            weight: '[222]',
+                            energyLevel: '[Xe] 4f14 5d10 6s2 6p6',
+                            electronegativity: '—',
+                            meltingPoint: '-71',
+                            boilingPoint: '-61.7',
+                            electronAffinity: '—',
+                            radius: '150'
+                        })">
+                            Rn<br><small>86</small><br><span>[222]</span>
+                        </div>
+                        
+                        <div class="element alkali-metal" data-symbol="Fr" onclick="showDescription({
+                            name: 'Francium',
+                            symbol: 'Fr',
+                            number: 87,
+                            state: 'Твердый',
+                            weight: '[223]',
+                            energyLevel: '[Rn] 7s1',
+                            electronegativity: '0.7',
+                            meltingPoint: '27',
+                            boilingPoint: '677',
+                            electronAffinity: '0.48',
+                            radius: '260'
+                        })">
+                            Fr<br><small>87</small><br><span>[223]</span>
+                        </div>
+                        
+                        <div class="element alkaline-earth-metal" data-symbol="Ra" onclick="showDescription({
+                            name: 'Radium',
+                            symbol: 'Ra',
+                            number: 88,
+                            state: 'Твердый',
+                            weight: '[226]',
+                            energyLevel: '[Rn] 7s2',
+                            electronegativity: '0.9',
+                            meltingPoint: '700',
+                            boilingPoint: '1737',
+                            electronAffinity: '—',
+                            radius: '215'
+                        })">
+                            Ra<br><small>88</small><br><span>[226]</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 3; grid-row: 10;" data-symbol="Ac" onclick="showDescription({
+                            name: 'Actinium',
+                            symbol: 'Ac',
+                            number: 89,
+                            state: 'Твердый',
+                            weight: '[227]',
+                            energyLevel: '[Rn] 6d1 7s2',
+                            electronegativity: '1.1',
+                            meltingPoint: '1050',
+                            boilingPoint: '3198',
+                            electronAffinity: '—',
+                            radius: '195'
+                        })">
+                            Ac<br><small>89</small><br><span>[227]</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 4; grid-row: 10;" data-symbol="Th" onclick="showDescription({
+                            name: 'Thorium',
+                            symbol: 'Th',
+                            number: 90,
+                            state: 'Твердый',
+                            weight: '232.04',
+                            energyLevel: '[Rn] 6d2 7s2',
+                            electronegativity: '1.3',
+                            meltingPoint: '1750',
+                            boilingPoint: '4788',
+                            electronAffinity: '—',
+                            radius: '180'
+                        })">
+                            Th<br><small>90</small><br><span>232.04</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 5; grid-row: 10;" data-symbol="Pa" onclick="showDescription({
+                            name: 'Protactinium',
+                            symbol: 'Pa',
+                            number: 91,
+                            state: 'Твердый',
+                            weight: '231.04',
+                            energyLevel: '[Rn] 5f2 6d1 7s2',
+                            electronegativity: '1.5',
+                            meltingPoint: '1572',
+                            boilingPoint: '4000',
+                            electronAffinity: '—',
+                            radius: '180'
+                        })">
+                            Pa<br><small>91</small><br><span>231.04</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 6; grid-row: 10;" data-symbol="U" onclick="showDescription({
+                            name: 'Uranium',
+                            symbol: 'U',
+                            number: 92,
+                            state: 'Твердый',
+                            weight: '238.03',
+                            energyLevel: '[Rn] 5f3 6d1 7s2',
+                            electronegativity: '1.38',
+                            meltingPoint: '1135',
+                            boilingPoint: '4131',
+                            electronAffinity: '0.53',
+                            radius: '175'
+                        })">
+                            U<br><small>92</small><br><span>238.03</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 7; grid-row: 10;" data-symbol="Np" onclick="showDescription({
+                            name: 'Neptunium',
+                            symbol: 'Np',
+                            number: 93,
+                            state: 'Твердый',
+                            weight: '[237]',
+                            energyLevel: '[Rn] 5f4 6d1 7s2',
+                            electronegativity: '1.36',
+                            meltingPoint: '640',
+                            boilingPoint: '4174',
+                            electronAffinity: '—',
+                            radius: '175'
+                        })">
+                            Np<br><small>93</small><br><span>[237]</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 8; grid-row: 10;" data-symbol="Pu" onclick="showDescription({
+                            name: 'Plutonium',
+                            symbol: 'Pu',
+                            number: 94,
+                            state: 'Твердый',
+                            weight: '[244]',
+                            energyLevel: '[Rn] 5f6 7s2',
+                            electronegativity: '1.28',
+                            meltingPoint: '640',
+                            boilingPoint: '3228',
+                            electronAffinity: '—',
+                            radius: '175'
+                        })">
+                            Pu<br><small>94</small><br><span>[244]</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 9; grid-row: 10;" data-symbol="Am" onclick="showDescription({
+                            name: 'Americium',
+                            symbol: 'Am',
+                            number: 95,
+                            state: 'Твердый',
+                            weight: '[243]',
+                            energyLevel: '[Rn] 5f7 7s2',
+                            electronegativity: '1.3',
+                            meltingPoint: '1176',
+                            boilingPoint: '2607',
+                            electronAffinity: '—',
+                            radius: '175'
+                        })">
+                            Am<br><small>95</small><br><span>[243]</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 10; grid-row: 10;" data-symbol="Cm" onclick="showDescription({
+                            name: 'Curium',
+                            symbol: 'Cm',
+                            number: 96,
+                            state: 'Твердый',
+                            weight: '[247]',
+                            energyLevel: '[Rn] 5f7 6d1 7s2',
+                            electronegativity: '1.3',
+                            meltingPoint: '1345',
+                            boilingPoint: '3110',
+                            electronAffinity: '—',
+                            radius: '170'
+                        })">
+                            Cm<br><small>96</small><br><span>[247]</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 11; grid-row: 10;" data-symbol="Bk" onclick="showDescription({
+                            name: 'Berkelium',
+                            symbol: 'Bk',
+                            number: 97,
+                            state: 'Твердый',
+                            weight: '[247]',
+                            energyLevel: '[Rn] 5f9 7s2',
+                            electronegativity: '1.3',
+                            meltingPoint: '1050',
+                            boilingPoint: '—',
+                            electronAffinity: '—',
+                            radius: '170'
+                        })">
+                            Bk<br><small>97</small><br><span>[247]</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 12; grid-row: 10;" data-symbol="Cf" onclick="showDescription({
+                            name: 'Californium',
+                            symbol: 'Cf',
+                            number: 98,
+                            state: 'Твердый',
+                            weight: '[251]',
+                            energyLevel: '[Rn] 5f10 7s2',
+                            electronegativity: '1.3',
+                            meltingPoint: '900',
+                            boilingPoint: '—',
+                            electronAffinity: '—',
+                            radius: '170'
+                        })">
+                            Cf<br><small>98</small><br><span>[251]</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 13; grid-row: 10;" data-symbol="Es" onclick="showDescription({
+                            name: 'Einsteinium',
+                            symbol: 'Es',
+                            number: 99,
+                            state: 'Твердый',
+                            weight: '[252]',
+                            energyLevel: '[Rn] 5f11 7s2',
+                            electronegativity: '1.3',
+                            meltingPoint: '860',
+                            boilingPoint: '—',
+                            electronAffinity: '—',
+                            radius: '170'
+                        })">
+                            Es<br><small>99</small><br><span>[252]</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 14; grid-row: 10;" data-symbol="Fm" onclick="showDescription({
+                            name: 'Fermium',
+                            symbol: 'Fm',
+                            number: 100,
+                            state: 'Твердый',
+                            weight: '[257]',
+                            energyLevel: '[Rn] 5f12 7s2',
+                            electronegativity: '1.3',
+                            meltingPoint: '1527',
+                            boilingPoint: '—',
+                            electronAffinity: '—',
+                            radius: '170'
+                        })">
+                            Fm<br><small>100</small><br><span>[257]</span>
+                        </div>
+
+                        <div class="element actinide" style="grid-column: 15; grid-row: 10;" data-symbol="Md" onclick="showDescription({
+                            name: 'Mendelevium',
+                            symbol: 'Md',
+                            number: 101,
+                            state: 'Твердый',
+                            weight: '[258]',
+                            energyLevel: '[Rn] 5f13 7s2',
+                            electronegativity: '1.3',
+                            meltingPoint: '827',
+                            boilingPoint: '—',
+                            electronAffinity: '—',
+                            radius: '170'
+                        })">
+                            Md<br><small>101</small><br><span>[258]</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 16; grid-row: 10;" data-symbol="No" onclick="showDescription({
+                            name: 'Nobelium',
+                            symbol: 'No',
+                            number: 102,
+                            state: 'Твердый',
+                            weight: '[259]',
+                            energyLevel: '[Rn] 5f14 7s2',
+                            electronegativity: '1.3',
+                            meltingPoint: '827',
+                            boilingPoint: '—',
+                            electronAffinity: '—',
+                            radius: '170'
+                        })">
+                            No<br><small>102</small><br><span>[259]</span>
+                        </div>
+                        
+                        <div class="element actinide" style="grid-column: 17; grid-row: 10;" data-symbol="Lr" onclick="showDescription({
+                            name: 'Lawrencium',
+                            symbol: 'Lr',
+                            number: 103,
+                            state: 'Твердый',
+                            weight: '[266]',
+                            energyLevel: '[Rn] 5f14 7s2 7p1',
+                            electronegativity: '1.3',
+                            meltingPoint: '1627',
+                            boilingPoint: '—',
+                            electronAffinity: '—',
+                            radius: '170'
+                        })">
+                            Lr<br><small>103</small><br><span>[266]</span>
+                        </div>
+                        
+                        
+                        
+        </div>
+        
+        <div class="legend">
+            <h3>Легенда:</h3>
+            <div class="legend-container">
+                <ul>
+                    <li style="color: #ffcccb;" onmouseover="highlightCategory('alkali-metal')" onmouseout="resetHighlight()">Щелочные металлы</li>
+                    <li style="color: #add8e6;" onmouseover="highlightCategory('alkaline-earth-metal')" onmouseout="resetHighlight()">Щелочноземельные металлы</li>
+                    <li style="color: #d3d3d3;" onmouseover="highlightCategory('transition-metal')" onmouseout="resetHighlight()">Переходные металлы</li>
+                    <li style="color: #f0e68c;" onmouseover="highlightCategory('post-transition-metal')" onmouseout="resetHighlight()">Постпереходные металлы</li>
+                    <li style="color: #98fb98;" onmouseover="highlightCategory('metalloid')" onmouseout="resetHighlight()">Полуметаллы</li>
+                    <li style="color: #dda0dd;" onmouseover="highlightCategory('non-metal')" onmouseout="resetHighlight()">Неметаллы</li>
+                    <li style="color: #ffb6c1;" onmouseover="highlightCategory('halogen')" onmouseout="resetHighlight()">Галогены</li>
+                    <li style="color: #b0e0e6;" onmouseover="highlightCategory('noble-gas')" onmouseout="resetHighlight()">Благородные газы</li>
+                    <li style="color: #c0c0c0;" onmouseover="highlightCategory('metal')" onmouseout="resetHighlight()">Все металлы</li>
+                    <li style="color: #ffc0cb;" onmouseover="highlightCategory('lanthanide')" onmouseout="resetHighlight()">Лантаноиды</li>
+                    <li style="color: #ffdead;" onmouseover="highlightCategory('actinide')" onmouseout="resetHighlight()">Актиноиды</li>
+                    <li style="color: #87cefa;" onmouseover="highlightCategory('unknown')" onmouseout="resetHighlight()">Неизвестные свойства</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Кнопка для открытия окна соединений -->
+        <button class="custom-button" onclick="toggleConnectionWindow()">Проверить соединения</button>
+        
+        <!-- Окно для перетаскивания элементов -->
+        <div id="connection-window" style="display: none; position: fixed; top: 15%; left: 14.5%; width: 20%; height: 25%; background: rgba(255, 255, 255, 0.8); border: 2px solid black; border-radius: 10px; padding: 20px; z-index: 1000; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); backdrop-filter: blur(1px); overflow: auto; pointer-events: auto;">
+            <h3>Перетащите элементы для проверки соединений</h3>
+            <div id="drag-area" style="border: 2px dashed #ccc; height: 150px; padding: 10px; text-align: center; line-height: 150px;" ondragover="event.preventDefault();" ondrop="dropElement(event)">
+                Перетащите сюда элементы
+            </div>
+            <div id="result" style="margin-top: 20px;"></div>
+            <button onclick="toggleConnectionWindow()" style="margin-top: 10px; position: fixed; top: 60%; left: 75%; background: linear-gradient(to bottom, #4CAF50, #2E7D32); color: white; padding: 10px 15px; font-size: 14px; border: none; border-radius: 5px; cursor: pointer; transition: all 0.3s ease; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);">
+                Закрыть
+            </button>
+        </div>
+
+    </div>
+
+    <p><a href="{% url 'index' %}">🔙 На главную</a></p>
+    
+    <div class="description-container">
+        <div class="description" id="description">
+            <h2>Выберите элемент, чтобы увидеть описание.</h2>
+        </div>
+        <div class="additional-text">
+            <h3>Дополнительная информация</h3>
+            <p>Выберите элемент, чтобы увидеть подробности.</p>
+        </div>
+    </div>
+    <script>
+        const temperatureSpan = document.getElementById('temperature-value');
+
+        function updateTemperature(value) {
+            temperatureSpan.textContent = `${value}°C`;
+        }
+
+        function showDescription(element) {
+            const descriptionDiv = document.getElementById('description');
+            const state = determineState(element, parseInt(temperatureSpan.textContent));
+
+            descriptionDiv.innerHTML = `
+                <h2>${element.name} (${element.symbol})</h2>
+                <p><strong>Атомный номер:</strong> ${element.number}</p>
+                <p><strong>Агрегатное состояние:</strong> ${state}</p>
+                <p><strong>Вес:</strong> ${element.weight}</p>
+                <p><strong>Энергетический уровень:</strong> ${element.energyLevel}</p>
+                <p><strong>Электроотрицательность:</strong> ${element.electronegativity}</p>
+                <p><strong>Температура плавления:</strong> ${element.meltingPoint}°C</p>
+                <p><strong>Температура кипения:</strong> ${element.boilingPoint}°C</p>
+                <p><strong>Энергия сродства к электрону:</strong> ${element.electronAffinity} kJ/mol</p>
+                <p><strong>Радиус:</strong> ${element.radius} pm</p>
+            `;
+        }
+
+        function determineState(element, temperature) {
+            if (temperature < element.meltingPoint) {
+                return 'Твёрдое';
+            } else if (temperature >= element.meltingPoint && temperature < element.boilingPoint) {
+                return 'Жидкое';
+            } else {
+                return 'Газообразное';
+            }
+        }
+
+        function highlightCategory(category) {
+            document.querySelectorAll(`.${category}`).forEach(el => el.style.backgroundColor = '#FFD700');
+        }
+
+        function resetHighlight() {
+            document.querySelectorAll('.element').forEach(el => el.style.backgroundColor = '');
+        }
+    </script>
+
+    <script>
+        const elementsData = {
+            H: { name: 'Hydrogen', canReactWith: ['O', 'Cl', 'F', 'N'] },
+            He: { name: 'Helium', canReactWith: [] },
+            Li: { name: 'Lithium', canReactWith: ['Cl', 'O'] },
+            Be: { name: 'Beryllium', canReactWith: ['O'] },
+            B: { name: 'Boron', canReactWith: ['F'] },
+            C: { name: 'Carbon', canReactWith: ['O', 'H'] },
+            N: { name: 'Nitrogen', canReactWith: ['H', 'O'] },
+            O: { name: 'Oxygen', canReactWith: ['H', 'C', 'N'] },
+            F: { name: 'Fluorine', canReactWith: ['H', 'B'] },
+            Ne: { name: 'Neon', canReactWith: [] },
+            Na: { name: 'Sodium', canReactWith: ['Cl', 'O'] },
+            Mg: { name: 'Magnesium', canReactWith: ['O', 'Cl'] },
+            Al: { name: 'Aluminum', canReactWith: ['O', 'Cl'] },
+            Si: { name: 'Silicon', canReactWith: ['O', 'H', 'F'] },
+            P: { name: 'Phosphorus', canReactWith: ['O', 'H'] },
+            S: { name: 'Sulfur', canReactWith: ['O', 'H'] },
+            Cl: { name: 'Chlorine', canReactWith: ['H', 'Na', 'Mg'] },
+            Ar: { name: 'Argon', canReactWith: [] },
+            K: { name: 'Potassium', canReactWith: ['Cl', 'O'] },
+            Ca: { name: 'Calcium', canReactWith: ['O', 'Cl'] },
+            Sc: { name: 'Scandium', canReactWith: ['O', 'F'] },
+            Ti: { name: 'Titanium', canReactWith: ['O', 'Cl'] },
+            V: { name: 'Vanadium', canReactWith: ['O', 'F'] },
+            Cr: { name: 'Chromium', canReactWith: ['O', 'Cl'] },
+            Mn: { name: 'Manganese', canReactWith: ['O', 'Cl'] },
+            Fe: { name: 'Iron', canReactWith: ['O', 'Cl'] },
+            Co: { name: 'Cobalt', canReactWith: ['O', 'Cl'] },
+            Ni: { name: 'Nickel', canReactWith: ['O', 'Cl'] },
+            Cu: { name: 'Copper', canReactWith: ['O', 'Cl'] },
+            Zn: { name: 'Zinc', canReactWith: ['O', 'Cl'] },
+            Ga: { name: 'Gallium', canReactWith: ['O', 'Cl'] },
+            Ge: { name: 'Germanium', canReactWith: ['O', 'Cl'] },
+            As: { name: 'Arsenic', canReactWith: ['O', 'H'] },
+            Se: { name: 'Selenium', canReactWith: ['O', 'H'] },
+            Br: { name: 'Bromine', canReactWith: ['H', 'Na'] },
+            Kr: { name: 'Krypton', canReactWith: [] },
+            Rb: { name: 'Rubidium', canReactWith: ['O', 'Cl'] },
+            Sr: { name: 'Strontium', canReactWith: ['O', 'Cl'] },
+            Y: { name: 'Yttrium', canReactWith: ['O', 'F'] },
+            Zr: { name: 'Zirconium', canReactWith: ['O', 'Cl'] },
+            Nb: { name: 'Niobium', canReactWith: ['O', 'F'] },
+            Mo: { name: 'Molybdenum', canReactWith: ['O', 'Cl'] },
+            Tc: { name: 'Technetium', canReactWith: ['O', 'Cl'] },
+            Ru: { name: 'Ruthenium', canReactWith: ['O', 'Cl'] },
+            Rh: { name: 'Rhodium', canReactWith: ['O', 'Cl'] },
+            Pd: { name: 'Palladium', canReactWith: ['O', 'Cl'] },
+            Ag: { name: 'Silver', canReactWith: ['O', 'Cl'] },
+            Cd: { name: 'Cadmium', canReactWith: ['O', 'Cl'] },
+            In: { name: 'Indium', canReactWith: ['O', 'Cl'] },
+            Sn: { name: 'Tin', canReactWith: ['O', 'Cl'] },
+            Sb: { name: 'Antimony', canReactWith: ['O', 'H'] },
+            Te: { name: 'Tellurium', canReactWith: ['O', 'H'] },
+            I: { name: 'Iodine', canReactWith: ['H', 'Na'] },
+            Xe: { name: 'Xenon', canReactWith: ['F'] },
+            Cs: { name: 'Cesium', canReactWith: ['O', 'Cl'] },
+            Ba: { name: 'Barium', canReactWith: ['O', 'Cl'] },
+            La: { name: 'Lanthanum', canReactWith: ['O', 'Cl'] },
+            Ce: { name: 'Cerium', canReactWith: ['O', 'Cl'] },
+            Pr: { name: 'Praseodymium', canReactWith: ['O', 'Cl'] },
+            Nd: { name: 'Neodymium', canReactWith: ['O', 'Cl'] },
+            Pm: { name: 'Promethium', canReactWith: ['O', 'Cl'] },
+            Sm: { name: 'Samarium', canReactWith: ['O', 'Cl'] },
+            Eu: { name: 'Europium', canReactWith: ['O', 'Cl'] },
+            Gd: { name: 'Gadolinium', canReactWith: ['O', 'Cl'] },
+            Tb: { name: 'Terbium', canReactWith: ['O', 'Cl'] },
+            Dy: { name: 'Dysprosium', canReactWith: ['O', 'Cl'] },
+            Ho: { name: 'Holmium', canReactWith: ['O', 'Cl'] },
+            Er: { name: 'Erbium', canReactWith: ['O', 'Cl'] },
+            Tm: { name: 'Thulium', canReactWith: ['O', 'Cl'] },
+            Yb: { name: 'Ytterbium', canReactWith: ['O', 'Cl'] },
+            Lu: { name: 'Lutetium', canReactWith: ['O', 'Cl'] },
+            Hf: { name: 'Hafnium', canReactWith: ['O', 'Cl'] },
+            Ta: { name: 'Tantalum', canReactWith: ['O', 'Cl'] },
+            W: { name: 'Tungsten', canReactWith: ['O', 'Cl'] },
+            Re: { name: 'Rhenium', canReactWith: ['O', 'Cl'] },
+            Os: { name: 'Osmium', canReactWith: ['O', 'Cl'] },
+            Ir: { name: 'Iridium', canReactWith: ['O', 'Cl'] },
+            Pt: { name: 'Platinum', canReactWith: ['O', 'Cl'] },
+            Au: { name: 'Gold', canReactWith: ['O', 'Cl'] },
+            Hg: { name: 'Mercury', canReactWith: ['O', 'Cl'] },
+            Tl: { name: 'Thallium', canReactWith: ['O', 'Cl'] },
+            Pb: { name: 'Lead', canReactWith: ['O', 'Cl'] },
+            Bi: { name: 'Bismuth', canReactWith: ['O', 'Cl'] },
+            Po: { name: 'Polonium', canReactWith: ['O', 'Cl'] },
+            At: { name: 'Astatine', canReactWith: ['H'] },
+            Rn: { name: 'Radon', canReactWith: [] },
+            Fr: { name: 'Francium', canReactWith: ['O', 'Cl'] },
+            Ra: { name: 'Radium', canReactWith: ['O', 'Cl'] },
+            Ac: { name: 'Actinium', canReactWith: ['O'] },
+            Th: { name: 'Thorium', canReactWith: ['O'] },
+            Pa: { name: 'Protactinium', canReactWith: ['O'] },
+            U: { name: 'Uranium', canReactWith: ['O'] }
+        };
+        
+        // Переключение окна соединений
+        function toggleConnectionWindow() {
+            const connectionWindow = document.getElementById('connection-window');
+            connectionWindow.style.display = connectionWindow.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Перетаскивание элементов
+        const dragArea = document.getElementById('drag-area');
+        const resultDiv = document.getElementById('result');
+        const elements = document.querySelectorAll('.element');
+
+        elements.forEach(el => {
+            el.draggable = true; // Разрешить перетаскивание
+            el.addEventListener('dragstart', (e) => {
+                const elementSymbol = el.getAttribute('data-symbol'); // Получаем символ
+                e.dataTransfer.setData('text/plain', elementSymbol); // Передаем символ
+            });
+        });
+        
+        dragArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+        
+        dragArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const draggedElementSymbol = e.dataTransfer.getData('text/plain'); // Символ перетаскиваемого элемента
+            const draggedElement = elementsData[draggedElementSymbol];
+        
+            if (!draggedElement) {
+                resultDiv.innerHTML = `<p>Элемент не распознан.</p>`;
+                return;
+            }
+        
+            resultDiv.innerHTML = `<h4>Соединения для ${draggedElement.name} (${draggedElementSymbol}):</h4>`;
+        
+            // Проверяем все элементы, с которыми H может взаимодействовать
+            Object.keys(elementsData).forEach((symbol) => {
+                const formula = generateFormula(draggedElementSymbol, symbol);
+        
+                if (formula) {
+                    resultDiv.innerHTML += `<div style="color: green;">${draggedElementSymbol} + ${symbol} → ${formula}</div>`;
+                }
+            });
+        });
+        
+        // Функция генерации формулы соединения
+        function generateFormula(element1, element2) {
+            // Правила для формирования формул с участием H
+            const combinations = {
+                'H+O': 'H2O', // Вода
+                'H+Cl': 'HCl', // Хлороводород
+                'H+F': 'HF', // Фтороводород
+                'H+Br': 'HBr', // Бромоводород
+                'H+I': 'HI', // Йодоводород
+                'H+N': 'NH3', // Аммиак
+                'H+S': 'H2S', // Сероводород
+                'H+C': 'CH4', // Метан
+                'H+Si': 'SiH4', // Силан
+                'H+P': 'PH3', // Фосфин
+                'H+Li': 'LiH', // Гидрид лития
+                'H+Ca': 'CaH2', // Гидрид кальция
+                'H+Fe': 'FeH3', // Гидрид железа
+                'O+C': 'CO2', // Углекислый газ
+                'O+N': 'NO2', // Диоксид азота
+                'O+S': 'SO2', // Диоксид серы
+                'O+Mg': 'MgO', // Оксид магния
+                'O+Na': 'Na2O', // Оксид натрия
+                'O+Fe': 'Fe2O3', // Оксид железа(III)
+                'N+H': 'NH3', // Аммиак
+                'N+O': 'N2O', // Оксид азота
+                'C+O': 'CO', // Угарный газ
+                'C+H': 'CH4', // Метан
+                'C+Cl': 'CCl4', // Тетрахлорметан
+                'Na+Cl': 'NaCl', // Поваренная соль
+                'K+Cl': 'KCl', // Хлорид калия
+                'Ca+Cl': 'CaCl2', // Хлорид кальция
+                'Mg+Cl': 'MgCl2', // Хлорид магния
+                'Fe+Cl': 'FeCl3', // Хлорид железа(III)
+                'Al+Cl': 'AlCl3', // Хлорид алюминия
+                'Si+O': 'SiO2', // Диоксид кремния (кварц)
+                'P+O': 'P2O5', // Пентаоксид фосфора
+                'S+O': 'SO3', // Триоксид серы
+                'Cl+O': 'Cl2O', // Оксид хлора
+                'Br+O': 'Br2O', // Оксид брома
+                'I+O': 'I2O5', // Пентаоксид йода
+                'Ba+O': 'BaO', // Оксид бария
+                'Zn+O': 'ZnO', // Оксид цинка
+                'Cu+O': 'CuO', // Оксид меди(II)
+                'Ag+O': 'Ag2O', // Оксид серебра
+                'Pb+O': 'PbO', // Оксид свинца(II)
+                'Sn+O': 'SnO2', // Оксид олова(IV)
+                'Cr+O': 'CrO3', // Оксид хрома
+                'Mn+O': 'MnO2', // Оксид марганца
+                'Co+O': 'CoO', // Оксид кобальта
+                'Ni+O': 'NiO', // Оксид никеля
+                'Ti+O': 'TiO2', // Оксид титана
+                'U+O': 'UO2', // Оксид урана
+                'Th+O': 'ThO2', // Оксид тория
+                'Pu+O': 'PuO2', // Оксид плутония
+                'Np+O': 'NpO2', // Оксид нептуния
+                'Am+O': 'AmO2', // Оксид америция
+                'Cm+O': 'CmO2', // Оксид кюрия
+                'Bk+O': 'BkO2', // Оксид берклия
+                'Cf+O': 'CfO2', // Оксид калифорния
+                'Es+O': 'EsO2', // Оксид эйнштейния
+                'Fm+O': 'FmO2', // Оксид фермия
+                'Md+O': 'MdO2', // Оксид менделевия
+                'No+O': 'NoO2', // Оксид нобелия
+                'Lr+O': 'LrO2', // Оксид лоуренсия
+                'H+O+Cl': 'HOCl', // Гипохлорит водорода
+                'H+O+S': 'H2SO4', // Серная кислота
+                'H+O+N': 'HNO3', // Азотная кислота
+                'Na+O+H': 'NaOH', // Гидроксид натрия
+                'K+O+H': 'KOH', // Гидроксид калия
+                'Ca+O+H': 'Ca(OH)2', // Гидроксид кальция
+                'Mg+O+H': 'Mg(OH)2', // Гидроксид магния
+                'Fe+O+H': 'Fe(OH)3', // Гидроксид железа(III)
+                'Al+O+H': 'Al(OH)3', // Гидроксид алюминия
+                'Na2O+H2O': '2NaOH', // Гидроксид натрия
+                'SO3+H2O': 'H2SO4', // Серная кислота
+                'CO2+CaO': 'CaCO3', // Карбонат кальция
+                'NH3+O2': 'NO + H2O', // Реакция аммиака с кислородом
+                'Fe+HCl': 'FeCl2 + H2', // Реакция железа с соляной кислотой
+                'Zn+H2SO4': 'ZnSO4 + H2', // Реакция цинка с серной кислотой
+                'Cu+HNO3': 'Cu(NO3)2 + NO2 + H2O', // Реакция меди с азотной кислотой
+                'AgNO3+NaCl': 'AgCl + NaNO3', // Осадочная реакция
+                'Ba(OH)2+CO2': 'BaCO3 + H2O', // Карбонат бария
+                'Pb(NO3)2+KI': 'PbI2 + KNO3', // Йодид свинца
+                'Ca(OH)2+CO2': 'CaCO3 + H2O', // Реакция известковой воды
+                'Na2CO3+HCl': 'NaCl + CO2 + H2O', // Реакция карбоната натрия с кислотой
+                'Fe2O3+H2': 'Fe + H2O', // Восстановление оксида железа
+                'Al+H2O': 'Al(OH)3 + H2', // Реакция алюминия с водой
+                'K2Cr2O7+H2SO4': 'Cr2(SO4)3 + K2SO4 + H2O', // Реакция бихромата калия
+                'Cl2+H2O': 'HCl + HOCl', // Диспропорционирование хлора
+                'Na+O2': 'Na2O2', // Пероксид натрия
+                'Mg+HNO3': 'Mg(NO3)2 + H2', // Реакция магния с азотной кислотой
+                'Ca+H2O': 'Ca(OH)2 + H2', // Реакция кальция с водой
+                'Al+Br2': 'AlBr3', // Бромид алюминия
+                'Zn+S': 'ZnS', // Сульфид цинка
+                'K+H2O': 'KOH + H2', // Реакция калия с водой
+                'SiO2+HF': 'SiF4 + H2O', // Реакция кварца с плавиковой кислотой
+                'NH4Cl+NaOH': 'NH3 + NaCl + H2O', // Получение аммиака
+                'CuSO4+Fe': 'Cu + FeSO4', // Вытеснение меди
+                'Sn+HCl': 'SnCl2 + H2', // Реакция олова с соляной кислотой
+                'Cr2O3+Al': 'Cr + Al2O3', // Алюмотермия
+                'MnO2+HCl': 'MnCl2 + Cl2 + H2O', // Получение хлора
+                'H2O2+MnO2': 'O2 + H2O', // Разложение пероксида водорода
+                'C+H2O': 'CO + H2', // Реакция углерода с водой
+                'H2+Cl2': 'HCl', // Реакция водорода с хлором
+                'H2+S': 'H2S', // Реакция водорода с серой
+                'Ag+HNO3': 'AgNO3 + NO + H2O', // Растворение серебра в кислоте
+                'Fe+S': 'FeS', // Сульфид железа
+                'KClO3+MnO2': 'KCl + O2', // Разложение хлората калия
+                'CaC2+H2O': 'C2H2 + Ca(OH)2', // Карбид кальция
+                'BaO2+H2SO4': 'BaSO4 + H2O2', // Пероксид бария
+                'Si+F2': 'SiF4', // Фторид кремния
+                'NO2+H2O': 'HNO3 + HNO2', // Азотная кислота
+            };            
+        
+            const key1 = `${element1}+${element2}`;
+            const key2 = `${element2}+${element1}`; // Проверяем реакцию в обратном порядке
+        
+            return combinations[key1] || combinations[key2] || null; // null для отсутствующих реакций
+        }
+        
+        
+
+        // Подсветка категорий
+        function highlightCategory(category) {
+            const elements = document.querySelectorAll(`.${category}`);
+            elements.forEach(el => {
+                el.style.backgroundColor = 'rgba(60, 100, 0, 0.8';
+            });
+        }
+
+        function dropElement(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text");
+            const element = document.getElementById(data);
+            if (element) {
+                document.getElementById('drag-area').appendChild(element);
+            }
+        }
+        
+        function toggleConnectionWindow() {
+            const window = document.getElementById("connection-window");
+            window.style.display = window.style.display === "none" ? "block" : "none";
+        }
+
+        function keepResultInBounds() {
+            const resultDiv = document.getElementById('result');
+            const connectionWindow = document.getElementById('connection-window');
+        
+            if (resultDiv && connectionWindow) {
+                resultDiv.style.maxHeight = (connectionWindow.clientHeight * 0.8) + "px";
+            }
+        }
+        
+        window.addEventListener("resize", keepResultInBounds);
+        document.addEventListener("DOMContentLoaded", keepResultInBounds);
+
+        function resetHighlight() {
+            const elements = document.querySelectorAll('.element');
+            elements.forEach(el => {
+                el.style.backgroundColor = '';
+            });
+        }
+    </script>
+</body>
+</html>
+
+{% endblock %}
