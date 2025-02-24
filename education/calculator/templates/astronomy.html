@@ -3,22 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Интерактивная карта звёздного неба</title>
-    <script src="https://cdn.jsdelivr.net/npm/celestial/celestial.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/celestial/celestial.css">
+    <title>Интерактивная карта Солнечной системы</title>
+    <script src="https://unpkg.com/three@0.132.2/build/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-            background-color: black;
-            color: white;
-        }
-        #celestial-map {
-            width: 100vw;
-            height: 100vh;
-        }
+        body { margin: 0; overflow: hidden; background-color: black; }
+        canvas { display: block; }
         #controls {
             position: fixed;
             top: 10px;
@@ -31,65 +21,113 @@
             flex-direction: column;
             gap: 5px;
         }
-        button {
-            background-color: #444;
+        #info-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
             color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
+            width: 200px;
         }
-        button:hover {
-            background-color: #666;
+        #time-slider {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div id="celestial-map"></div>
-
-    <div id="controls">
-        <button onclick="Celestial.toggle('constellations')">Созвездия</button>
-        <button onclick="Celestial.toggle('planets')">Планеты</button>
-        <button onclick="Celestial.toggle('stars')">Звёзды</button>
-        <button onclick="Celestial.toggle('grid')">Сетка</button>
-        <button onclick="resetView()">Сбросить вид</button>
+    <div id="controls"></div>
+    <div id="info-panel">Нажмите на планету</div>
+    <div id="time-slider">
+        <label for="time">Время:</label>
+        <input type="range" id="time" min="0" max="365" value="0">
     </div>
-
+    
     <script>
-        // Инициализация карты
-        Celestial.display({
-            container: "celestial-map",
-            projection: "airy",
-            datapath: "https://cdn.jsdelivr.net/npm/celestial/data/",
-            lang: "ru",
-            stars: {
-                show: true,
-                colors: true,
-                limit: 6
-            },
-            constellations: {
-                show: true,
-                names: true,
-                lines: true,
-                bounds: true
-            },
-            planets: {
-                show: true
-            },
-            grid: {
-                show: true
-            },
-            location: true,
-            form: false,
-            zoom: 1
-        });
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-        // Функция сброса вида
-        function resetView() {
-            Celestial.zoomBy(1);
-            Celestial.rotate({ center: [0, 0] });
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        camera.position.set(0, 200, 800);
+
+        const textureLoader = new THREE.TextureLoader();
+        const planets = {};
+        const planetData = {
+    'sun': { size: 50, distance: 0, texture: 'https://upload.wikimedia.org/wikipedia/commons/3/3a/Solar_System_true_color.png', info: 'Солнце - звезда нашей системы.' },
+    'mercury': { size: 5, distance: 80, texture: 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Mercury_3D.png', orbitSpeed: 4.15, info: 'Меркурий - ближайшая к Солнцу планета.' },
+    'venus': { size: 10, distance: 120, texture: 'https://upload.wikimedia.org/wikipedia/commons/8/85/Venus_globe.png', orbitSpeed: 1.62, info: 'Венера - вторая планета от Солнца.' },
+    'earth': { size: 12, distance: 160, texture: 'https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg', orbitSpeed: 1, info: 'Земля - наш дом.' },
+    'mars': { size: 8, distance: 220, texture: 'https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg', orbitSpeed: 0.53, info: 'Марс - красная планета.' },
+    'jupiter': { size: 30, distance: 320, texture: 'https://upload.wikimedia.org/wikipedia/commons/e/e2/Jupiter.jpg', orbitSpeed: 0.084, info: 'Юпитер - крупнейшая планета.' },
+    'saturn': { size: 28, distance: 420, texture: 'https://upload.wikimedia.org/wikipedia/commons/0/0d/Saturn_-_April_25_2016.png', orbitSpeed: 0.034, info: 'Сатурн - планета с кольцами.' },
+    'uranus': { size: 20, distance: 520, texture: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Uranus2.jpg', orbitSpeed: 0.012, info: 'Уран - ледяной гигант.' },
+    'neptune': { size: 18, distance: 620, texture: 'https://upload.wikimedia.org/wikipedia/commons/5/56/Neptune_Full.jpg', orbitSpeed: 0.006, info: 'Нептун - дальняя планета.' },
+    'pluto': { size: 5, distance: 700, texture: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Nh-pluto-in-true-color_2x_JPEG-edit-frame.jpg', orbitSpeed: 0.004, info: 'Плутон - карликовая планета.' },
+    'ceres': { size: 4, distance: 450, texture: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Ceres_optimized.jpg', orbitSpeed: 0.03, info: 'Церера - крупнейший объект пояса астероидов.' },
+    'eris': { size: 4, distance: 800, texture: 'https://upload.wikimedia.org/wikipedia/commons/7/79/Eris_%28dwarf_planet%29.png', orbitSpeed: 0.002, info: 'Эрис - вторая по размеру карликовая планета.' },
+    'polaris': { size: 100, distance: 5000, texture: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Polaris.jpg', info: 'Полярная звезда - одна из самых ярких звезд.' }
+};
+
+        
+        function createPlanet(name, data) {
+            const geometry = new THREE.SphereGeometry(data.size, 32, 32);
+            const material = new THREE.MeshStandardMaterial({ map: textureLoader.load(data.texture) });
+            const planet = new THREE.Mesh(geometry, material);
+            scene.add(planet);
+            planets[name] = { mesh: planet, distance: data.distance, orbitSpeed: data.orbitSpeed };
+            
+            const button = document.createElement('button');
+            button.innerText = name.toUpperCase();
+            button.onclick = () => showInfo(name, data.info);
+            document.getElementById('controls').appendChild(button);
         }
+        
+        for (let planet in planetData) {
+            createPlanet(planet, planetData[planet]);
+        }
+
+        function showInfo(name, info) {
+            document.getElementById('info-panel').innerText = info;
+            camera.position.set(planets[name].mesh.position.x, 50, planets[name].mesh.position.z + 150);
+        }
+        
+        let timeFactor = 0;
+        document.getElementById('time').addEventListener('input', (event) => {
+            timeFactor = event.target.value / 10;
+        });
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            for (let name in planets) {
+                if (name !== 'sun') {
+                    let planet = planets[name];
+                    let angle = timeFactor * planet.orbitSpeed;
+                    planet.mesh.position.x = Math.cos(angle) * planet.distance;
+                    planet.mesh.position.z = Math.sin(angle) * planet.distance;
+                    planet.mesh.rotation.y += 0.01;
+                }
+            }
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        const light = new THREE.PointLight(0xffffff, 2, 2000);
+        light.position.set(0, 0, 0);
+        scene.add(light);
+
+        animate();
     </script>
 </body>
 </html>
