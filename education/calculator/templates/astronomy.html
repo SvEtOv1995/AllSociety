@@ -270,16 +270,22 @@
 
         console.log(planetData);
 
-        const sunTexture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/2/28/Sun_Symbol.png');
+        // Создание материала для Солнца без текстуры
         const sunMaterial = new THREE.MeshStandardMaterial({
-            emissive: 0xffff00,
-            emissiveIntensity: 2,
-            map: sunTexture
+            color: 0xffff00,  // Желтый цвет
+            emissive: 0xffff00,  // Эмиссия желтого света
+            emissiveIntensity: 2  // Интенсивность эмиссии
         });
 
+        // Создание геометрии для Солнца
         const sunGeometry = new THREE.SphereGeometry(50, 32, 32);
+
+        // Создание объекта Солнца
         const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+
+        // Добавление Солнца в сцену
         scene.add(sun);
+
 
         // Создание планет
         planetData.forEach(data => {

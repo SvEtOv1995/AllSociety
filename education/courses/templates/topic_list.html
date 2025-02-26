@@ -16,7 +16,7 @@
         <div class="subject-container" style="display: flex; flex-direction: column; gap: 25px; margin-top: 20px; align-content: center;">
             {% for topic in topics %}
                 <a href="{% url 'lesson_list' topic.id %}" class="button topic-button">
-                    <span>{{ topic.name }}</span>
+                    <h2>{{ topic.name }}</h2>
                     {% if topic.image %}
                         <img src="{{ topic.image.url }}" alt="Иконка" class="small-icon" style="width: 40px; height: 40px; object-fit: cover; border-radius: 40%;">
                     {% endif %}
@@ -94,6 +94,12 @@
 
             top: -20px;
             right: 27%;
+
+        }
+
+        h2 {
+
+            font-size: 20px;
 
         }
 

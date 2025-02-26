@@ -22,6 +22,7 @@ class Lesson(models.Model):
     image = models.ImageField(upload_to='lessons/', blank=True, null=True)
     allow_latex = models.BooleanField(default=True)  # Флаг для включения LaTeX
     explanation = models.TextField(null=True, blank=True)  # Объяснение урока
+    svg_content = models.TextField(null=True, blank=True)  # Поле для хранения SVG-кода
 
     def __str__(self):
         return f"{self.topic.name} - {self.title}"

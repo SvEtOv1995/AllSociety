@@ -3,6 +3,8 @@ from .models import Subject, Topic, Lesson, News
 from django.shortcuts import redirect
 from .models import Question, Answer
 from .models import Subject, SubjectCalculator, SubjectNotes
+from django.utils.safestring import mark_safe
+import re
 
 def subjects_list(request):
     subjects = Subject.objects.all()
@@ -19,12 +21,38 @@ def lesson_list(request, topic_id):
     lessons = topic.lessons.all()
     return render(request, 'lesson_list.html', {'topic': topic, 'lessons': lessons})
 
+def structure_lesson_content(content):
+    """
+    Функция принимает текст из админ-панели и добавляет классы для стилизации контента.
+    - Форматы: заголовки, списки, формулы, абзацы.
+    """
+    
+    # Добавление классов к заголовкам (например, ## Заголовок -> <h2>)
+    content = re.sub(r'## (.+)', r'<h2 class="lesson-heading">\1</h2>', content)
+    content = re.sub(r'# (.+)', r'<h1 class="lesson-title">\1</h1>', content)
+
+    # Форматирование списков (начинающихся с "- " или "1. ")
+    content = re.sub(r'\n- (.+)', r'<li>\1</li>', content)
+    content = re.sub(r'\n1\. (.+)', r'<li>\1</li>', content)
+    content = re.sub(r'(<li>.+</li>)', r'<ul class="lesson-list">\1</ul>', content)
+
+    # Форматирование формул LaTeX (блоковые и встроенные)
+    content = re.sub(r'\$\$(.+?)\$\$', r'<div class="math">\1</div>', content)  # Блоковые формулы
+    content = re.sub(r'\$(.+?)\$', r'<span class="math-inline">\1</span>', content)  # Встроенные формулы
+
+    # Добавление классов к абзацам
+    content = re.sub(r'\n(.+)', r'<p class="lesson-text">\1</p>', content)
+
+    return mark_safe(content)  # Django считает HTML-безопасным
+
 def lesson_detail(request, lesson_id):
     lesson = get_object_or_404(Lesson, id=lesson_id)
-    return render(request, 'lesson_detail.html', {'lesson': lesson})
+    
+    # Применяем структурирование данных к содержимому урока
+    structured_content = structure_lesson_content(lesson.content)
+    
+    return render(request, 'lesson_detail.html', {'lesson': lesson, 'structured_content': structured_content})
 
-from django.shortcuts import get_object_or_404, render
-from .models import Question, Answer
 
 def check_answer(request, question_id):
     question = get_object_or_404(Question, id=question_id)

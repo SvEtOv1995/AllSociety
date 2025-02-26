@@ -8,21 +8,27 @@
     <div class="lesson-container">
         <h1 class="lesson-title">{{ lesson.title }}</h1>
 
-        {% if lesson.image %}
-            <div class="lesson-image-container">
-                <img src="{{ lesson.image.url }}" alt="{{ lesson.title }}" class="lesson-image">
-            </div>
+        {% if lesson.svg_content %}
+            <div class="lesson-svg">
+                {{ lesson.svg_content|safe }}
+            </div>        
         {% endif %}
 
         <div class="lesson-content">
             {% if lesson.allow_latex %}
                 <div class="latex-content">
-                    <p>{{ lesson.content|safe }}</p>
+                    {{ structured_content|safe }}
                 </div>
             {% else %}
                 <p>{{ lesson.content }}</p>
             {% endif %}
         </div>
+
+        {% if lesson.image %}
+            <div class="lesson-image-container">
+                <img src="{{ lesson.image.url }}" alt="{{ lesson.title }}" class="lesson-image">
+            </div>
+        {% endif %}
 
         <!-- Задания -->
         <div class="questions-section">
@@ -138,6 +144,105 @@
             transform: translateY(-2px);
         }
         
+        /* Основные стили для контента урока */
+        .lesson-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #333; /* Темный текст для хорошей читаемости */
+        }
+
+        /* Стили для заголовков */
+        .lesson-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color:rgb(61, 174, 168);
+            text-align: center;
+        }
+
+        .lesson-heading {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color:rgb(253, 253, 253);
+        }
+
+        /* Стили для списков */
+        .lesson-list {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .lesson-list li {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        /* Стили для математических формул */
+        .math {
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 35px;  /* Увеличенный размер шрифта для формул */
+            color:rgb(139, 255, 255);
+            font-family: 'Arial', sans-serif;
+            position: relative;
+        }
+
+        .math-inline {
+            background-color:rgb(31, 117, 113);
+            border-radius: 4px;
+            padding: 0 5px;
+            color:rgb(255, 255, 255);
+            font-weight: bold;
+            font-size: 20px;  /* Увеличение шрифта для встроенных формул */
+            left: 0%;
+        }
+
+        /* Номера формул */
+        .math-number {
+            font-size: 18px;
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        /* Стили для номеров формул в виде ссылок */
+        .math-number a {
+            text-decoration: none;
+            color: #3498db;
+        }
+
+        .math-number a:hover {
+            text-decoration: underline;
+        }
+
+        /* Стили для улучшения восприятия текста */
+        .lesson-text {
+            text-align: justify;
+            font-family: 'Arial', sans-serif;
+            color:rgb(253, 253, 253);
+        }
+
+        /* Стиль для абзацев */
+        p.lesson-text {
+            margin-bottom: 1.5em;
+            color:rgb(253, 253, 253);
+        }
+
+        /* Стили для больших заголовков, чтобы выделить номер формулы */
+        .math-title {
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            color: #34495e;
+        }
+
         /* 🌙 Темный режим */
         @media (prefers-color-scheme: dark) {
             body {
