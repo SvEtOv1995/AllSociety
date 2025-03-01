@@ -1,92 +1,213 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Физический калькулятор</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 flex justify-center items-center min-h-screen">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
-        <h2 class="text-3xl font-bold text-center mb-6">Физический калькулятор</h2>
-        
-        <label class="block mb-2 text-lg">Выберите формулу:</label>
-        <select id="formula" class="w-full p-3 border rounded mb-4 text-lg" onchange="updateFields()">
-            <option value="f_ma">F = m * a</option>
-            <option value="e_mgh">E = m * g * h</option>
-            <option value="v_st">V = S / t</option>
-            <option value="p_w">P = W / t</option>
-            <option value="a_v">a = (v - v0) / t</option>
-            <option value="v_c">V = √(2 * g * h)</option>
-            <option value="q_ohm">I = U / R</option>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Физический калькулятор{% endblock %}
+
+{% block content %}
+<style>
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--bg-color); /* Полупрозрачный цвет */
+            padding: 30px;
+            border-radius: 16px; /* Закругление углов */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Мягкая тень */
+            backdrop-filter: blur(8px); /* Легкое размытие для стеклянного эффекта */
+        }
+
+
+        h2 {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #444;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #f9f9f9;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: #007bff;
+            outline: none;
+            background: #fff;
+        }
+
+        button {
+            width: 100%;
+            background: #007bff;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #result {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #28a745;
+            margin-top: 15px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 16px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Уборка лишних с главной страницы SVG */
+        .center-line {
+            display: none;
+        }  
+
+        .title-container {
+            display: none;
+        }
+
+        .paragraph-container {
+            display: none;
+        }
+
+        .h2 {
+            display: none;
+        }
+
+        .h3 {
+            display: none;
+        }
+
+        #character-container {
+            display: none;
+        }
+
+        .svg-container {
+            display: none;
+        }
+
+</style>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="container">
+    <div class="card">
+        <h2>⚛️ Физический калькулятор</h2>
+
+        <label>Выберите формулу:</label>
+        <select id="formula" onchange="updateFields()">
+            <option value="f_ma">F = m * a (Сила)</option>
+            <option value="e_mgh">E = m * g * h (Энергия)</option>
+            <option value="v_st">V = S / t (Скорость)</option>
+            <option value="p_w">P = W / t (Мощность)</option>
+            <option value="a_v">a = (v - v0) / t (Ускорение)</option>
+            <option value="v_c">V = √(2 * g * h) (Скорость падения)</option>
+            <option value="q_ohm">I = U / R (Закон Ома)</option>
         </select>
 
-        <div id="inputs" class="mb-4"></div>
-        <div id="formulaDescription" class="text-sm mb-4 text-gray-700"></div>
-        
-        <label class="block text-lg">Введите условия задачи:</label>
-        <textarea id="problem" class="w-full p-3 border rounded mb-4 text-lg" placeholder="Опишите вашу задачу..."></textarea>
+        <div id="inputs"></div>
+        <div id="formulaDescription"></div>
 
-        <button onclick="calculate()" class="w-full bg-blue-500 text-white p-3 rounded text-xl">Рассчитать</button>
-        <div id="result" class="mt-4 text-center text-xl font-semibold"></div>
+        <label>Введите условия задачи:</label>
+        <textarea id="problem" placeholder="Опишите вашу задачу..."></textarea>
 
-        <p class="mt-4 text-center text-gray-600"><a href="{% url 'index' %}" class="text-blue-500">🔙 На главную</a></p>
+        <button onclick="calculate()">Рассчитать</button>
 
+        <div id="result"></div>
+
+        <a href="{% url 'index' %}" class="back-link">🔙 Вернуться на главную</a>
     </div>
+</div>
 
-    <script>
-        const formulaDescriptions = {
-            'f_ma': { description: "Сила (F) равна массе (m), умноженной на ускорение (a).", variables: ['m', 'a'] },
-            'e_mgh': { description: "Энергия (E) равна массе (m), ускорению свободного падения (g) и высоте (h).", variables: ['m', 'g', 'h'] },
-            'v_st': { description: "Скорость (V) равна расстоянию (S), деленному на время (t).", variables: ['S', 't'] },
-            'p_w': { description: "Мощность (P) равна работе (W), деленной на время (t).", variables: ['W', 't'] },
-            'a_v': { description: "Ускорение (a) равно изменению скорости (v - v0) деленному на время (t).", variables: ['v', 'v0', 't'] },
-            'v_c': { description: "Скорость тела (V) при падении с высоты (h) равна √(2 * g * h).", variables: ['g', 'h'] },
-            'q_ohm': { description: "Ток (I) равен напряжению (U), деленному на сопротивление (R).", variables: ['U', 'R'] }
-        };
+<script>
+    const formulaDescriptions = {
+        'f_ma': { description: "Сила (F) равна массе (m), умноженной на ускорение (a).", variables: ['m', 'a'] },
+        'e_mgh': { description: "Энергия (E) равна массе (m), ускорению свободного падения (g) и высоте (h).", variables: ['m', 'g', 'h'] },
+        'v_st': { description: "Скорость (V) равна расстоянию (S), деленному на время (t).", variables: ['S', 't'] },
+        'p_w': { description: "Мощность (P) равна работе (W), деленной на время (t).", variables: ['W', 't'] },
+        'a_v': { description: "Ускорение (a) равно изменению скорости (v - v0) деленному на время (t).", variables: ['v', 'v0', 't'] },
+        'v_c': { description: "Скорость тела (V) при падении с высоты (h) равна √(2 * g * h).", variables: ['g', 'h'] },
+        'q_ohm': { description: "Ток (I) равен напряжению (U), деленному на сопротивление (R).", variables: ['U', 'R'] }
+    };
 
-        function updateFields() {
-            const formula = document.getElementById('formula').value;
-            const inputsDiv = document.getElementById('inputs');
-            const descriptionDiv = document.getElementById('formulaDescription');
-            inputsDiv.innerHTML = '';
-            descriptionDiv.innerHTML = `<strong>Описание:</strong> ${formulaDescriptions[formula].description}`;
-            formulaDescriptions[formula].variables.forEach(variable => {
-                inputsDiv.innerHTML += `<label class='block mb-2'>${variable}: <input type='number' id='${variable}' class='w-full p-2 border rounded'></label>`;
-            });
+    function updateFields() {
+        const formula = document.getElementById('formula').value;
+        const inputsDiv = document.getElementById('inputs');
+        const descriptionDiv = document.getElementById('formulaDescription');
+        inputsDiv.innerHTML = '';
+        descriptionDiv.innerHTML = `<strong>Описание:</strong> ${formulaDescriptions[formula].description}`;
+        
+        formulaDescriptions[formula].variables.forEach(variable => {
+            inputsDiv.innerHTML += `
+                <label>${variable}:</label>
+                <input type='number' id='${variable}'>
+            `;
+        });
+    }
+
+    function calculate() {
+        const formula = document.getElementById('formula').value;
+        let result = 0;
+        let values = {};
+        let allFilled = true;
+
+        formulaDescriptions[formula].variables.forEach(variable => {
+            let value = parseFloat(document.getElementById(variable).value);
+            if (isNaN(value)) allFilled = false;
+            values[variable] = value;
+        });
+
+        if (!allFilled) {
+            alert('Заполните все поля!');
+            return;
         }
 
-        function calculate() {
-            const formula = document.getElementById('formula').value;
-            let result = 0;
-            let values = {};
-            let allFilled = true;
-
-            formulaDescriptions[formula].variables.forEach(variable => {
-                let value = parseFloat(document.getElementById(variable).value);
-                if (isNaN(value)) allFilled = false;
-                values[variable] = value;
-            });
-
-            if (!allFilled) {
-                alert('Заполните все поля!');
-                return;
-            }
-
-            switch (formula) {
-                case 'f_ma': result = values['m'] * values['a']; break;
-                case 'e_mgh': result = values['m'] * values['g'] * values['h']; break;
-                case 'v_st': result = values['S'] / values['t']; break;
-                case 'p_w': result = values['W'] / values['t']; break;
-                case 'a_v': result = (values['v'] - values['v0']) / values['t']; break;
-                case 'v_c': result = Math.sqrt(2 * values['g'] * values['h']); break;
-                case 'q_ohm': result = values['U'] / values['R']; break;
-            }
-
-            document.getElementById('result').innerText = `Результат: ${result}`;
+        switch (formula) {
+            case 'f_ma': result = values['m'] * values['a']; break;
+            case 'e_mgh': result = values['m'] * values['g'] * values['h']; break;
+            case 'v_st': result = values['S'] / values['t']; break;
+            case 'p_w': result = values['W'] / values['t']; break;
+            case 'a_v': result = (values['v'] - values['v0']) / values['t']; break;
+            case 'v_c': result = Math.sqrt(2 * values['g'] * values['h']); break;
+            case 'q_ohm': result = values['U'] / values['R']; break;
         }
 
-        updateFields();
-    </script>
-</body>
-</html>
+        document.getElementById('result').innerText = `Результат: ${result}`;
+    }
+
+    updateFields();
+</script>
+{% endblock %}
