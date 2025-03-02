@@ -17,13 +17,12 @@
         {% endfor %}
     </div>
     
-
     <!-- Блок новостей -->
     <div class="news-wrapper">
         <h2 class="news-title">Новости</h2>
         <div class="news-container">
             {% for news_item in news %}
-                <div class="news-item">
+                <div class="news-item" id="news-{{ forloop.counter }}">
                     {% if news_item.image %}
                         <img src="{{ news_item.image.url }}" alt="{{ news_item.title }}" class="news-image">
                     {% endif %}
@@ -31,8 +30,6 @@
                     <p class="news-date">{{ news_item.published_at|date:"d.m.Y H:i" }}</p>
                     <p class="news-content">{{ news_item.content }}</p>
                 </div>
-            {% empty %}
-                <p>Новостей пока нет.</p>
             {% endfor %}
         </div>
     </div>
@@ -40,7 +37,6 @@
 {% endblock %}
 
 <style>
-
     /* Контейнер для всех новостей с тенью */
     .news-wrapper {
         width: 80%;
@@ -59,7 +55,7 @@
 
     /* Контейнер для новостей */
     .news-container {
-        display: none;
+        display: flex;
         flex-direction: column;
         align-items: center;
         gap: 15px;
@@ -72,12 +68,17 @@
         max-width: 600px;
         padding: 20px;
         border-radius: 8px;
-        background: transparent; /* Make the container background invisible */
+        background: transparent;
         transition: transform 0.2s ease;
         display: flex;
         flex-direction: row-reverse;
         align-items: flex-start;
         flex-wrap: wrap;
+        display: none; /* Скрыть все новости по умолчанию */
+    }
+
+    .news-item.active {
+        display: block; /* Показывать только активную новость */
     }
 
     .news-item:hover {
@@ -95,46 +96,66 @@
         font-size: 15px;
     }
 
+    /* Кнопки навигации */
+    .news-navigation {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        width: 80%;
+    }
+
+    .nav-button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .nav-button:disabled {
+        background-color: #ccc;
+    }
+    
     /* Контейнер для предметов */
     .subject-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 20px; /* Отступы между элементами */
-        justify-content: center; /* Центрирование элементов */
-        margin-top: 40px; /* Отступ сверху */
+        gap: 20px;
+        justify-content: center;
+        margin-top: 40px;
     }
 
-    /* Стили для каждого элемента */
     .subject-item {
         width: 100%;
-        max-width: 250px; /* Максимальная ширина */
-        padding: 20px; /* Внутренний отступ */
-        border-radius: 12px; /* Скругленные углы */
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Тень */
-        text-align: center; /* Центрирование текста */
-        transition: transform 0.2s ease, box-shadow 0.3s ease; /* Плавные переходы */
-        margin: 10px; /* Отступы вокруг элементов */
+        max-width: 250px;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+        margin: 10px;
     }
 
     .subject-item:hover {
-        transform: scale(1.05); /* Легкое увеличение */
-        box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* Усиленная тень */
+        transform: scale(1.05);
+        box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
     }
 
-    /* Стили для изображения внутри элемента */
     .subject-image {
         width: 100%;
-        height: auto; /* Ожидаем, что изображение будет адаптироваться по ширине */
-        border-radius: 8px; /* Скругление углов изображения */
-        object-fit: cover; /* Масштабирование изображения */
-        margin-bottom: 15px; /* Отступ снизу изображения */
+        height: auto;
+        border-radius: 8px;
+        object-fit: cover;
+        margin-bottom: 15px;
     }
 
-    /* Стили для текста под изображением */
     .subject-name {
-        margin-top: 10px; /* Отступ сверху */
-        font-size: 18px; /* Размер шрифта */
-        font-weight: bold; /* Полужирный шрифт */
+        margin-top: 10px;
+        font-size: 18px;
+        font-weight: bold;
     }
 
 </style>
+
