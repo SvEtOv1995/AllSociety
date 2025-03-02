@@ -1,18 +1,12 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор Геометрии</title>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Физический калькулятор{% endblock %}
+
+{% block content %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: #f4f4f9;
-            margin: 0;
-            padding: 0;
-        }
+        
         .container {
             display: flex;
             justify-content: center;
@@ -23,8 +17,7 @@
             margin: 20px;
             padding: 20px;
             border-radius: 10px;
-            background: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: var(--bg-color);
         }
         .canvas-container {
             display: flex;
@@ -41,18 +34,42 @@
             padding: 10px;
             font-size: 16px;
         }
-        button {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
+
+        h1{
+
+            top: 20px;
+
         }
-        button:hover {
-            background: #45a049;
+
+        /* Уборка лишних с главной страницы SVG */
+        .center-line {
+            display: none;
+        }  
+
+        .title-container {
+            display: none;
+        }
+
+        .paragraph-container {
+            display: none;
+        }
+
+        .h2 {
+            display: none;
+        }
+
+        .h3 {
+            display: none;
+        }
+
+        #character-container {
+            display: none;
+        }
+
+        .svg-container {
+            display: none;
         }
     </style>
-</head>
-<body>
     <h1>Калькулятор Геометрии</h1>
 
     <div class="container">
@@ -79,14 +96,15 @@
             </select>
 
             <div id="form-container"></div>
-            <button onclick="calculate()">Рассчитать</button>
+            <button onclick="calculate()" class="button">Рассчитать</button>
             <h3>Результат: <span id="result">-</span></h3>
+            <a href="{% url 'index' %}" class="button">📚 Вернуться на главную</a>
         </div>
 
         <div class="canvas-container">
             <h2>Графическое представление</h2>
             <canvas id="canvas" width="300" height="300"></canvas>
-            <button onclick="toggleCalculationFields()">Показать параметры</button>
+            <button onclick="toggleCalculationFields()"class="button">Показать параметры</button>
         </div>
     </div>
 
@@ -423,6 +441,5 @@
 
     </script>
 
-    <p><a href="{% url 'index' %}">🔙 На главную</a></p>
-</body>
-</html>
+    {% endblock %}
+
