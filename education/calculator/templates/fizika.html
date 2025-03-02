@@ -13,7 +13,7 @@
         }
 
         .card {
-            background: var(--bg-color); /* Полупрозрачный цвет */
+            background: var(--button-bg); /* Полупрозрачный цвет */
             padding: 30px;
             border-radius: 16px; /* Закругление углов */
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Мягкая тень */
@@ -26,13 +26,13 @@
             font-weight: bold;
             text-align: center;
             margin-bottom: 20px;
-            color: #333;
+            color: #ffffff;
         }
 
         label {
             font-size: 18px;
             font-weight: 600;
-            color: #444;
+            color: #ffffff;
             display: block;
             margin-bottom: 8px;
         }
@@ -144,11 +144,11 @@
         <label>Введите условия задачи:</label>
         <textarea id="problem" placeholder="Опишите вашу задачу..."></textarea>
 
-        <button onclick="calculate()">Рассчитать</button>
+        <button onclick="calculate()" class="button">Рассчитать</button>
 
         <div id="result"></div>
 
-        <a href="{% url 'index' %}" class="back-link">🔙 Вернуться на главную</a>
+        <a href="{% url 'index' %}" class="button">📚 Вернуться на главную</a>
     </div>
 </div>
 
