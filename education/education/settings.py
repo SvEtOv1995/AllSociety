@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'courses',  # добавляем наше приложение
+    'courses',  # добавляем наше приложение http://192.168.1.100:8000 как пример!!!
     'character',
     'schedule',
     'calculator',
