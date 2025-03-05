@@ -1,23 +1,22 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор</title>
+{% extends 'base.html' %}
+
+{% block title %}Калькулятор{% endblock %}
+
+{% block content %}
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: #eef;
-        }
+
+        /* Стили для калькулятора */
         .calculator {
             width: 450px;
             margin: auto;
             padding: 20px;
             border-radius: 20px;
-            background: #fff;
+            background: var(--bg-color);
             box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
         }
+
+        /* Стили для дисплея калькулятора */
         .display {
             width: 100%;
             height: 90px;
@@ -29,27 +28,56 @@
             border: 1px solid #ccc;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-end;
             white-space: nowrap;
+            overflow: hidden;
+            background:var(--bg-color);
+            box-shadow: inset 1px 1px 20px 20px rgba(0, 0, 0, 0.2);
         }
-        .buttons button {
-            width: 60px;
-            height: 60px;
-            font-size: 18px;
-            margin: 5px;
-            border-radius: 50%;
-            border: none;
-            background: blue;
-            color: white;
-            cursor: pointer;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+
+        h1 {
+            
+            right: 42%;
+            top: -25px;
         }
-        .buttons button:hover {
-            background: darkblue;
+
+        /* Стили для футера */
+        footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
         }
+
+        /* Уборка лишних с главной страницы SVG */
+        .center-line {
+            display: none;
+        }  
+
+        .title-container {
+            display: none;
+        }
+
+        .paragraph-container {
+            display: none;
+        }
+
+        .h2 {
+            display: none;
+        }
+
+        .h3 {
+            display: none;
+        }
+
+        #character-container {
+            display: none;
+        }
+
+        .svg-container {
+            display: none;
+        }
+
     </style>
-</head>
-<body>
     <h1>Калькулятор</h1>
     <div class="calculator">
         <div id="display" class="display"></div>
@@ -85,7 +113,9 @@
             <button onclick="solveSystemInequalities()">сис.неравенств</button>
             <button onclick="toggleAdvancedMode()">Расш.</button>
         </div>
+        <a href="{% url 'index' %}" class="button">📚 Вернуться на главную</a>
     </div>
+
     <script>
         let advancedMode = false;
 
@@ -133,9 +163,6 @@
             document.getElementById("display").innerHTML += `<br>Результат: ${results.join(", ")}`;
         }
         
-        
-        
-
         function appendFractionValue(value) {
             let numerator = document.getElementById("numerator");
             let denominator = document.getElementById("denominator");
@@ -158,8 +185,6 @@
             let result = numerator / denominator;
             document.getElementById("display").innerHTML += `<br>Результат: ${result.toFixed(10)}`;
         }
-
-
 
         function calculate() {
             try {
@@ -221,9 +246,6 @@
             document.getElementById("quadraticResult").innerText = result;
         }        
         
-        
-        
-
         function solveInequality() {
             let display = document.getElementById("display");
         
@@ -257,8 +279,6 @@
             document.getElementById("inequalityResult").innerText = result;
         }
         
-        
-
         function solveSystemInequalities() {
             let display = document.getElementById("display");
         
@@ -311,8 +331,6 @@
             document.getElementById("systemInequalityResult").innerText = `Решение: x ∈ ${intersection}`;
         }
         
-        
-        
         function formatExpression(expression) {
             return expression.replace(/√(\d+)/g, 'Math.sqrt($1)')
                              .replace(/sin(\d+)/g, 'Math.sin($1 * Math.PI / 180)')
@@ -348,10 +366,5 @@
             let x = roundNumber((right - b) / a);
             document.getElementById("display").innerText = `x = ${x}`;
         }        
-        
-        
     </script>
-
-    <p><a href="{% url 'index' %}">🔙 На главную</a></p>
-</body>
-</html>
+{% endblock %}
