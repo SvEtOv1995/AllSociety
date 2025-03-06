@@ -185,7 +185,6 @@
         
 
         .theme-toggle {
-            position: fixed;
             cursor: pointer;
             background: var(--button-bg);
             color: white;
@@ -493,7 +492,7 @@
             width: 100%;
             max-width: 450px;
             min-height: 250px; /* Устанавливаем минимальную высоту */
-            padding: 20px;
+            padding: 5px;
             border-radius: 30px;
             border: 7px solid rgba(0, 0, 0, 0.05);
             transition: transform 0.2s ease;
@@ -521,7 +520,7 @@
             overflow: hidden;
             text-overflow: ellipsis; /* Если текст слишком длинный, обрезаем */
             display: -webkit-box;
-            -webkit-line-clamp: 3; /* Оставляем максимум 3 строки */
+            -webkit-line-clamp: 5; /* Оставляем максимум 3 строки */
             -webkit-box-orient: vertical;
         }
         
@@ -536,7 +535,7 @@
 
         .news-content {
             margin-top: -10px;
-            font-size: 14px;
+            font-size: 10px;
         }
 
         .theme-toggle {
@@ -546,12 +545,11 @@
             border: none;
             border-radius: 50%;
             cursor: pointer;
-            position: relative;
+            position: fixed;
             overflow: hidden;
             transition: background 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
             box-shadow: 0px 4px 10px var(--shadow-color);
-            position: relative;
-            left: 115%;
+            left: 95%;
         }
         
         .theme-toggle:hover {
@@ -765,7 +763,7 @@
             filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.7)); /* Эффект свечения */
             position: relative; /* Для возможности перемещения */
             cursor: grab; /* Курсор в виде руки для перетаскивания */
-            top: 400px;
+            top: 450px;
             right: 25%;
         }
 
@@ -821,6 +819,131 @@
 
                 left: 16%;
 
+            }
+        }
+
+        @media screen and (max-width: 1000px) {
+            .paragraph {
+                font-size: 12px;
+            }
+
+            .title {
+                font-size: 20px;
+            }
+
+            .subject-container {
+                right: 9%;
+            }
+
+            h1 {
+                right: 17%;
+            }
+
+            #character img {
+                width: 125%;
+            }
+
+            #character-container {
+                right: 21%;
+            }
+
+            .news-title {
+                left: 69%;
+            }
+
+            .news-container {
+                width: 130%;
+                margin-left: -40px;
+            }
+        }
+
+        @media screen and (max-width: 820px) {
+            .svg-icon {
+                left: 19%;
+            }
+
+            .paragraph {
+                font-size: 11px;
+            }
+
+            .title {
+                font-size: 20px;
+            }
+
+            .center-line {
+                top: 50%;
+                left: 48%;
+                width: 74vw;
+                height: 3px;
+            }
+
+            .subject-container {
+                right: 6%;
+                top: 315px;
+                transform: scale(0.9);
+            }
+
+            .news-title {
+                top: 480px;
+                left: 69%;
+            }
+
+            .news-container {
+               margin-top: -22px;
+            }
+        }
+
+        @media screen and (max-width: 720px) {
+            .svg-icon {
+
+                left: 22%;
+
+            }
+
+            .paragraph {
+                font-size: 10px;
+            }
+
+            .title {
+                font-size: 18px;
+            }
+
+            .subject-container {
+                right: 4%;
+                top: 315px;
+                transform: scale(0.75);
+            }
+
+            h1 {
+                right: 14%;
+            }
+
+            #character-container {
+                right: 24%;
+            }
+
+            #character img {
+                width: 156%;
+            }
+        }
+
+        @media screen and (max-width: 600px) {
+            .center-line {
+                top: 52%;
+                left: 47%;
+                width: 105vw;
+                height: 2px;
+            }
+
+            .subject-container {
+                right: -1%;
+                top: 296px;
+                transform: scale(0.65);
+            }
+
+            h1 {
+                right: 16%;
+                font-size: 23px;
             }
         }
         
