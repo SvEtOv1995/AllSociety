@@ -8,12 +8,14 @@
     <div class="lesson-container">
         <h1 class="lesson-title">{{ lesson.title }}</h1>
 
+        <!-- SVG контент, если есть -->
         {% if lesson.svg_content %}
             <div class="lesson-svg">
                 {{ lesson.svg_content|safe }}
             </div>        
         {% endif %}
 
+        <!-- Основной контент урока -->
         <div class="lesson-content">
             {% if lesson.allow_latex %}
                 <div class="latex-content">
@@ -24,13 +26,14 @@
             {% endif %}
         </div>
 
+        <!-- Изображение урока, если есть -->
         {% if lesson.image %}
             <div class="lesson-image-container">
                 <img src="{{ lesson.image.url }}" alt="{{ lesson.title }}" class="lesson-image">
             </div>
         {% endif %}
 
-        <!-- Задания -->
+        <!-- Секция с заданиями -->
         <div class="questions-section">
             <h2>Задания</h2>
             <div class="questions-container">
@@ -39,6 +42,7 @@
                         <div class="question">
                             <p>{{ question.question_text }}</p>
 
+                            <!-- Форма для ответа на вопрос -->
                             <form action="{% url 'check_answer' question.id %}" method="post" class="answer-form">
                                 {% csrf_token %}
                                 <div class="answers-container">
@@ -53,6 +57,7 @@
                                 <button type="submit" class="submit-button">Ответить</button>
                             </form>
 
+                            <!-- Результат ответа, если есть -->
                             {% if answered_questions|get_item:question.id %}
                             <div class="result-container">
                                 <p class="result-text">{{ answered_questions|get_item:question.id|get_item:"result" }}</p>
@@ -68,13 +73,13 @@
         </div>
     </div>
 
+    <!-- Форма завершения урока -->
     <form id="lesson-form" action="{% url 'add_exp' 10 %}" method="POST">
         {% csrf_token %}
         <button type="submit" id="complete-lesson-button" class="submit-button" {% if answered_questions|length < lesson.questions.count %}disabled{% endif %}>Завершить урок</button>
     </form> 
-    
-    <style>
 
+    <style>
         :root {
             /* 🌞 Светлый режим */
             --bg-light-color: #F0F4F8; /* Светло-серый фон */
@@ -107,14 +112,16 @@
             box-shadow: var(--shadow-light);
             max-width: 1300px;
             margin: 0 auto;
-            display: contents;
         }
         
         .lesson-title {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: bold;
             color: var(--text-light-color);
-            margin-bottom: 20px;
+            margin-bottom: 126px;
+            position: fixed;
+            top: 170px;
+            left: 91%;
         }
         
         .lesson-content {
@@ -122,11 +129,9 @@
             color: var(--text-light-color);
             line-height: 1.6;
         }
-
+    
         h2 {
-
             font-size: 2rem;
-
         }
         
         .button {
@@ -144,63 +149,54 @@
             transform: translateY(-2px);
         }
         
-        /* Основные стили для контента урока */
+        /* Стили для контента урока */
         .lesson-text {
             font-size: 16px;
             line-height: 1.6;
             margin-bottom: 20px;
-            color: #333; /* Темный текст для хорошей читаемости */
+            color: #333;
         }
-
+    
         /* Стили для заголовков */
-        .lesson-title {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color:rgb(61, 174, 168);
-            text-align: center;
-        }
-
         .lesson-heading {
             font-size: 24px;
             font-weight: bold;
             margin-top: 30px;
             margin-bottom: 15px;
-            color:rgb(253, 253, 253);
+            color: rgb(253, 253, 253);
         }
-
+    
         /* Стили для списков */
         .lesson-list {
             list-style-type: disc;
             padding-left: 20px;
             margin-bottom: 20px;
         }
-
+    
         .lesson-list li {
             font-size: 16px;
             margin-bottom: 10px;
         }
-
+    
         /* Стили для математических формул */
         .math {
             padding: 15px;
             margin: 20px 0;
-            font-size: 35px;  /* Увеличенный размер шрифта для формул */
-            color:rgb(139, 255, 255);
+            font-size: 35px;
+            color: rgb(139, 255, 255);
             font-family: 'Arial', sans-serif;
             position: relative;
         }
-
+    
         .math-inline {
-            background-color:var(--button-bg);
+            background-color: var(--button-bg);
             border-radius: 4px;
             padding: 0 5px;
-            color:rgb(255, 255, 255);
+            color: rgb(255, 255, 255);
             font-weight: bold;
-            font-size: 20px;  /* Увеличение шрифта для встроенных формул */
-            left: 0%;
+            font-size: 20px;
         }
-
+    
         /* Номера формул */
         .math-number {
             font-size: 18px;
@@ -210,30 +206,30 @@
             color: #3498db;
             font-weight: bold;
         }
-
+    
         /* Стили для номеров формул в виде ссылок */
         .math-number a {
             text-decoration: none;
             color: #3498db;
         }
-
+    
         .math-number a:hover {
             text-decoration: underline;
         }
-
+    
         /* Стили для улучшения восприятия текста */
         .lesson-text {
             text-align: justify;
             font-family: 'Arial', sans-serif;
-            color:rgb(253, 253, 253);
+            color: rgb(253, 253, 253);
         }
-
+    
         /* Стиль для абзацев */
         p.lesson-text {
             margin-bottom: 1.5em;
-            color:rgb(253, 253, 253);
+            color: rgb(253, 253, 253);
         }
-
+    
         /* Стили для больших заголовков, чтобы выделить номер формулы */
         .math-title {
             font-size: 26px;
@@ -242,7 +238,7 @@
             margin-bottom: 20px;
             color: #34495e;
         }
-
+    
         /* 🌙 Темный режим */
         @media (prefers-color-scheme: dark) {
             body {
@@ -257,9 +253,6 @@
         
             .lesson-title {
                 color: var(--text-dark-color);
-                position: relative;
-                top: -20px;
-                right: 40%;
             }
         
             .lesson-content {
@@ -274,33 +267,9 @@
                 background-color: var(--button-dark-hover);
             }
         }        
-
-        /* Уборка лишних с главной страницы SVG */
-        .center-line {
-            display: none;
-        }  
-
-        .title-container {
-            display: none;
-        }
-
-        .paragraph-container {
-            display: none;
-        }
-
-        .h2 {
-            display: none;
-        }
-
-        .h3 {
-            display: none;
-        }
-
-        #character-container {
-            display: none;
-        }
-
-        .svg-container {
+    
+        /* Уборка лишних элементов */
+        .center-line, .title-container, .paragraph-container, .h2, .h3, #character-container, .svg-container {
             display: none;
         }
     </style>

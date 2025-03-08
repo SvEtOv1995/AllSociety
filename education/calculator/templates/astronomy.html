@@ -9,13 +9,17 @@
     <script src="https://unpkg.com/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { 
-            margin: 0; 
-            overflow: hidden; 
-            background-color: black; 
-            font-family: 'Orbitron', sans-serif; 
+        /* Общие стили для всех устройств */
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+            font-family: 'Orbitron', sans-serif;
         }
-        canvas { display: block; }
+
+        canvas {
+            display: block;
+        }
 
         #info-panel {
             position: fixed;
@@ -127,17 +131,118 @@
             box-shadow: 0 0 20px rgba(255, 115, 0, 0.8);
         }
 
+        /* Стили для планшетов (ширина экрана до 1024px) */
+        @media (max-width: 1024px) {
+            #info-panel {
+                width: 50%;
+                padding: 15px;
+            }
+
+            #info-panel img {
+                width: 120px;
+                height: 100px;
+            }
+
+            #info-panel h2 {
+                font-size: 20px;
+            }
+
+            #info-panel p {
+                font-size: 14px;
+            }
+
+            #focus-panel {
+                top: 15px;
+                right: 15px;
+                padding: 10px;
+            }
+
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+
+            #exit-observe {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+        }
+
+        /* Стили для мобильных устройств (ширина экрана до 768px) */
         @media (max-width: 768px) {
             #info-panel {
                 width: 95%;
                 bottom: 10px;
                 left: 50%;
                 transform: translateX(-50%);
+                padding: 10px;
+            }
+
+            #info-panel img {
+                width: 100px;
+                height: 80px;
+            }
+
+            #info-panel h2 {
+                font-size: 18px;
+            }
+
+            #info-panel p {
+                font-size: 12px;
             }
 
             #focus-panel {
                 top: 10px;
                 right: 10px;
+                padding: 8px;
+            }
+
+            button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            #exit-observe {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+
+        /* Стили для очень маленьких экранов (ширина экрана до 480px) */
+        @media (max-width: 480px) {
+            #info-panel {
+                width: 100%;
+                bottom: 5px;
+                padding: 8px;
+            }
+
+            #info-panel img {
+                width: 80px;
+                height: 60px;
+            }
+
+            #info-panel h2 {
+                font-size: 16px;
+            }
+
+            #info-panel p {
+                font-size: 10px;
+            }
+
+            #focus-panel {
+                top: 5px;
+                right: 5px;
+                padding: 5px;
+            }
+
+            button {
+                padding: 6px 10px;
+                font-size: 10px;
+            }
+
+            #exit-observe {
+                padding: 6px 10px;
+                font-size: 10px;
             }
         }
     </style>
