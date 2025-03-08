@@ -132,6 +132,7 @@
         }
 
         .paragraph {
+            position: fixed;
             font-size: 15px;
             color: white;
             line-height: 1.6;
@@ -635,17 +636,17 @@
         
         
         .calculator-button {
-            background-color: #ffcc00; /* Yellow for Calculator */
-            position: relative;
-            top: 220px;
-            left: -35%;
+            background-color: #ffcc00;
+            position: fixed;
+            top: 215px;
+            right: 63%;
         }
         
         .notes-button {
-            background-color: #4CAF50; /* Green for Notes */
-            position: relative;
-            top: -100px;
-            right: 35%;
+            background-color: #4CAF50;
+            position: fixed;
+            top: 136px;
+            right: 64%;
         }
         
         .button:hover {
@@ -761,10 +762,10 @@
             max-width: 90%; /* Чтобы SVG не выходил за границы экрана */
             max-height: 50vh; /* Ограничение по высоте */
             filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.7)); /* Эффект свечения */
-            position: relative; /* Для возможности перемещения */
+            position: fixed; /* Для возможности перемещения */
             cursor: grab; /* Курсор в виде руки для перетаскивания */
-            top: 450px;
-            right: 25%;
+            top: 550px;
+            right: 60%;
         }
 
         /* Когда элемент захвачен для перетаскивания */
@@ -1315,11 +1316,6 @@
                 height: 2px;
             }
 
-            .animated-svg {
-                width: 35%;  /* Можно изменять ширину */
-                top: 360px;
-                right: 25%;
-            }
         }
         
         @media screen and (max-width: 240px) {
@@ -1431,6 +1427,8 @@
                 right: 12%; /* Сдвигаем поисковую строку влево */
             }
         }
+
+        
 
         
     </style>

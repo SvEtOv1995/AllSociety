@@ -13,9 +13,9 @@
         </a>
         
         <!-- Center-aligned Topics List -->
-        <div class="subject-container" style="display: flex; flex-direction: column; gap: 25px; margin-top: 20px; align-content: center;">
+        <div class="subject-container" style="display: flex; flex-direction: column; gap: 25px; margin-top: 20px; align-content: flex-end;">
             {% for topic in topics %}
-                <a href="{% url 'lesson_list' topic.id %}" class="button topic-button">
+                <a href="{% url 'lesson_list' topic.id %}" class="button">
                     <h2>{{ topic.name }}</h2>
                     {% if topic.image %}
                         <img src="{{ topic.image.url }}" alt="Иконка" class="small-icon" style="width: 40px; height: 40px; object-fit: cover; border-radius: 40%;">
@@ -32,7 +32,7 @@
 
     <br>
     
-    <a href="{% url 'subjects_list' %}" class="button" style=" position: relative; left: 35%; display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background-color: rgba(173, 216, 230, 0.6); border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; width: 30%;">
+    <a href="{% url 'subjects_list' %}" class="button" style=" position: relative; left: 57%; display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background-color: rgba(173, 216, 230, 0.6); border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; width: 30%;">
         Назад
     </a>
 
@@ -91,10 +91,8 @@
         }              
         
         h1 {
-
-            top: -20px;
-            right: 27%;
-
+            top: 71px;
+            right: 30%;
         }
 
         h2 {
