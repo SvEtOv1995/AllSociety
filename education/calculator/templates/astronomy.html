@@ -3,58 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Интерактивная обсерватория</title>
+    <title>Интерактивная 3D Обсерватория</title>
     <script src="https://unpkg.com/three@0.132.2/build/three.min.js"></script>
     <script src="https://unpkg.com/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://unpkg.com/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; overflow: hidden; background-color: black; font-family: Arial, sans-serif; }
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: black; 
+            font-family: 'Orbitron', sans-serif; 
+        }
         canvas { display: block; }
 
         #info-panel {
             position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(86, 86, 86, 0.9);
-            padding: 15px;
-            border-radius: 10px;
-            color: black;
-            width: 320px;
-            display: none;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 50, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            width: 30%;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
+            backdrop-filter: blur(10px);
+            transition: opacity 0.5s;
         }
+
         #info-panel img {
-            width: 100%;
-            border-radius: 10px;
-            background: #888;
-            padding: 5px;
+            width: 150px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #info-panel h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #00ffcc;
+        }
+
+        #info-panel p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #ffffff;
         }
 
         #focus-panel {
             position: fixed;
-            top: 50%;
-            left: 10px;
-            transform: translateY(-50%);
-            background: rgba(200, 200, 200, 0.9);
+            top: 20px;
+            right: 20px;
+            background: rgba(50, 50, 100, 0.9);
             padding: 15px;
-            border-radius: 10px;
-            color: black;
+            border-radius: 15px;
+            color: white;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.7);
+            backdrop-filter: blur(10px);
         }
+
         button {
-            background: white;
-            color: black;
+            background: linear-gradient(135deg, #ff007f, #7f00ff);
+            color: white;
             border: none;
-            padding: 8px;
-            border-radius: 5px;
+            padding: 12px 20px;
+            border-radius: 30px;
             cursor: pointer;
             font-weight: bold;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: 0.5s;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        button:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        button:hover {
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.8);
+        }
+
+        #exit-observe {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff0000, #ff7300);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        #exit-observe:hover {
+            box-shadow: 0 0 20px rgba(255, 115, 0, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            #info-panel {
+                width: 95%;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            #focus-panel {
+                top: 10px;
+                right: 10px;
+            }
         }
     </style>
 </head>
+<a href="{% url 'index' %}" class="button">📚 Вернуться на главную</a>
 <body>
+    <button id="exit-observe" style="display: none;">Выйти из наблюдения</button>
     <div id="info-panel">
         <img id="info-image" src="" alt="Планета">
         <h2 id="info-name"></h2>
@@ -64,69 +154,55 @@
         <p><strong>Средняя температура:</strong> <span id="info-temperature"></span> °C</p>
     </div>
 
-    <p class="mt-4 text-center text-gray-600"><a href="{% url 'index' %}" class="text-blue-500">🔙 На главную</a></p>
-
     <div id="focus-panel"></div>
 
     <script>
-        
-        // Создание сцены, камеры и рендера
         const scene = new THREE.Scene();
-
-        // Улучшенная камера с более реалистичным FOV и глубиной
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 20000);
-        camera.position.set(0, 300, 1000); // Оптимальное начальное положение
+        camera.position.set(0, 300, 1000);
 
-        // Улучшенный рендерер с антиалиасингом и прозрачностью
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true; // Включаем тени
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Улучшенные тени
-        renderer.toneMapping = THREE.ACESFilmicToneMapping; // Улучшенная цветопередача
-        renderer.outputEncoding = THREE.sRGBEncoding; // Коррекция цветов
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.outputEncoding = THREE.sRGBEncoding;
         document.body.appendChild(renderer.domElement);
 
-        // Автоматическое обновление размера рендера при изменении окна
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-
-        // Улучшенное управление камерой (OrbitControls)
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        camera.position.set(0, 250, 1200); // Улучшенная стартовая позиция
+        camera.position.set(0, 250, 1200);
         controls.target.set(0, 0, 0);
-        controls.enableDamping = true; // Плавность вращения
+        controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.autoRotate = true; // Авто-вращение
+        controls.autoRotate = true;
         controls.autoRotateSpeed = 0.2;
-        controls.minDistance = 200; // Минимальное расстояние камеры
-        controls.maxDistance = 5000; // Максимальное расстояние
-        controls.maxPolarAngle = Math.PI / 2; // Ограничение наклона вниз
+        controls.minDistance = 200;
+        controls.maxDistance = 5000;
+        controls.maxPolarAngle = Math.PI / 2;
 
-        // Глобальное освещение
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // Мягкий заполняющий свет
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
         scene.add(ambientLight);
 
-        // Основной источник света (Солнце)
-        const sunLight = new THREE.PointLight(0xffffff, 2, 10000, 2); // decay = 2 для реалистичного затухания
+        const sunLight = new THREE.PointLight(0xffffff, 2, 10000, 2);
         sunLight.position.set(0, 0, 0);
         sunLight.castShadow = true;
         sunLight.shadow.mapSize.width = 2048;
         sunLight.shadow.mapSize.height = 2048;
         scene.add(sunLight);
 
-        // Дополнительный направленный свет для теней
         const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
         dirLight.position.set(5, 10, 2);
         dirLight.castShadow = true;
         scene.add(dirLight);
 
-
-        const planets = {}; // Объект для хранения данных о планетах
-        let focusedPlanet = null; // Выбранная планета
+        const planets = {};
+        let focusedPlanet = null;
 
         const planetData = [
         {
@@ -268,33 +344,22 @@
     ];
 
 
-        console.log(planetData);
-
-        // Создание материала для Солнца без текстуры
         const sunMaterial = new THREE.MeshStandardMaterial({
-            color: 0xffff00,  // Желтый цвет
-            emissive: 0xffff00,  // Эмиссия желтого света
-            emissiveIntensity: 2  // Интенсивность эмиссии
+            color: 0xffff00,
+            emissive: 0xffff00,
+            emissiveIntensity: 2
         });
 
-        // Создание геометрии для Солнца
         const sunGeometry = new THREE.SphereGeometry(50, 32, 32);
-
-        // Создание объекта Солнца
         const sun = new THREE.Mesh(sunGeometry, sunMaterial);
-
-        // Добавление Солнца в сцену
         scene.add(sun);
 
-
-        // Создание планет
         planetData.forEach(data => {
             const geometry = new THREE.SphereGeometry(data.size, 32, 32);
             const material = new THREE.MeshStandardMaterial({ color: data.color });
             const planet = new THREE.Mesh(geometry, material);
             scene.add(planet);
 
-            // Добавляем кольца, если есть
             if (data.hasRings) {
                 createRings(planet, data.size * 1.5, data.size * 2, 0xaaaaaa);
             }
@@ -307,29 +372,24 @@
                 info: data
             };
 
-            // Создание кнопок для фокусировки
             createFocusButton(data.name);
         });
 
-        // Функция создания колец вокруг планеты
         function createRings(planet, innerRadius, outerRadius, color) {
             const ringGeometry = new THREE.RingGeometry(innerRadius, outerRadius, 64);
             const ringMaterial = new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide });
             const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-            ring.rotation.x = Math.PI / 2; // Наклоняем кольцо
+            ring.rotation.x = Math.PI / 2;
             planet.add(ring);
         }
 
-        // Функция для создания кнопок фокусировки
         function createFocusButton(name) {
             const button = document.createElement('button');
             button.innerText = name;
-            button.classList.add('focus-button'); // Добавляем класс стилей
             button.onclick = () => focusOnPlanet(name);
             document.getElementById('focus-panel').appendChild(button);
         }
 
-        // Функция для отображения информации о планете
         function showInfo(name) {
             const info = planets[name].info;
             document.getElementById('info-image').src = info.img;
@@ -338,37 +398,14 @@
             document.getElementById('info-distance').innerText = `📏 Расстояние: ${info.distance} млн км`;
             document.getElementById('info-diameter').innerText = `⚪ Диаметр: ${info.diameter} км`;
             document.getElementById('info-temperature').innerText = `🌡 Температура: ${info.temperature}°C`;
-            document.getElementById('info-panel').style.display = 'block';
+            document.getElementById('info-panel').style.display = 'flex';
         }
 
-        // Добавление CSS-стилей для кнопок
-        const style = document.createElement('style');
-        style.innerHTML = `
-            .focus-button {
-                margin: 5px;
-                padding: 8px 15px;
-                background: #333;
-                color: white;
-                border: none;
-                cursor: pointer;
-                border-radius: 5px;
-                transition: 0.3s;
-            }
-            .focus-button:hover {
-                background: #555;
-            }
-        `;
-        document.head.appendChild(style);
-
-        
-
-        // Функция для фокусировки камеры на выбранной планете
         function focusOnPlanet(name) {
             showInfo(name);
             focusedPlanet = planets[name];
         }
 
-        // Функция генерации звездного фона
         function generateStars() {
             const starGeometry = new THREE.BufferGeometry();
             const starVertices = [];
@@ -398,85 +435,15 @@
             const stars = new THREE.Points(starGeometry, starMaterial);
             scene.add(stars);
 
-            // Анимация мерцания звезд
             function animateStars() {
                 starMaterial.opacity = 0.8 + Math.sin(Date.now() * 0.001) * 0.2;
                 requestAnimationFrame(animateStars);
             }
             animateStars();
-
-            // Генерация Млечного Пути
-            const milkyWayGeometry = new THREE.BufferGeometry();
-            const milkyWayVertices = [];
-            const milkyWayColors = [];
-
-            for (let i = 0; i < 8000; i++) {
-                const angle = Math.random() * Math.PI * 2;
-                const radius = Math.random() * 4000 + 2000;
-                const x = Math.cos(angle) * radius;
-                const y = (Math.random() - 0.5) * 300;
-                const z = Math.sin(angle) * radius;
-                milkyWayVertices.push(x, y, z);
-
-                const color = new THREE.Color(1, 1, Math.random() * 0.5 + 0.5);
-                milkyWayColors.push(color.r, color.g, color.b);
-            }
-
-            milkyWayGeometry.setAttribute('position', new THREE.Float32BufferAttribute(milkyWayVertices, 3));
-            milkyWayGeometry.setAttribute('color', new THREE.Float32BufferAttribute(milkyWayColors, 3));
-
-            const milkyWayMaterial = new THREE.PointsMaterial({ 
-                vertexColors: true, 
-                size: 1.2, 
-                transparent: true, 
-                opacity: 0.5 
-            });
-
-            const milkyWay = new THREE.Points(milkyWayGeometry, milkyWayMaterial);
-            scene.add(milkyWay);
-
-            // Функция создания падающей звезды (кометы)
-            function createFallingStar() {
-                const cometGeometry = new THREE.SphereGeometry(3, 16, 16);
-                const cometMaterial = new THREE.MeshBasicMaterial({ color: 0xfff4e5 });
-                const comet = new THREE.Mesh(cometGeometry, cometMaterial);
-
-                comet.position.set((Math.random() - 0.5) * 5000, 2000, (Math.random() - 0.5) * 5000);
-                scene.add(comet);
-
-                // Создание хвоста кометы
-                const tailGeometry = new THREE.BufferGeometry();
-                const tailMaterial = new THREE.LineBasicMaterial({ color: 0xffcc99, transparent: true, opacity: 0.8 });
-                const tail = new THREE.Line(tailGeometry, tailMaterial);
-                scene.add(tail);
-
-                let tailPositions = [comet.position.x, comet.position.y, comet.position.z];
-
-                function animateFall() {
-                    if (comet.position.y > -2000) {
-                        comet.position.y -= 25;
-                        comet.position.x += Math.random() * 10 - 5;
-                        comet.position.z += Math.random() * 10 - 5;
-
-                        tailPositions.push(comet.position.x, comet.position.y, comet.position.z);
-                        if (tailPositions.length > 30) tailPositions.shift(); // Ограничиваем длину хвоста
-
-                        tailGeometry.setAttribute('position', new THREE.Float32BufferAttribute(tailPositions, 3));
-
-                        requestAnimationFrame(animateFall);
-                    } else {
-                        scene.remove(comet);
-                        scene.remove(tail);
-                    }
-                }
-                animateFall();
-            }
-            setInterval(createFallingStar, Math.random() * 15000 + 15000); // Раз в 15-30 сек
         }
 
         generateStars();
 
-        // Анимация планет и камеры
         function animate() {
             requestAnimationFrame(animate);
 
@@ -486,7 +453,6 @@
                 planet.mesh.position.x = Math.cos(planet.angle) * planet.distance;
                 planet.mesh.position.z = Math.sin(planet.angle) * planet.distance;
 
-                // Плавное перемещение камеры к выбранной планете
                 if (focusedPlanet === planet) {
                     const targetPosition = planet.mesh.position.clone().add(new THREE.Vector3(0, 50, 200));
                     camera.position.lerp(targetPosition, 0.05);
@@ -500,7 +466,46 @@
         }
         animate();
 
+        const exitButton = document.getElementById('exit-observe');
 
+        function exitObservationMode() {
+            focusedPlanet = null;
+            document.getElementById('info-panel').style.display = 'none';
+            exitButton.style.display = 'none';
+        }
+
+        function handlePlanetClick(name) {
+            if (focusedPlanet && focusedPlanet.info.name === name) {
+                document.getElementById('info-panel').style.display = 'none';
+                focusedPlanet = null;
+                exitButton.style.display = 'none';
+            } else {
+                focusOnPlanet(name);
+                exitButton.style.display = 'block';
+            }
+        }
+
+        Object.keys(planets).forEach(name => {
+            planets[name].mesh.userData = { planetName: name };
+        });
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        window.addEventListener('click', event => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(Object.values(planets).map(p => p.mesh));
+
+            if (intersects.length > 0) {
+                const clickedPlanet = intersects[0].object.userData.planetName;
+                handlePlanetClick(clickedPlanet);
+            }
+        });
+
+        exitButton.addEventListener('click', exitObservationMode);
     </script>
 </body>
 </html>
