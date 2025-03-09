@@ -6,7 +6,6 @@
 
 {% block content %}
     <div class="lesson-container">
-        <h1 class="lesson-title">{{ lesson.title }}</h1>
 
         <!-- SVG контент, если есть -->
         {% if lesson.svg_content %}
@@ -86,7 +85,7 @@
             --text-light-color: #2A2A2A; /* Тёмно-серый текст */
             --button-light-bg: #7DE2D1; /* Светлый бирюзовый */
             --button-light-hover: #29A0B1; /* Чуть более насыщенный */
-            --container-light-bg: rgba(255, 255, 255, 0.8); /* Полупрозрачный белый */
+            --container-light-bg: rgba(115, 228, 245, 0.8); /* Полупрозрачный белый */
             --shadow-light: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Мягкая тень */
         
             /* 🌙 Темный режим */
@@ -102,11 +101,11 @@
         body {
             background-color: var(--bg-light-color);
             color: var(--text-light-color);
-            font-family: Arial, sans-serif;
+            font-family: 'Comic Sans MS', sans-serif;
         }
         
         .lesson-container {
-            background-color: var(--container-light-bg);
+            background-color: var(--container-bg);
             border-radius: 40px;
             padding: 30px;
             box-shadow: var(--shadow-light);
@@ -117,7 +116,7 @@
         .lesson-title {
             font-size: 2rem;
             font-weight: bold;
-            color: var(--text-light-color);
+            color: var(--text-color);
             margin-bottom: 126px;
             position: fixed;
             top: 170px;
@@ -126,7 +125,7 @@
         
         .lesson-content {
             font-size: 1.2rem;
-            color: var(--text-light-color);
+            color: var(--text-color);
             line-height: 1.6;
         }
     
@@ -184,7 +183,7 @@
             margin: 20px 0;
             font-size: 35px;
             color: rgb(139, 255, 255);
-            font-family: 'Arial', sans-serif;
+            font-family: 'Comic Sans MS', sans-serif;
             position: relative;
         }
     
@@ -220,7 +219,7 @@
         /* Стили для улучшения восприятия текста */
         .lesson-text {
             text-align: justify;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Comic Sans MS', sans-serif;
             color: rgb(253, 253, 253);
         }
     
