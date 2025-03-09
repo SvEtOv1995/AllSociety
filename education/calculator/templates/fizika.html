@@ -1,94 +1,248 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends 'base.html' %}
 
-{% block title %}Физический калькулятор{% endblock %}
+{% block title %}Калькулятор{% endblock %}
 
 {% block content %}
-<style>
-
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
+    <title>Физический калькулятор</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .card {
-            background: var(--button-bg); /* Полупрозрачный цвет */
-            padding: 30px;
-            border-radius: 16px; /* Закругление углов */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Мягкая тень */
-            backdrop-filter: blur(8px); /* Легкое размытие для стеклянного эффекта */
-        }
+        
 
-
-        h2 {
-            font-size: 28px;
-            font-weight: bold;
+        /* Стили для главной страницы */
+        .welcome-container {
             text-align: center;
-            margin-bottom: 20px;
-            color: #ffffff;
+            padding: 50px 20px;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        label {
-            font-size: 18px;
-            font-weight: 600;
-            color: #ffffff;
-            display: block;
-            margin-bottom: 8px;
+        .physics-svg {
+            width: 443px;
+            height: 344px;
+            margin: 17px auto;
+            position: relative;
+            left: 12%;
         }
 
-        select, input, textarea {
+        .welcome-title {
+            color: var(--text-color);
+            font-size: 1.9em;
+            margin: 20px 0;
+            position: relative;
+            top: -45px;
+            right: 21%;
+        }
+
+        .description {
+            color:var(--text-color);
+            font-size: 1.1em;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .start-btn {
+            background: var(--button-bg);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.3s;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            background:var(--button-hover);
+        }
+
+        /* Стили для меню и калькулятора */
+        .menu-toggle {
+            position: fixed;
+            top: 79px;
+            left: 95px;
+            cursor: pointer;
+            z-index: 1000;
+            background: #2c3e50;
+            padding: 12px 15px;
+            border-radius: 5px;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: -307px;
+            top: 66px;
+            width: 300px;
+            height: 90%;
+            background: var(--bg-color);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+            padding: 20px;
+            overflow-y: auto;
+            border-radius: 30px;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .search-container {
+            margin-bottom: 25px;
+            margin-top: 60px; /* Отступ для поиска */
+        }
+
+        .search-enput {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ccc;
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 16px;
-            background: #f9f9f9;
             transition: border-color 0.3s;
         }
 
-        select:focus, input:focus, textarea:focus {
-            border-color: #007bff;
+        .search-enput:focus {
+            border-color: #3498db;
             outline: none;
-            background: #fff;
         }
 
-        button {
-            width: 100%;
-            background: #007bff;
-            color: white;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
+        .formula-category {
+            margin-bottom: 25px;
+        }
+
+        .category-title {
+            font-weight: 600;
+            color: var(--bg-color);
+            margin: 15px 0;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 0.95em;
+        }
+
+        .formula-item {
+            padding: 12px;
             cursor: pointer;
-            transition: background 0.3s;
+            border-radius: 6px;
+            margin: 8px 0;
+            transition: 0.2s;
+            background:var(--button-bg);
+            border: 1px solid #e9ecef;
         }
 
-        button:hover {
-            background: #0056b3;
+        .formula-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
         }
 
-        #result {
-            text-align: center;
-            font-size: 22px;
-            font-weight: bold;
-            color: #28a745;
-            margin-top: 15px;
+        .content {
+            margin-left: 0;
+            padding: 80px 20px 20px;
+            transition: 0.3s;
+            display: none; /* Скрываем калькулятор на старте */
         }
 
-        .back-link {
+        .details {
+            background: var(--button-color);
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 0px 20px 9px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .details h2 {
+            color:var(--text-color);
+            margin-bottom: 20px;
+            font-size: 1.4em;
+        }
+
+        label {
             display: block;
-            text-align: center;
-            margin-top: 15px;
-            font-size: 16px;
-            color: #007bff;
-            text-decoration: none;
+            margin: 15px 0 8px;
+            color:var(--text-color);
+            font-weight: 500;
         }
 
-        .back-link:hover {
-            text-decoration: underline;
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background:var(--bg-color);
+            border-radius: 6px;
+            font-weight: 600;
+            color:var(--text-color);
+        }
+
+        .theory {
+            margin-top: 20px;
+            padding: 15px;
+            background:var(--bg-color);
+            border-radius: 6px;
+            font-size: 0.95em;
+            line-height: 1.6;
+            color:var(--text-color);
+        }
+
+        .history-icon {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .history-popup {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: var(--bg-color);
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .history-item {
+            padding: 12px;
+            margin: 8px 0;
+            background:var(--button-bg);
+            border-radius: 35px;
+            font-size: 0.9em;
         }
 
         /* Уборка лишних с главной страницы SVG */
@@ -120,94 +274,446 @@
             display: none;
         }
 
-</style>
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+        @media (max-width: 768px) {
+            .content.active {
+                margin-left: 0;
+            }
+            
+            .sidebar {
+                width: 100%;
+                left: -100%;
+            }
+            
+            .sidebar.active {
+                left: 0;
+            }
 
-<div class="container">
-    <div class="card">
-        <h2>⚛️ Физический калькулятор</h2>
+        }
+    </style>
+</head>
+<body>
 
-        <label>Выберите формулу:</label>
-        <select id="formula" onchange="updateFields()">
-            <option value="f_ma">F = m * a (Сила)</option>
-            <option value="e_mgh">E = m * g * h (Энергия)</option>
-            <option value="v_st">V = S / t (Скорость)</option>
-            <option value="p_w">P = W / t (Мощность)</option>
-            <option value="a_v">a = (v - v0) / t (Ускорение)</option>
-            <option value="v_c">V = √(2 * g * h) (Скорость падения)</option>
-            <option value="q_ohm">I = U / R (Закон Ома)</option>
-        </select>
+<!-- Главная страница -->
+<div class="welcome-container" id="welcomePage">
+    <svg class="physics-svg" viewBox="0 0 150 100">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="#fff" stroke-width="2"/>
+        <g transform="translate(30,30)">
+            <circle cx="25" cy="25" r="5" fill="#3498db">
+                <animate attributeName="r" values="5;3;5" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <path d="M25,25 L50,50" stroke="#e74c3c" stroke-width="1.5"/>
+            <circle cx="50" cy="50" r="8" fill="#2ecc71">
+                <animate attributeName="cx" values="50;55;50" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <path d="M50,50 Q65,35 80,50" stroke="#f1c40f" fill="none" stroke-width="1.5"/>
+            <rect x="60" y="60" width="5" height="5" fill="#9b59b6" transform="rotate(45 65 65)">
+                <animateTransform attributeName="transform" type="rotate" from="0 65 65" to="360 65 65" dur="3s" repeatCount="indefinite"/>
+            </rect>
+        </g>
+    </svg>
+    
+    <h1 class="welcome-title">Физический калькулятор</h1>
+    
+    <p class="description">
+        Интерактивный помощник для решения задач по физике. Выбирайте нужные формулы, 
+        вводите параметры и получайте подробные решения. Работает с механикой, 
+        термодинамикой, электричеством и другими разделами физики.
+    </p>
+    
+    <button class="start-btn" onclick="startCalculations()">Начать расчеты</button>
+</div>
 
-        <div id="inputs"></div>
-        <div id="formulaDescription"></div>
+<!-- Остальная часть с меню и калькулятором -->
+<div class="menu-toggle" onclick="toggleSidebar()">☰ Формулы</div>
 
-        <label>Введите условия задачи:</label>
-        <textarea id="problem" placeholder="Опишите вашу задачу..."></textarea>
+<div class="sidebar" id="sidebar">
+    <div class="search-container">
+        <input type="text" class="search-enput" placeholder="Поиск формул..." oninput="filterFormulas()">
+    </div>
+    
+    <div class="formula-category">
+        <div class="category-title">Механика</div>
+        <div class="formula-item" onclick="showFormula('forceDetails')">Сила (F = m·a)</div>
+        <div class="formula-item" onclick="showFormula('workDetails')">Работа (W = F·d)</div>
+        <div class="formula-item" onclick="showFormula('keDetails')">Кинетическая энергия (KE = ½mv²)</div>
+        <div class="formula-item" onclick="showFormula('momentumDetails')">Импульс (p = m·v)</div>
+        <div class="formula-item" onclick="showFormula('gravityDetails')">Сила тяжести (F = m·g)</div>
+        <div class="formula-item" onclick="showFormula('pressureDetails')">Давление (P = F/S)</div>
+    </div>
 
-        <button onclick="calculate()" class="button">Рассчитать</button>
+    <div class="formula-category">
+        <div class="category-title">Энергия</div>
+        <div class="formula-item" onclick="showFormula('workEnergyDetails')">Работа с углом (W = F·d·cosθ)</div>
+        <div class="formula-item" onclick="showFormula('thermalDetails')">Теплота (Q = mcΔT)</div>
+    </div>
 
-        <div id="result"></div>
+    <div class="formula-category">
+        <div class="category-title">Электричество</div>
+        <div class="formula-item" onclick="showFormula('ohmDetails')">Закон Ома (U = I·R)</div>
+        <div class="formula-item" onclick="showFormula('powerDetails')">Мощность (P = W/t)</div>
+        <div class="formula-item" onclick="showFormula('coulombDetails')">Закон Кулона (F = k·q₁q₂/r²)</div>
+    </div>
 
-        <a href="{% url 'index' %}" class="button">📚 Вернуться на главную</a>
+    <div class="formula-category">
+        <div class="category-title">Волны</div>
+        <div class="formula-item" onclick="showFormula('waveDetails')">Скорость волны (v = f·λ)</div>
     </div>
 </div>
 
+<div class="content" id="mainContent">
+    <!-- Блоки с формулами -->
+    <div class="details" id="forceDetails">
+        <h2>Расчет силы (F = m·a)</h2>
+        <label>Масса (кг): <input type="number" id="mass"></label>
+        <label>Ускорение (м/с²): <input type="number" id="acceleration"></label>
+        <button onclick="calculateForce()">Рассчитать</button>
+        <div class="result" id="forceResult"></div>
+        <div class="theory" id="forceTheory">
+            <strong>Теория:</strong> Сила — это векторная величина, которая характеризует воздействие на тело, вызывающее его ускорение. 
+            Второй закон Ньютона гласит, что сила равна произведению массы тела на его ускорение (F = m·a). 
+            Единица измерения силы — Ньютон (Н).
+        </div>
+    </div>
+
+    <div class="details" id="workDetails">
+        <h2>Расчет работы (W = F·d)</h2>
+        <label>Сила (Н): <input type="number" id="force"></label>
+        <label>Расстояние (м): <input type="number" id="distance"></label>
+        <button onclick="calculateWork()">Рассчитать</button>
+        <div class="result" id="workResult"></div>
+        <div class="theory" id="workTheory">
+            <strong>Теория:</strong> Работа — это скалярная величина, равная произведению силы на перемещение и косинус угла между ними. 
+            Если сила и перемещение направлены в одну сторону, работа вычисляется как W = F·d. 
+            Единица измерения работы — Джоуль (Дж).
+        </div>
+    </div>
+
+    <div class="details" id="keDetails">
+        <h2>Кинетическая энергия (KE = ½mv²)</h2>
+        <label>Масса (кг): <input type="number" id="massKE"></label>
+        <label>Скорость (м/с): <input type="number" id="velocity"></label>
+        <button onclick="calculateKineticEnergy()">Рассчитать</button>
+        <div class="result" id="keResult"></div>
+        <div class="theory" id="keTheory">
+            <strong>Теория:</strong> Кинетическая энергия — это энергия движения. Она зависит от массы тела и его скорости. 
+            Формула для расчета: KE = ½mv², где m — масса, v — скорость. 
+            Единица измерения — Джоуль (Дж).
+        </div>
+    </div>
+
+    <div class="details" id="momentumDetails">
+        <h2>Импульс (p = m·v)</h2>
+        <label>Масса (кг): <input type="number" id="massP"></label>
+        <label>Скорость (м/с): <input type="number" id="velocityP"></label>
+        <button onclick="calculateMomentum()">Рассчитать</button>
+        <div class="result" id="momentumResult"></div>
+        <div class="theory" id="momentumTheory">
+            <strong>Теория:</strong> Импульс — это векторная величина, равная произведению массы тела на его скорость (p = m·v). 
+            Импульс характеризует количество движения тела. Единица измерения — кг·м/с.
+        </div>
+    </div>
+
+    <div class="details" id="gravityDetails">
+        <h2>Сила тяжести (F = m·g)</h2>
+        <label>Масса (кг): <input type="number" id="massG"></label>
+        <button onclick="calculateGravity()">Рассчитать</button>
+        <div class="result" id="gravityResult"></div>
+        <div class="theory" id="gravityTheory">
+            <strong>Теория:</strong> Сила тяжести — это сила, с которой Земля притягивает тело. 
+            Она вычисляется по формуле F = m·g, где m — масса тела, g — ускорение свободного падения (~9.81 м/с²). 
+            Единица измерения — Ньютон (Н).
+        </div>
+    </div>
+
+    <div class="details" id="pressureDetails">
+        <h2>Давление (P = F/S)</h2>
+        <label>Сила (Н): <input type="number" id="forceP"></label>
+        <label>Площадь (м²): <input type="number" id="area"></label>
+        <button onclick="calculatePressure()">Рассчитать</button>
+        <div class="result" id="pressureResult"></div>
+        <div class="theory" id="pressureTheory">
+            <strong>Теория:</strong> Давление — это физическая величина, равная отношению силы к площади, на которую она действует. 
+            Формула: P = F/S, где F — сила, S — площадь. Единица измерения — Паскаль (Па).
+        </div>
+    </div>
+
+    <div class="details" id="workEnergyDetails">
+        <h2>Работа с углом (W = F·d·cosθ)</h2>
+        <label>Сила (Н): <input type="number" id="forceWE"></label>
+        <label>Расстояние (м): <input type="number" id="distanceWE"></label>
+        <label>Угол (градусы): <input type="number" id="angle"></label>
+        <button onclick="calculateWorkEnergy()">Рассчитать</button>
+        <div class="result" id="workEnergyResult"></div>
+        <div class="theory" id="workEnergyTheory">
+            <strong>Теория:</strong> Работа с учетом угла — это работа, совершаемая силой, направленной под углом к перемещению. 
+            Формула: W = F·d·cosθ, где θ — угол между силой и перемещением. Единица измерения — Джоуль (Дж).
+        </div>
+    </div>
+
+    <div class="details" id="thermalDetails">
+        <h2>Теплота (Q = mcΔT)</h2>
+        <label>Масса (кг): <input type="number" id="massT"></label>
+        <label>Удельная теплоемкость (Дж/(кг·°C)): <input type="number" id="specificHeat"></label>
+        <label>Изменение температуры (°C): <input type="number" id="deltaT"></label>
+        <button onclick="calculateThermal()">Рассчитать</button>
+        <div class="result" id="thermalResult"></div>
+        <div class="theory" id="thermalTheory">
+            <strong>Теория:</strong> Теплота — это энергия, передаваемая между телами из-за разницы температур. 
+            Формула: Q = mcΔT, где m — масса, c — удельная теплоемкость, ΔT — изменение температуры. 
+            Единица измерения — Джоуль (Дж).
+        </div>
+    </div>
+
+    <div class="details" id="ohmDetails">
+        <h2>Закон Ома (U = I·R)</h2>
+        <label>Сила тока (А): <input type="number" id="current"></label>
+        <label>Сопротивление (Ом): <input type="number" id="resistance"></label>
+        <button onclick="calculateOhm()">Рассчитать</button>
+        <div class="result" id="ohmResult"></div>
+        <div class="theory" id="ohmTheory">
+            <strong>Теория:</strong> Закон Ома связывает напряжение, силу тока и сопротивление в электрической цепи. 
+            Формула: U = I·R, где U — напряжение, I — сила тока, R — сопротивление. 
+            Единица измерения напряжения — Вольт (В).
+        </div>
+    </div>
+
+    <div class="details" id="powerDetails">
+        <h2>Мощность (P = W/t)</h2>
+        <label>Работа (Дж): <input type="number" id="workP"></label>
+        <label>Время (с): <input type="number" id="timeP"></label>
+        <button onclick="calculatePower()">Рассчитать</button>
+        <div class="result" id="powerResult"></div>
+        <div class="theory" id="powerTheory">
+            <strong>Теория:</strong> Мощность — это физическая величина, равная отношению работы ко времени. 
+            Формула: P = W/t, где W — работа, t — время. Единица измерения — Ватт (Вт).
+        </div>
+    </div>
+
+    <div class="details" id="coulombDetails">
+        <h2>Закон Кулона (F = k·q₁q₂/r²)</h2>
+        <label>Заряд 1 (Кл): <input type="number" id="charge1"></label>
+        <label>Заряд 2 (Кл): <input type="number" id="charge2"></label>
+        <label>Расстояние (м): <input type="number" id="distanceC"></label>
+        <button onclick="calculateCoulomb()">Рассчитать</button>
+        <div class="result" id="coulombResult"></div>
+        <div class="theory" id="coulombTheory">
+            <strong>Теория:</strong> Закон Кулона описывает силу взаимодействия между двумя точечными зарядами. 
+            Формула: F = k·q₁q₂/r², где k — постоянная Кулона (~9×10⁹ Н·м²/Кл²), q₁ и q₂ — заряды, r — расстояние между ними. 
+            Единица измерения силы — Ньютон (Н).
+        </div>
+    </div>
+
+    <div class="details" id="waveDetails">
+        <h2>Скорость волны (v = f·λ)</h2>
+        <label>Частота (Гц): <input type="number" id="frequency"></label>
+        <label>Длина волны (м): <input type="number" id="wavelength"></label>
+        <button onclick="calculateWaveSpeed()">Рассчитать</button>
+        <div class="result" id="waveResult"></div>
+        <div class="theory" id="waveTheory">
+            <strong>Теория:</strong> Скорость волны — это скорость распространения волны в среде. 
+            Формула: v = f·λ, где f — частота, λ — длина волны. 
+            Единица измерения скорости — м/с.
+        </div>
+    </div>
+</div>
+
+<div class="history-icon" onclick="toggleHistory()">📜</div>
+<a href="{% url 'index' %}" class="button">📚 Вернуться на главную</a>
+<div class="history-popup" id="historyPopup">
+    <h3>История расчетов</h3>
+    <div id="historyList"></div>
+</div>
+
 <script>
-    const formulaDescriptions = {
-        'f_ma': { description: "Сила (F) равна массе (m), умноженной на ускорение (a).", variables: ['m', 'a'] },
-        'e_mgh': { description: "Энергия (E) равна массе (m), ускорению свободного падения (g) и высоте (h).", variables: ['m', 'g', 'h'] },
-        'v_st': { description: "Скорость (V) равна расстоянию (S), деленному на время (t).", variables: ['S', 't'] },
-        'p_w': { description: "Мощность (P) равна работе (W), деленной на время (t).", variables: ['W', 't'] },
-        'a_v': { description: "Ускорение (a) равно изменению скорости (v - v0) деленному на время (t).", variables: ['v', 'v0', 't'] },
-        'v_c': { description: "Скорость тела (V) при падении с высоты (h) равна √(2 * g * h).", variables: ['g', 'h'] },
-        'q_ohm': { description: "Ток (I) равен напряжению (U), деленному на сопротивление (R).", variables: ['U', 'R'] }
-    };
+    let history = [];
 
-    function updateFields() {
-        const formula = document.getElementById('formula').value;
-        const inputsDiv = document.getElementById('inputs');
-        const descriptionDiv = document.getElementById('formulaDescription');
-        inputsDiv.innerHTML = '';
-        descriptionDiv.innerHTML = `<strong>Описание:</strong> ${formulaDescriptions[formula].description}`;
-        
-        formulaDescriptions[formula].variables.forEach(variable => {
-            inputsDiv.innerHTML += `
-                <label>${variable}:</label>
-                <input type='number' id='${variable}'>
-            `;
+    // Управление главной страницей
+    function startCalculations() {
+        document.getElementById('welcomePage').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+    }
+
+    // Управление боковым меню
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('mainContent').classList.toggle('active');
+    }
+
+    // Показать выбранную формулу
+    function showFormula(formulaId) {
+        document.getElementById('welcomePage').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        document.querySelectorAll('.details').forEach(d => d.style.display = 'none');
+        document.getElementById(formulaId).style.display = 'block';
+        window.scrollTo(0, 0);
+    }
+
+    // Фильтрация формул
+    function filterFormulas() {
+        const search = document.querySelector('.search-enput').value.toLowerCase();
+        document.querySelectorAll('.formula-item').forEach(item => {
+            item.style.display = item.textContent.toLowerCase().includes(search) ? 'block' : 'none';
         });
     }
 
-    function calculate() {
-        const formula = document.getElementById('formula').value;
-        let result = 0;
-        let values = {};
-        let allFilled = true;
-
-        formulaDescriptions[formula].variables.forEach(variable => {
-            let value = parseFloat(document.getElementById(variable).value);
-            if (isNaN(value)) allFilled = false;
-            values[variable] = value;
-        });
-
-        if (!allFilled) {
-            alert('Заполните все поля!');
-            return;
-        }
-
-        switch (formula) {
-            case 'f_ma': result = values['m'] * values['a']; break;
-            case 'e_mgh': result = values['m'] * values['g'] * values['h']; break;
-            case 'v_st': result = values['S'] / values['t']; break;
-            case 'p_w': result = values['W'] / values['t']; break;
-            case 'a_v': result = (values['v'] - values['v0']) / values['t']; break;
-            case 'v_c': result = Math.sqrt(2 * values['g'] * values['h']); break;
-            case 'q_ohm': result = values['U'] / values['R']; break;
-        }
-
-        document.getElementById('result').innerText = `Результат: ${result}`;
+    // История расчетов
+    function addToHistory(formula, result) {
+        history.unshift({formula, result});
+        if(history.length > 50) history.pop();
+        updateHistory();
     }
 
-    updateFields();
+    function updateHistory() {
+        document.getElementById('historyList').innerHTML = history
+            .map((item, index) => `
+                <div class="history-item">
+                    <strong>${index+1}.</strong> ${item.formula}<br>
+                    Результат: ${item.result}
+                </div>
+            `).join('');
+    }
+
+    function toggleHistory() {
+        document.getElementById('historyPopup').style.display = 
+            document.getElementById('historyPopup').style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Функции расчетов
+    function calculateForce() {
+        const m = parseFloat(document.getElementById('mass').value);
+        const a = parseFloat(document.getElementById('acceleration').value);
+        const result = m * a;
+        document.getElementById('forceResult').innerHTML = `
+            Сила: <strong>${result.toFixed(2)} Н</strong><br>
+            <small>Решение: F = ${m} × ${a} = ${result.toFixed(2)} Н</small>
+        `;
+        addToHistory('Сила (F = m·a)', `${result.toFixed(2)} Н`);
+    }
+
+    function calculateWork() {
+        const f = parseFloat(document.getElementById('force').value);
+        const d = parseFloat(document.getElementById('distance').value);
+        const result = f * d;
+        document.getElementById('workResult').innerHTML = `
+            Работа: <strong>${result.toFixed(2)} Дж</strong><br>
+            <small>Решение: W = ${f} × ${d} = ${result.toFixed(2)} Дж</small>
+        `;
+        addToHistory('Работа (W = F·d)', `${result.toFixed(2)} Дж`);
+    }
+
+    function calculateKineticEnergy() {
+        const m = parseFloat(document.getElementById('massKE').value);
+        const v = parseFloat(document.getElementById('velocity').value);
+        const result = 0.5 * m * Math.pow(v, 2);
+        document.getElementById('keResult').innerHTML = `
+            Кинетическая энергия: <strong>${result.toFixed(2)} Дж</strong><br>
+            <small>Решение: KE = ½ × ${m} × ${v}² = ${result.toFixed(2)} Дж</small>
+        `;
+        addToHistory('Кинетическая энергия (KE = ½mv²)', `${result.toFixed(2)} Дж`);
+    }
+
+    function calculateMomentum() {
+        const m = parseFloat(document.getElementById('massP').value);
+        const v = parseFloat(document.getElementById('velocityP').value);
+        const result = m * v;
+        document.getElementById('momentumResult').innerHTML = `
+            Импульс: <strong>${result.toFixed(2)} кг·м/с</strong><br>
+            <small>Решение: p = ${m} × ${v} = ${result.toFixed(2)} кг·м/с</small>
+        `;
+        addToHistory('Импульс (p = m·v)', `${result.toFixed(2)} кг·м/с`);
+    }
+
+    function calculateGravity() {
+        const m = parseFloat(document.getElementById('massG').value);
+        const g = 9.81;
+        const result = m * g;
+        document.getElementById('gravityResult').innerHTML = `
+            Сила тяжести: <strong>${result.toFixed(2)} Н</strong><br>
+            <small>Решение: F = ${m} × 9.81 = ${result.toFixed(2)} Н</small>
+        `;
+        addToHistory('Сила тяжести (F = m·g)', `${result.toFixed(2)} Н`);
+    }
+
+    function calculatePressure() {
+        const f = parseFloat(document.getElementById('forceP').value);
+        const s = parseFloat(document.getElementById('area').value);
+        const result = f / s;
+        document.getElementById('pressureResult').innerHTML = `
+            Давление: <strong>${result.toFixed(2)} Па</strong><br>
+            <small>Решение: P = ${f} / ${s} = ${result.toFixed(2)} Па</small>
+        `;
+        addToHistory('Давление (P = F/S)', `${result.toFixed(2)} Па`);
+    }
+
+    function calculateWorkEnergy() {
+        const f = parseFloat(document.getElementById('forceWE').value);
+        const d = parseFloat(document.getElementById('distanceWE').value);
+        const angle = parseFloat(document.getElementById('angle').value);
+        const result = f * d * Math.cos((angle * Math.PI) / 180);
+        document.getElementById('workEnergyResult').innerHTML = `
+            Работа: <strong>${result.toFixed(2)} Дж</strong><br>
+            <small>Решение: W = ${f} × ${d} × cos(${angle}°) = ${result.toFixed(2)} Дж</small>
+        `;
+        addToHistory('Работа с углом (W = F·d·cosθ)', `${result.toFixed(2)} Дж`);
+    }
+
+    function calculateThermal() {
+        const m = parseFloat(document.getElementById('massT').value);
+        const c = parseFloat(document.getElementById('specificHeat').value);
+        const deltaT = parseFloat(document.getElementById('deltaT').value);
+        const result = m * c * deltaT;
+        document.getElementById('thermalResult').innerHTML = `
+            Теплота: <strong>${result.toFixed(2)} Дж</strong><br>
+            <small>Решение: Q = ${m} × ${c} × ${deltaT} = ${result.toFixed(2)} Дж</small>
+        `;
+        addToHistory('Теплота (Q = mcΔT)', `${result.toFixed(2)} Дж`);
+    }
+
+    function calculateOhm() {
+        const i = parseFloat(document.getElementById('current').value);
+        const r = parseFloat(document.getElementById('resistance').value);
+        const result = i * r;
+        document.getElementById('ohmResult').innerHTML = `
+            Напряжение: <strong>${result.toFixed(2)} В</strong><br>
+            <small>Решение: U = ${i} × ${r} = ${result.toFixed(2)} В</small>
+        `;
+        addToHistory('Закон Ома (U = I·R)', `${result.toFixed(2)} В`);
+    }
+
+    function calculatePower() {
+        const w = parseFloat(document.getElementById('workP').value);
+        const t = parseFloat(document.getElementById('timeP').value);
+        const result = w / t;
+        document.getElementById('powerResult').innerHTML = `
+            Мощность: <strong>${result.toFixed(2)} Вт</strong><br>
+            <small>Решение: P = ${w} / ${t} = ${result.toFixed(2)} Вт</small>
+        `;
+        addToHistory('Мощность (P = W/t)', `${result.toFixed(2)} Вт`);
+    }
+
+    function calculateCoulomb() {
+        const q1 = parseFloat(document.getElementById('charge1').value);
+        const q2 = parseFloat(document.getElementById('charge2').value);
+        const r = parseFloat(document.getElementById('distanceC').value);
+        const k = 9e9;
+        const result = (k * q1 * q2) / Math.pow(r, 2);
+        document.getElementById('coulombResult').innerHTML = `
+            Сила: <strong>${result.toFixed(2)} Н</strong><br>
+            <small>Решение: F = (9×10⁹ × ${q1} × ${q2}) / ${r}² = ${result.toFixed(2)} Н</small>
+        `;
+        addToHistory('Закон Кулона (F = k·q₁q₂/r²)', `${result.toFixed(2)} Н`);
+    }
+
+    function calculateWaveSpeed() {
+        const f = parseFloat(document.getElementById('frequency').value);
+        const λ = parseFloat(document.getElementById('wavelength').value);
+        const result = f * λ;
+        document.getElementById('waveResult').innerHTML = `
+            Скорость волны: <strong>${result.toFixed(2)} м/с</strong><br>
+            <small>Решение: v = ${f} × ${λ} = ${result.toFixed(2)} м/с</small>
+        `;
+        addToHistory('Скорость волны (v = f·λ)', `${result.toFixed(2)} м/с`);
+    }
 </script>
+
 {% endblock %}
