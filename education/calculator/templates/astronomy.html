@@ -610,58 +610,28 @@
             }
         });
 
-        function generateStars() {
-            const starGeometry = new THREE.BufferGeometry();
-            const starVertices = [];
-            const starColors = [];
-        
-            // Генерация случайных звезд
-            for (let i = 0; i < 5000; i++) {
-                const x = (Math.random() - 0.5) * 8000;
-                const y = (Math.random() - 0.5) * 8000;
-                const z = (Math.random() - 0.5) * 8000;
-                starVertices.push(x, y, z);
-        
-                const colors = [0xffffff, 0xffd700, 0xadd8e6, 0xff4500];
-                const color = new THREE.Color(colors[Math.floor(Math.random() * colors.length)]);
-                starColors.push(color.r, color.g, color.b);
-            }
-        
-            starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-            starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starColors, 3));
-        
-            const starMaterial = new THREE.PointsMaterial({ 
-                vertexColors: true, 
-                size: 1.5, 
-                transparent: true, 
-                opacity: 0.9 
-            });
-        
-            const stars = new THREE.Points(starGeometry, starMaterial);
-            scene.add(stars);
-        
-            // Анимация мерцания звезд
-            function animateStars() {
-                starMaterial.opacity = 0.8 + Math.sin(Date.now() * 0.001) * 0.2;
-                requestAnimationFrame(animateStars);
-            }
-            animateStars();
-        
-            // Создание созвездий
-            createConstellations();
+        // Функция для генерации случайных звезд (фон)
+    function generateStars(count) {
+        for (let i = 0; i < count; i++) {
+            const azimuth = (Math.random() - 0.5) * 2 * Math.PI; // Азимут от -π до π
+            const elevation = (Math.random() - 0.5) * Math.PI; // Угол возвышения от -π/2 до π/2
+            const starPosition = sphericalToCartesian(skyRadius, azimuth, elevation);
+            createStar(starPosition.x, starPosition.y, starPosition.z, Math.random() * 1.5 + 0.5, 0xffffff);
         }
-        
-        // Функция для создания звезд
-    function createStar(x, y, z) {
-        const starGeometry = new THREE.SphereGeometry(5, 16, 16); // Увеличим размер звезд
-        const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    }
+
+    // Функция для создания звезд
+    function createStar(x, y, z, size = 1, color = 0xffffff) {
+        const starGeometry = new THREE.SphereGeometry(size, 16, 16);
+        const starMaterial = new THREE.MeshBasicMaterial({ color });
         const star = new THREE.Mesh(starGeometry, starMaterial);
         star.position.set(x, y, z);
         scene.add(star);
+        return star;
     }
 
     // Функция для создания линий созвездия
-    function createConstellationLine(points) {
+    function createConstellationLine(points, color = 0xffffff) {
         const lineGeometry = new THREE.BufferGeometry();
         const vertices = [];
 
@@ -671,20 +641,28 @@
 
         lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
 
-        const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
-        const constellation = new THREE.Line(lineGeometry, lineMaterial);
-        scene.add(constellation);
+        const lineMaterial = new THREE.LineBasicMaterial({ color, linewidth: 1 });
+        const constellationLine = new THREE.Line(lineGeometry, lineMaterial);
+        scene.add(constellationLine);
+        return constellationLine;
     }
 
     // Функция для создания созвездия
-    function createConstellation(points) {
-        // Создание звезд для созвездия (на углах)
+    function createConstellation(points, name) {
+        const stars = [];
+        const lines = [];
+
+        // Создание звезд для созвездия
         points.forEach(point => {
-            createStar(point.x, point.y, point.z);
+            const star = createStar(point.x, point.y, point.z, Math.random() * 2 + 1, 0xffffff);
+            stars.push(star);
         });
 
         // Создание линий созвездия
-        createConstellationLine(points);
+        const line = createConstellationLine(points);
+        lines.push(line);
+
+        return { stars, lines, name };
     }
 
     // Функция для преобразования сферических координат в декартовы
@@ -698,95 +676,126 @@
     // Радиус небесной сферы
     const skyRadius = 2000;
 
-    // Созвездие Орион (Orion)
-    const orionPoints = [
-        sphericalToCartesian(skyRadius, -0.5, 0.2),
-        sphericalToCartesian(skyRadius, -0.4, 0.3),
-        sphericalToCartesian(skyRadius, -0.3, 0.2),
-        sphericalToCartesian(skyRadius, -0.2, 0.3),
-        sphericalToCartesian(skyRadius, -0.1, 0.2),
-        sphericalToCartesian(skyRadius, -0.2, 0.1),
-        sphericalToCartesian(skyRadius, -0.3, 0.2),
-        sphericalToCartesian(skyRadius, -0.4, 0.1),
-        sphericalToCartesian(skyRadius, -0.5, 0.2)
-    ];
-
-    // Созвездие Большая Медведица (Ursa Major)
-    const ursaMajorPoints = [
-        sphericalToCartesian(skyRadius, 0.8, 0.5),
-        sphericalToCartesian(skyRadius, 0.9, 0.6),
-        sphericalToCartesian(skyRadius, 1.0, 0.5),
-        sphericalToCartesian(skyRadius, 1.1, 0.6),
-        sphericalToCartesian(skyRadius, 1.2, 0.5),
-        sphericalToCartesian(skyRadius, 1.1, 0.4),
-        sphericalToCartesian(skyRadius, 1.0, 0.5)
-    ];
-
-    // Созвездие Лебедь (Cygnus)
-    const cygnusPoints = [
-        sphericalToCartesian(skyRadius, 0.2, 0.7),
-        sphericalToCartesian(skyRadius, 0.3, 0.8),
-        sphericalToCartesian(skyRadius, 0.4, 0.7),
-        sphericalToCartesian(skyRadius, 0.5, 0.8),
-        sphericalToCartesian(skyRadius, 0.6, 0.7)
-    ];
-
-    // Созвездие Кассиопея (Cassiopeia)
-    const cassiopeiaPoints = [
-        sphericalToCartesian(skyRadius, -0.7, 0.8),
-        sphericalToCartesian(skyRadius, -0.6, 0.9),
-        sphericalToCartesian(skyRadius, -0.5, 0.8),
-        sphericalToCartesian(skyRadius, -0.4, 0.9),
-        sphericalToCartesian(skyRadius, -0.3, 0.8)
-    ];
-
-    // Созвездие Скорпион (Scorpius)
-    const scorpiusPoints = [
-        sphericalToCartesian(skyRadius, 0.5, -0.3),
-        sphericalToCartesian(skyRadius, 0.6, -0.4),
-        sphericalToCartesian(skyRadius, 0.7, -0.3),
-        sphericalToCartesian(skyRadius, 0.8, -0.4),
-        sphericalToCartesian(skyRadius, 0.9, -0.3)
-    ];
-
-    // Созвездие Андромеда (Andromeda)
-    const andromedaPoints = [
-        sphericalToCartesian(skyRadius, -0.2, 0.6),
-        sphericalToCartesian(skyRadius, -0.1, 0.7),
-        sphericalToCartesian(skyRadius, 0.0, 0.6),
-        sphericalToCartesian(skyRadius, 0.1, 0.7),
-        sphericalToCartesian(skyRadius, 0.2, 0.6)
-    ];
-
-    // Созвездие Пегас (Pegasus)
-    const pegasusPoints = [
-        sphericalToCartesian(skyRadius, 0.3, 0.4),
-        sphericalToCartesian(skyRadius, 0.4, 0.5),
-        sphericalToCartesian(skyRadius, 0.5, 0.4),
-        sphericalToCartesian(skyRadius, 0.6, 0.5),
-        sphericalToCartesian(skyRadius, 0.7, 0.4)
+    // Созвездия
+    const constellations = [
+        {
+            name: "Орион",
+            points: [
+                sphericalToCartesian(skyRadius, -0.5, 0.2),
+                sphericalToCartesian(skyRadius, -0.4, 0.3),
+                sphericalToCartesian(skyRadius, -0.3, 0.2),
+                sphericalToCartesian(skyRadius, -0.2, 0.3),
+                sphericalToCartesian(skyRadius, -0.1, 0.2),
+                sphericalToCartesian(skyRadius, -0.2, 0.1),
+                sphericalToCartesian(skyRadius, -0.3, 0.2),
+                sphericalToCartesian(skyRadius, -0.4, 0.1),
+                sphericalToCartesian(skyRadius, -0.5, 0.2)
+            ]
+        },
+        {
+            name: "Большая Медведица",
+            points: [
+                sphericalToCartesian(skyRadius, 0.8, 0.5),
+                sphericalToCartesian(skyRadius, 0.9, 0.6),
+                sphericalToCartesian(skyRadius, 1.0, 0.5),
+                sphericalToCartesian(skyRadius, 1.1, 0.6),
+                sphericalToCartesian(skyRadius, 1.2, 0.5),
+                sphericalToCartesian(skyRadius, 1.1, 0.4),
+                sphericalToCartesian(skyRadius, 1.0, 0.5)
+            ]
+        },
+        {
+            name: "Лебедь",
+            points: [
+                sphericalToCartesian(skyRadius, 0.2, 0.7),
+                sphericalToCartesian(skyRadius, 0.3, 0.8),
+                sphericalToCartesian(skyRadius, 0.4, 0.7),
+                sphericalToCartesian(skyRadius, 0.5, 0.8),
+                sphericalToCartesian(skyRadius, 0.6, 0.7)
+            ]
+        },
+        {
+            name: "Кассиопея",
+            points: [
+                sphericalToCartesian(skyRadius, -0.7, 0.8),
+                sphericalToCartesian(skyRadius, -0.6, 0.9),
+                sphericalToCartesian(skyRadius, -0.5, 0.8),
+                sphericalToCartesian(skyRadius, -0.4, 0.9),
+                sphericalToCartesian(skyRadius, -0.3, 0.8)
+            ]
+        },
+        {
+            name: "Скорпион",
+            points: [
+                sphericalToCartesian(skyRadius, 0.5, -0.3),
+                sphericalToCartesian(skyRadius, 0.6, -0.4),
+                sphericalToCartesian(skyRadius, 0.7, -0.3),
+                sphericalToCartesian(skyRadius, 0.8, -0.4),
+                sphericalToCartesian(skyRadius, 0.9, -0.3)
+            ]
+        },
+        {
+            name: "Андромеда",
+            points: [
+                sphericalToCartesian(skyRadius, -0.2, 0.6),
+                sphericalToCartesian(skyRadius, -0.1, 0.7),
+                sphericalToCartesian(skyRadius, 0.0, 0.6),
+                sphericalToCartesian(skyRadius, 0.1, 0.7),
+                sphericalToCartesian(skyRadius, 0.2, 0.6)
+            ]
+        },
+        {
+            name: "Пегас",
+            points: [
+                sphericalToCartesian(skyRadius, 0.3, 0.4),
+                sphericalToCartesian(skyRadius, 0.4, 0.5),
+                sphericalToCartesian(skyRadius, 0.5, 0.4),
+                sphericalToCartesian(skyRadius, 0.6, 0.5),
+                sphericalToCartesian(skyRadius, 0.7, 0.4)
+            ]
+        }
     ];
 
     // Создание созвездий
-    createConstellation(orionPoints);
-    createConstellation(ursaMajorPoints);
-    createConstellation(cygnusPoints);
-    createConstellation(cassiopeiaPoints);
-    createConstellation(scorpiusPoints);
-    createConstellation(andromedaPoints);
-    createConstellation(pegasusPoints);
+    const constellationObjects = constellations.map(constellation => createConstellation(constellation.points, constellation.name));
 
     // Функция для генерации случайных звезд (фон)
-    function generateStars(count) {
-        for (let i = 0; i < count; i++) {
-            const azimuth = (Math.random() - 0.5) * 2 * Math.PI; // Азимут от -π до π
-            const elevation = (Math.random() - 0.5) * Math.PI; // Угол возвышения от -π/2 до π/2
-            const starPosition = sphericalToCartesian(skyRadius, azimuth, elevation);
-            createStar(starPosition.x, starPosition.y, starPosition.z);
+    function generateStars() {
+        const starGeometry = new THREE.BufferGeometry();
+        const starVertices = [];
+        const starColors = [];
+
+        for (let i = 0; i < 5000; i++) {
+            const x = (Math.random() - 0.5) * 8000;
+            const y = (Math.random() - 0.5) * 8000;
+            const z = (Math.random() - 0.5) * 8000;
+            starVertices.push(x, y, z);
+
+            const colors = [0xffffff, 0xffd700, 0xadd8e6, 0xff4500];
+            const color = new THREE.Color(colors[Math.floor(Math.random() * colors.length)]);
+            starColors.push(color.r, color.g, color.b);
         }
+
+        starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+        starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starColors, 3));
+
+        const starMaterial = new THREE.PointsMaterial({ 
+            vertexColors: true, 
+            size: 1.5, 
+            transparent: true, 
+            opacity: 0.9 
+        });
+
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
+
+        function animateStars() {
+            starMaterial.opacity = 0.8 + Math.sin(Date.now() * 0.001) * 0.2;
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
     }
 
-    // Генерация случайных звезд (фон)
     generateStars(500);
 
     </script>

@@ -1,443 +1,724 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}Физический калькулятор{% endblock %}
-
-{% block content %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
-    <style>
+<html><head></head><body>{% extends "base.html" %}
+    {% load static %}
+    
+    {% block title %}Графическое отображение геометрических фигур{% endblock %}
+    
+    {% block content %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+        <style>
+              
+              .container {
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                padding: 20px;
+              }
+              
+              .calculator,
+              .canvas-container {
+                background-color:var(--bg-color);
+                border-radius: 12px;
+                padding: 25px;
+                margin: 10px;
+              }
+              
+              .calculator {
+                flex: 1 1 0;
+                max-width: 350px;
+              }
+              
+              .canvas-container {
+                flex: 2 1 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                min-width: 400px;
+              }
+              
+              canvas {
+                border: 2px solid;
+                border-radius: 8px;
+                background-color: #ffffff;
+                margin-top: 10px;
+              }
+              
+              input,
+              select,
+              button {
+                margin: 10px 0;
+                padding: 12px;
+                font-size: 16px;
+                width: 100%;
+                border: 1px solid;
+                border-radius: 8px;
+                transition: border-color 0.3s, box-shadow 0.3s;
+                background-color: var(--button-bg);
+              }
+              
+              input:focus,
+              select:focus {
+                box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+                outline: none;
+              }
+              
+              h1,
+              h2,
+              h3 {
+                text-align: center;
+              }
+              
+              h1 {
+                font-size: 2.5rem;
+                margin-bottom: 20px;
+                position: relative;
+                top: 31px;
+                left: 0%;
+             }
+              
+              h2 {
+                font-size: 1.8rem;
+                margin-bottom: 15px;
+              }
+              
+              .solution {
+                margin-top: 20px;
+                padding: 15px;
+                background-color: var(--bg-color);
+                border-radius: 8px;
+                font-size: 16px;
+                line-height: 1.5;
+              }
+              
+              .solution strong {
+                /* Add styles if needed */
+              }
+              
+              .form-group {
+                margin-bottom: 15px;
+              }
+              
+              .form-group label {
+                display: block;
+                font-weight: 600;
+                margin-bottom: 5px;
+              }
+              
+              .buttons-container {
+                display: flex;
+                margin-top: 20px;
+              }
+              
+              .buttons-container button {
+                flex: 1 1 0;
+              }
         
-        .container {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            padding: 20px;
-        }
-        .calculator, .canvas-container {
-            margin: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            background: var(--bg-color);
-        }
-        .canvas-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-        }
-        canvas {
-            border: 2px solid black;
-            background: white;
-        }
-        input, select, button {
-            margin: 5px;
-            padding: 10px;
-            font-size: 16px;
-        }
+                /* Уборка лишних с главной страницы SVG */
+                .center-line {
+                    display: none;
+                }  
+        
+                .title-container {
+                    display: none;
+                }
+        
+                .paragraph-container {
+                    display: none;
+                }
+        
+                .h2 {
+                    display: none;
+                }
+        
+                .h3 {
+                    display: none;
+                }
+        
+                #character-container {
+                    display: none;
+                }
+        
+                .svg-container {
+                    display: none;
+                }
+        </style>
+    
+        <h1>Графическое отображение геометрических фигур</h1>
+    
+        <div class="container">
+            <div class="calculator">
+                <h2>Выберите фигуру</h2>
+                <select id="shape" onchange="showForm(); drawShape();">
+                    <option value="triangle">Треугольник</option>
+                    <option value="rectangle">Прямоугольник</option>
+                    <option value="square">Квадрат</option>
+                    <option value="circle">Круг</option>
+                    <option value="trapezoid">Трапеция</option>
+                    <option value="rhombus">Ромб</option>
+                    <option value="parallelogram">Параллелограмм</option>
+                </select>
+    
+                <div id="form-container" class="form-group"></div>
+    
+                <h2>Выберите, что вычислить</h2>
+                <select id="calculation"></select>
+    
+                <div class="buttons-container">
+                    <button onclick="calculate()">Вычислить</button>
+                    <button onclick="drawShape()">Отрисовать</button>
+                </div>
 
-        h1 {
-            top: 85px;
-        }
-
-        /* Уборка лишних с главной страницы SVG */
-        .center-line {
-            display: none;
-        }  
-
-        .title-container {
-            display: none;
-        }
-
-        .paragraph-container {
-            display: none;
-        }
-
-        .h2 {
-            display: none;
-        }
-
-        .h3 {
-            display: none;
-        }
-
-        #character-container {
-            display: none;
-        }
-
-        .svg-container {
-            display: none;
-        }
-    </style>
-    <h1>Калькулятор Геометрии</h1>
-
-    <div class="container">
-        <div class="calculator">
-            <h2>Выберите фигуру</h2>
-            <select id="shape" onchange="showForm()">
-                <option value="triangle">Треугольник</option>
-                <option value="rectangle">Прямоугольник</option>
-                <option value="square">Квадрат</option>
-                <option value="circle">Круг</option>
-                <option value="parallelogram">Параллелограмм</option>
-                <option value="rhombus">Ромб</option>
-                <option value="trapezoid">Трапеция</option>
-            </select>
-            
-            <h2>Выберите, что вычислить</h2>
-            <select id="calculationType" onchange="showForm()">
-                <option value="area">Площадь</option>
-                <option value="perimeter">Периметр</option>
-                <option value="height">Высота</option>
-                <option value="median">Медиана</option>
-                <option value="angle">Угол</option>
-                <option value="midline">Средняя линия</option>
-            </select>
-
-            <div id="form-container"></div>
-            <button onclick="calculate()" class="button">Рассчитать</button>
-            <h3>Результат: <span id="result">-</span></h3>
-            <a href="{% url 'index' %}" class="button">📚 Вернуться на главную</a>
+                <a href="{% url 'index' %}" class="button">📚 Вернуться на главную</a>
+    
+                <div id="solution" class="solution"></div>
+            </div>
+    
+            <div class="canvas-container">
+                <h2>Рисунок</h2>
+                <canvas id="canvas" width="400" height="400"></canvas>
+            </div>
         </div>
-
-        <div class="canvas-container">
-            <h2>Графическое представление</h2>
-            <canvas id="canvas" width="300" height="300"></canvas>
-            <button onclick="toggleCalculationFields()"class="button">Показать параметры</button>
-        </div>
-    </div>
-
-    <script>
-        function showForm() {
-            const shape = document.getElementById("shape").value;
-            let formHtml = "";
-        
-            if (shape === "triangle") {
-                formHtml = `
-                    <label>Сторона a: <input type="number" id="a" value="100"></label><br>
-                    <label>Сторона b: <input type="number" id="b" value="80"></label><br>
-                    <label>Сторона c: <input type="number" id="c" value="60"></label><br>
-                    <label>Высота h: <input type="number" id="h" value="50"></label><br>
-                `;
-            } 
-            else if (shape === "rectangle") {
-                formHtml = `
-                    <label>Сторона a: <input type="number" id="a" value="120"></label><br>
-                    <label>Сторона b: <input type="number" id="b" value="60"></label><br>
-                `;
-            } 
-            else if (shape === "square") {
-                formHtml = `
-                    <label>Сторона a: <input type="number" id="a" value="100"></label><br>
-                `;
-            } 
-            else if (shape === "circle") {
-                formHtml = `
-                    <label>Радиус r: <input type="number" id="r" value="50"></label><br>
-                    <label>Диаметр d: <input type="number" id="d" value="100" readonly></label><br>
-                `;
-            } 
-            else if (shape === "parallelogram") {
-                formHtml = `
-                    <label>Сторона a: <input type="number" id="a" value="120"></label><br>
-                    <label>Сторона b: <input type="number" id="b" value="80"></label><br>
-                    <label>Угол между сторонами (°): <input type="number" id="angle" value="60"></label><br>
-                `;
-            } 
-            else if (shape === "rhombus") {
-                formHtml = `
-                    <label>Сторона a: <input type="number" id="a" value="100"></label><br>
-                    <label>Диагональ 1: <input type="number" id="d1" value="120"></label><br>
-                    <label>Диагональ 2: <input type="number" id="d2" value="80"></label><br>
-                `;
-            } 
-            else if (shape === "trapezoid") {
-                formHtml = `
-                    <label>Основание a: <input type="number" id="a" value="140"></label><br>
-                    <label>Основание b: <input type="number" id="b" value="100"></label><br>
-                    <label>Боковая сторона c: <input type="number" id="c" value="80"></label><br>
-                    <label>Боковая сторона d: <input type="number" id="d" value="80"></label><br>
-                    <label>Высота h: <input type="number" id="h" value="60"></label><br>
-                `;
+    
+        <script>
+            function alignToGrid(value) {
+                return Math.round(value / 20) * 20;
             }
-        
-            document.getElementById("form-container").innerHTML = formHtml;
-            drawShape();
-        }
-        
-
-        window.onload = showForm;
-
-        function drawCalculationFormula(shape, calculationType, values, result) {
-            const canvas = document.getElementById("canvas");
-            const ctx = canvas.getContext("2d");
     
-            // Очищаем предыдущие данные
-            ctx.clearRect(0, 250, canvas.width, 50);
-            ctx.fillStyle = "black";
-            ctx.font = "14px Arial";
-            
-            let formula = "";
-            let formulaWithValues = "";
-    
-            if (calculationType === "area") {
-                if (shape === "triangle") {
-                    formula = "S = 1/2 * a * h";
-                    formulaWithValues = `S = 1/2 * ${values.a} * ${values.h} = ${result}`;
-                } else if (shape === "rectangle" || shape === "parallelogram") {
-                    formula = "S = a * b";
-                    formulaWithValues = `S = ${values.a} * ${values.b} = ${result}`;
-                } else if (shape === "square" || shape === "rhombus") {
-                    formula = "S = a²";
-                    formulaWithValues = `S = ${values.a}² = ${result}`;
-                } else if (shape === "trapezoid") {
-                    formula = "S = (a + b) / 2 * h";
-                    formulaWithValues = `S = (${values.a} + ${values.b}) / 2 * ${values.h} = ${result}`;
-                } else if (shape === "circle") {
-                    formula = "S = π * r²";
-                    formulaWithValues = `S = 3.14 * ${values.r}² = ${result}`;
+            function drawGrid(ctx) {
+                ctx.strokeStyle = "#1085c9";
+                ctx.lineWidth = 1;
+                for (let x = 0; x <= 400; x += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, 400);
+                    ctx.stroke();
                 }
-            } else if (calculationType === "perimeter") {
-                if (shape === "triangle") {
-                    formula = "P = a + b + c";
-                    formulaWithValues = `P = ${values.a} + ${values.b} + ${values.c} = ${result}`;
-                } else if (shape === "rectangle" || shape === "parallelogram") {
-                    formula = "P = 2 * (a + b)";
-                    formulaWithValues = `P = 2 * (${values.a} + ${values.b}) = ${result}`;
-                } else if (shape === "square" || shape === "rhombus") {
-                    formula = "P = 4 * a";
-                    formulaWithValues = `P = 4 * ${values.a} = ${result}`;
-                } else if (shape === "trapezoid") {
-                    formula = "P = a + b + c + d";
-                    formulaWithValues = `P = ${values.a} + ${values.b} + ${values.c} + ${values.d} = ${result}`;
+                for (let y = 0; y <= 400; y += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(400, y);
+                    ctx.stroke();
+                }
+    
+                ctx.fillStyle = "#e0e0e0";
+                for (let x = 0; x <= 400; x += 20) {
+                    for (let y = 0; y <= 400; y += 20) {
+                        ctx.beginPath();
+                        ctx.arc(x, y, 2, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
                 }
             }
     
-            // Рисуем формулы на канвасе
-            ctx.fillText(formula, 10, 280);
-            ctx.fillText(formulaWithValues, 10, 300);
-        }
-
-        function calculate() {
-            const shape = document.getElementById("shape").value;
-            const calculationType = document.getElementById("calculationType").value;
-            let result = "";
-            let values = {};
+            function drawShape() {
+                const canvas = document.getElementById("canvas");
+                const ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                drawGrid(ctx);
     
-            if (calculationType === "area") {
-                if (shape === "triangle") {
-                    values.a = parseFloat(document.getElementById("a").value);
-                    values.h = parseFloat(document.getElementById("h").value);
-                    result = (0.5 * values.a * values.h).toFixed(2);
-                } else if (shape === "rectangle" || shape === "parallelogram") {
-                    values.a = parseFloat(document.getElementById("a").value);
-                    values.b = parseFloat(document.getElementById("b").value);
-                    result = (values.a * values.b).toFixed(2);
-                } else if (shape === "square" || shape === "rhombus") {
-                    values.a = parseFloat(document.getElementById("a").value);
-                    result = (values.a * values.a).toFixed(2);
-                } else if (shape === "trapezoid") {
-                    values.a = parseFloat(document.getElementById("a").value);
-                    values.b = parseFloat(document.getElementById("b").value);
-                    values.h = parseFloat(document.getElementById("h").value);
-                    result = (((values.a + values.b) / 2) * values.h).toFixed(2);
-                } else if (shape === "circle") {
-                    values.r = parseFloat(document.getElementById("r").value);
-                    result = (Math.PI * values.r * values.r).toFixed(2);
-                }
-            } else if (calculationType === "perimeter") {
-                if (shape === "triangle") {
-                    values.a = parseFloat(document.getElementById("a").value);
-                    values.b = parseFloat(document.getElementById("b").value);
-                    values.c = parseFloat(document.getElementById("c").value);
-                    result = (values.a + values.b + values.c).toFixed(2);
-                } else if (shape === "rectangle" || shape === "parallelogram") {
-                    values.a = parseFloat(document.getElementById("a").value);
-                    values.b = parseFloat(document.getElementById("b").value);
-                    result = (2 * (values.a + values.b)).toFixed(2);
-                } else if (shape === "square" || shape === "rhombus") {
-                    values.a = parseFloat(document.getElementById("a").value);
-                    result = (4 * values.a).toFixed(2);
-                } else if (shape === "trapezoid") {
-                    values.a = parseFloat(document.getElementById("a").value);
-                    values.b = parseFloat(document.getElementById("b").value);
-                    values.c = parseFloat(document.getElementById("c").value);
-                    values.d = parseFloat(document.getElementById("d").value);
-                    result = (values.a + values.b + values.c + values.d).toFixed(2);
+                const shape = document.getElementById("shape").value;
+                const centerX = alignToGrid(200);
+                const centerY = alignToGrid(200);
+    
+                try {
+                    switch(shape) {
+                        case 'triangle': {
+                            const a = alignToGrid(parseFloat(document.getElementById("a").value));
+                            const h = alignToGrid(parseFloat(document.getElementById("h").value));
+                            
+                            ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+                            ctx.shadowBlur = 10;
+                            ctx.shadowOffsetX = 5;
+                            ctx.shadowOffsetY = 5;
+    
+                            ctx.beginPath();
+                            ctx.moveTo(centerX - a/2, centerY + h/2);
+                            ctx.lineTo(centerX + a/2, centerY + h/2);
+                            ctx.lineTo(centerX, centerY - h/2);
+                            ctx.closePath();
+                            ctx.stroke();
+    
+                            ctx.shadowBlur = 0;
+                            ctx.shadowOffsetX = 0;
+                            ctx.shadowOffsetY = 0;
+    
+                            ctx.strokeStyle = "#ff4444";
+                            ctx.beginPath();
+                            ctx.moveTo(centerX, centerY - h/2);
+                            ctx.lineTo(centerX, centerY + h/2);
+                            ctx.stroke();
+    
+                            ctx.fillStyle = "#4a90e2";
+                            ctx.font = "14px Arial";
+                            ctx.fillText("Высота", centerX + 10, centerY);
+    
+                            ctx.fillStyle = "#2d3748";
+                            ctx.fillText(`a = ${a}`, centerX - a/2 + 10, centerY + h/2 + 20);
+                            ctx.fillText(`b = ${a}`, centerX + a/2 - 50, centerY + h/2 + 20);
+                            ctx.fillText(`c = ${a}`, centerX, centerY - h/2 - 10);
+    
+                            break;
+                        }
+                        
+                        case 'rectangle': {
+                            const width = alignToGrid(parseFloat(document.getElementById("width").value));
+                            const height = alignToGrid(parseFloat(document.getElementById("height").value));
+                            
+                            ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+                            ctx.shadowBlur = 10;
+                            ctx.shadowOffsetX = 5;
+                            ctx.shadowOffsetY = 5;
+    
+                            ctx.strokeRect(centerX - width/2, centerY - height/2, width, height);
+    
+                            ctx.shadowBlur = 0;
+                            ctx.shadowOffsetX = 0;
+                            ctx.shadowOffsetY = 0;
+    
+                            ctx.strokeStyle = "#ff8000";
+                            ctx.beginPath();
+                            ctx.moveTo(centerX - width/2, centerY - height/2);
+                            ctx.lineTo(centerX + width/2, centerY + height/2);
+                            ctx.stroke();
+    
+                            ctx.fillStyle = "#4a90e2";
+                            ctx.font = "14px Arial";
+                            ctx.fillText("Диагональ", centerX + width/4, centerY - height/4);
+    
+                            ctx.fillStyle = "#2d3748";
+                            ctx.fillText(`Ширина = ${width}`, centerX - width/2 + 10, centerY + height/2 + 20);
+                            ctx.fillText(`Высота = ${height}`, centerX + width/2 + 10, centerY);
+    
+                            break;
+                        }
+                        
+                        case 'square': {
+                            const side = alignToGrid(parseFloat(document.getElementById("side").value));
+                            
+                            ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+                            ctx.shadowBlur = 10;
+                            ctx.shadowOffsetX = 5;
+                            ctx.shadowOffsetY = 5;
+    
+                            ctx.strokeRect(centerX - side/2, centerY - side/2, side, side);
+    
+                            ctx.shadowBlur = 0;
+                            ctx.shadowOffsetX = 0;
+                            ctx.shadowOffsetY = 0;
+    
+                            ctx.strokeStyle = "#aa00ff";
+                            ctx.beginPath();
+                            ctx.moveTo(centerX - side/2, centerY - side/2);
+                            ctx.lineTo(centerX + side/2, centerY + side/2);
+                            ctx.stroke();
+    
+                            ctx.fillStyle = "#4a90e2";
+                            ctx.font = "14px Arial";
+                            ctx.fillText("Диагональ", centerX + side/4, centerY - side/4);
+    
+                            ctx.fillStyle = "#2d3748";
+                            ctx.fillText(`Сторона = ${side}`, centerX - side/2 + 10, centerY + side/2 + 20);
+    
+                            break;
+                        }
+                        
+                        case 'circle': {
+                            const radius = alignToGrid(parseFloat(document.getElementById("radius").value));
+                            
+                            ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+                            ctx.shadowBlur = 10;
+                            ctx.shadowOffsetX = 5;
+                            ctx.shadowOffsetY = 5;
+    
+                            ctx.beginPath();
+                            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                            ctx.stroke();
+    
+                            ctx.shadowBlur = 0;
+                            ctx.shadowOffsetX = 0;
+                            ctx.shadowOffsetY = 0;
+    
+                            ctx.strokeStyle = "#0066ff";
+                            ctx.beginPath();
+                            ctx.moveTo(centerX, centerY);
+                            ctx.lineTo(centerX + radius, centerY);
+                            ctx.stroke();
+    
+                            ctx.fillStyle = "#4a90e2";
+                            ctx.font = "14px Arial";
+                            ctx.fillText("Радиус", centerX + radius/2, centerY + 10);
+    
+                            ctx.fillStyle = "#2d3748";
+                            ctx.fillText(`Радиус = ${radius}`, centerX - radius, centerY - radius - 10);
+    
+                            break;
+                        }
+                        
+                        case 'trapezoid': {
+                            const a = alignToGrid(parseFloat(document.getElementById("a").value));
+                            const b = alignToGrid(parseFloat(document.getElementById("b").value));
+                            const h = alignToGrid(parseFloat(document.getElementById("h").value));
+                            
+                            ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+                            ctx.shadowBlur = 10;
+                            ctx.shadowOffsetX = 5;
+                            ctx.shadowOffsetY = 5;
+    
+                            ctx.beginPath();
+                            ctx.moveTo(centerX - b/2, centerY + h/2);
+                            ctx.lineTo(centerX + b/2, centerY + h/2);
+                            ctx.lineTo(centerX + a/2, centerY - h/2);
+                            ctx.lineTo(centerX - a/2, centerY - h/2);
+                            ctx.closePath();
+                            ctx.stroke();
+    
+                            ctx.shadowBlur = 0;
+                            ctx.shadowOffsetX = 0;
+                            ctx.shadowOffsetY = 0;
+    
+                            ctx.strokeStyle = "#00aa00";
+                            ctx.beginPath();
+                            ctx.moveTo(centerX, centerY + h/2);
+                            ctx.lineTo(centerX, centerY - h/2);
+                            ctx.stroke();
+    
+                            ctx.fillStyle = "#4a90e2";
+                            ctx.font = "14px Arial";
+                            ctx.fillText("Высота", centerX + 10, centerY);
+    
+                            ctx.fillStyle = "#2d3748";
+                            ctx.fillText(`a = ${a}`, centerX - a/2 + 10, centerY - h/2 - 10);
+                            ctx.fillText(`b = ${b}`, centerX - b/2 + 10, centerY + h/2 + 20);
+    
+                            break;
+                        }
+                        
+                        case 'rhombus': {
+                            const d1 = alignToGrid(parseFloat(document.getElementById("d1").value));
+                            const d2 = alignToGrid(parseFloat(document.getElementById("d2").value));
+                            
+                            ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+                            ctx.shadowBlur = 10;
+                            ctx.shadowOffsetX = 5;
+                            ctx.shadowOffsetY = 5;
+    
+                            ctx.beginPath();
+                            ctx.moveTo(centerX, centerY - d2/2);
+                            ctx.lineTo(centerX + d1/2, centerY);
+                            ctx.lineTo(centerX, centerY + d2/2);
+                            ctx.lineTo(centerX - d1/2, centerY);
+                            ctx.closePath();
+                            ctx.stroke();
+    
+                            ctx.shadowBlur = 0;
+                            ctx.shadowOffsetX = 0;
+                            ctx.shadowOffsetY = 0;
+    
+                            ctx.strokeStyle = "#00aaaa";
+                            ctx.beginPath();
+                            ctx.moveTo(centerX - d1/2, centerY);
+                            ctx.lineTo(centerX + d1/2, centerY);
+                            ctx.stroke();
+    
+                            ctx.fillStyle = "#4a90e2";
+                            ctx.font = "14px Arial";
+                            ctx.fillText("Диагональ", centerX + d1/4, centerY + 10);
+    
+                            ctx.fillStyle = "#2d3748";
+                            ctx.fillText(`d1 = ${d1}`, centerX - d1/2, centerY + d2/2 + 20);
+                            ctx.fillText(`d2 = ${d2}`, centerX + d1/2 + 10, centerY);
+    
+                            break;
+                        }
+                        
+                        case 'parallelogram': {
+                            const base = alignToGrid(parseFloat(document.getElementById("base").value));
+                            const height = alignToGrid(parseFloat(document.getElementById("height").value));
+                            
+                            ctx.shadowColor = "rgba(0, 0, 0, 0.2)";
+                            ctx.shadowBlur = 10;
+                            ctx.shadowOffsetX = 5;
+                            ctx.shadowOffsetY = 5;
+    
+                            ctx.beginPath();
+                            ctx.moveTo(centerX - base/2, centerY - height/2);
+                            ctx.lineTo(centerX + base/2, centerY - height/2);
+                            ctx.lineTo(centerX + base/2 - 20, centerY + height/2);
+                            ctx.lineTo(centerX - base/2 - 20, centerY + height/2);
+                            ctx.closePath();
+                            ctx.stroke();
+    
+                            ctx.shadowBlur = 0;
+                            ctx.shadowOffsetX = 0;
+                            ctx.shadowOffsetY = 0;
+    
+                            ctx.strokeStyle = "#ff00aa";
+                            ctx.beginPath();
+                            ctx.moveTo(centerX - base/2, centerY - height/2);
+                            ctx.lineTo(centerX - base/2 - 20, centerY + height/2);
+                            ctx.stroke();
+    
+                            ctx.fillStyle = "#4a90e2";
+                            ctx.font = "14px Arial";
+                            ctx.fillText("Высота", centerX - base/2 - 30, centerY);
+    
+                            ctx.fillStyle = "#2d3748";
+                            ctx.fillText(`Основание = ${base}`, centerX - base/2 + 10, centerY - height/2 - 10);
+                            ctx.fillText(`Высота = ${height}`, centerX + base/2 + 10, centerY);
+    
+                            break;
+                        }
+                    }
+                    ctx.strokeStyle = "#4a90e2";
+                } catch(e) {
+                    console.error("Ошибка при рисовании:", e);
                 }
             }
     
-            document.getElementById("result").innerText = result;
+            function showForm() {
+                const shape = document.getElementById("shape").value;
+                let formHtml = "";
+                let calculationOptions = "";
     
-            // Отрисовка графика и формулы
-            drawShape(true);
-            drawCalculationFormula(shape, calculationType, values, result);
-        }        
-
-        function drawShape(showDetails = false) {
-            const canvas = document.getElementById("canvas");
-            const ctx = canvas.getContext("2d");
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = "black";
-            ctx.lineWidth = 2;
-            ctx.font = "14px Arial";
-        
-            const shape = document.getElementById("shape").value;
-        
-            if (shape === "triangle") {
-                const a = parseFloat(document.getElementById("a").value) || 100;
-                const b = parseFloat(document.getElementById("b").value) || 80;
-                const angle = parseFloat(document.getElementById("angleA")?.value) || 60;
-                const h = a * Math.sin(angle * Math.PI / 180);
-                const area = 0.5 * a * h; // Площадь треугольника
-                const median = Math.sqrt(2 * (a * a + b * b) - (a - b) * (a - b)) / 2; // Медиана
-        
-                ctx.beginPath();
-                ctx.moveTo(100, 200);
-                ctx.lineTo(100 + a, 200);
-                ctx.lineTo(100 + a / 2, 200 - h);
-                ctx.closePath();
-                ctx.stroke();
-        
-                ctx.fillText("A", 95, 205);
-                ctx.fillText("B", 105 + a, 205);
-                ctx.fillText("C", 100 + a / 2, 190 - h);
-        
-                if (showDetails) {
-                    ctx.strokeStyle = "red";
-                    ctx.beginPath();
-                    ctx.moveTo(100 + a / 2, 200 - h);
-                    ctx.lineTo(100 + a / 2, 200);
-                    ctx.stroke();
-                    ctx.fillText("Высота", 110 + a / 2, 180);
-        
-                    ctx.fillText("Площадь: " + area.toFixed(2), 100, 220);
-                    ctx.fillText("Медиана: " + median.toFixed(2), 100, 240);
+                switch(shape) {
+                    case 'triangle':
+                        formHtml = `
+                            <label>Сторона a: <input type="number" id="a" value="100"></label>
+                            <label>Сторона b: <input type="number" id="b" value="80"></label>
+                            <label>Сторона c: <input type="number" id="c" value="60"></label>
+                            <label>Высота h: <input type="number" id="h" value="50"></label>
+                        `;
+                        calculationOptions = `
+                            <option value="area">Площадь</option>
+                            <option value="perimeter">Периметр</option>
+                            <option value="height">Высота</option>
+                            <option value="median">Медиана</option>
+                        `;
+                        break;
+                    
+                    case 'rectangle':
+                        formHtml = `
+                            <label>Ширина: <input type="number" id="width" value="120"></label>
+                            <label>Высота: <input type="number" id="height" value="80"></label>
+                        `;
+                        calculationOptions = `
+                            <option value="area">Площадь</option>
+                            <option value="perimeter">Периметр</option>
+                            <option value="diagonal">Диагональ</option>
+                        `;
+                        break;
+                    
+                    case 'square':
+                        formHtml = `
+                            <label>Сторона: <input type="number" id="side" value="100"></label>
+                        `;
+                        calculationOptions = `
+                            <option value="area">Площадь</option>
+                            <option value="perimeter">Периметр</option>
+                            <option value="diagonal">Диагональ</option>
+                        `;
+                        break;
+                    
+                    case 'circle':
+                        formHtml = `
+                            <label>Радиус: <input type="number" id="radius" value="50"></label>
+                        `;
+                        calculationOptions = `
+                            <option value="area">Площадь</option>
+                            <option value="circumference">Длина окружности</option>
+                        `;
+                        break;
+                    
+                    case 'trapezoid':
+                        formHtml = `
+                            <label>Основание a: <input type="number" id="a" value="140"></label>
+                            <label>Основание b: <input type="number" id="b" value="100"></label>
+                            <label>Высота h: <input type="number" id="h" value="60"></label>
+                        `;
+                        calculationOptions = `
+                            <option value="area">Площадь</option>
+                            <option value="perimeter">Периметр</option>
+                            <option value="midline">Средняя линия</option>
+                        `;
+                        break;
+                    
+                    case 'rhombus':
+                        formHtml = `
+                            <label>Диагональ 1: <input type="number" id="d1" value="100"></label>
+                            <label>Диагональ 2: <input type="number" id="d2" value="80"></label>
+                            <label>Сторона: <input type="number" id="side" value="60"></label>
+                        `;
+                        calculationOptions = `
+                            <option value="area">Площадь</option>
+                            <option value="perimeter">Периметр</option>
+                            <option value="height">Высота</option>
+                        `;
+                        break;
+                    
+                    case 'parallelogram':
+                        formHtml = `
+                            <label>Основание: <input type="number" id="base" value="120"></label>
+                            <label>Высота: <input type="number" id="height" value="80"></label>
+                            <label>Сторона: <input type="number" id="side" value="60"></label>
+                        `;
+                        calculationOptions = `
+                            <option value="area">Площадь</option>
+                            <option value="perimeter">Периметр</option>
+                            <option value="height">Высота</option>
+                        `;
+                        break;
                 }
-            } 
-        
-            else if (shape === "rectangle" || shape === "parallelogram") {
-                const a = parseFloat(document.getElementById("a").value) || 120;
-                const b = parseFloat(document.getElementById("b").value) || 60;
-                const area = a * b; // Площадь прямоугольника/параллелограмма
-                const height = b; // Высота
-        
-                ctx.strokeRect(100, 100, a, b);
-        
-                ctx.fillText("A", 95, 105);
-                ctx.fillText("B", 105 + a, 105);
-                ctx.fillText("C", 105 + a, 105 + b);
-                ctx.fillText("D", 95, 105 + b);
-        
-                if (showDetails) {
-                    ctx.strokeStyle = "red";
-                    ctx.beginPath();
-                    ctx.moveTo(100 + a / 2, 100);
-                    ctx.lineTo(100 + a / 2, 100 + b);
-                    ctx.stroke();
-                    ctx.fillText("Высота", 110 + a / 2, 130);
-        
-                    ctx.fillText("Площадь: " + area.toFixed(2), 100, 240);
-                }
-            } 
-        
-            else if (shape === "square" || shape === "rhombus") {
-                const a = parseFloat(document.getElementById("a").value) || 100;
-                const area = a * a; // Площадь квадрата/ромба
-                const diagonal = Math.sqrt(2) * a; // Диагональ квадрата/ромба
-        
-                ctx.strokeRect(120, 120, a, a);
-        
-                ctx.fillText("A", 115, 125);
-                ctx.fillText("B", 125 + a, 125);
-                ctx.fillText("C", 125 + a, 125 + a);
-                ctx.fillText("D", 115, 125 + a);
-        
-                if (showDetails) {
-                    ctx.strokeStyle = "red";
-                    ctx.beginPath();
-                    ctx.moveTo(120, 120);
-                    ctx.lineTo(120 + a, 120 + a);
-                    ctx.stroke();
-                    ctx.fillText("Диагональ", 130, 140);
-        
-                    ctx.fillText("Площадь: " + area.toFixed(2), 100, 240);
-                    ctx.fillText("Диагональ: " + diagonal.toFixed(2), 100, 260);
-                }
-            } 
-        
-            else if (shape === "trapezoid") {
-                const a = parseFloat(document.getElementById("a").value) || 140;
-                const b = parseFloat(document.getElementById("b").value) || 100;
-                const h = parseFloat(document.getElementById("h").value) || 60;
-                const area = 0.5 * (a + b) * h; // Площадь трапеции
-        
-                ctx.beginPath();
-                ctx.moveTo(100, 200);
-                ctx.lineTo(100 + a, 200);
-                ctx.lineTo(100 + (a - b) / 2 + b, 200 - h);
-                ctx.lineTo(100 + (a - b) / 2, 200 - h);
-                ctx.closePath();
-                ctx.stroke();
-        
-                ctx.fillText("A", 95, 205);
-                ctx.fillText("B", 105 + a, 205);
-                ctx.fillText("C", 110 + (a - b) / 2 + b, 190 - h);
-                ctx.fillText("D", 95 + (a - b) / 2, 190 - h);
-        
-                if (showDetails) {
-                    ctx.strokeStyle = "red";
-                    ctx.beginPath();
-                    ctx.moveTo(100 + a / 2, 200 - h);
-                    ctx.lineTo(100 + a / 2, 200);
-                    ctx.stroke();
-                    ctx.fillText("Высота", 110 + a / 2, 180);
-        
-                    ctx.fillText("Площадь: " + area.toFixed(2), 100, 240);
-                }
-            } 
-        
-            else if (shape === "circle") {
-                const r = parseFloat(document.getElementById("r").value) || 50;
-                const area = Math.PI * r * r; // Площадь круга
-        
-                ctx.beginPath();
-                ctx.arc(200, 200, r, 0, 2 * Math.PI);
-                ctx.stroke();
-        
-                ctx.fillText("O", 195, 195);
-        
-                if (showDetails) {
-                    ctx.strokeStyle = "red";
-                    ctx.beginPath();
-                    ctx.moveTo(200, 200);
-                    ctx.lineTo(200 + r, 200);
-                    ctx.stroke();
-                    ctx.fillText("Радиус", 210, 190);
-        
-                    ctx.fillText("Площадь: " + area.toFixed(2), 100, 240);
-                }
+    
+                document.getElementById("form-container").innerHTML = formHtml;
+                document.getElementById("calculation").innerHTML = calculationOptions;
             }
-        }
-        
-        
-        function toggleMeasurements() {
-            alert("Функция отображения размеров в процессе разработки!");
-        }
-        document.getElementById("shape").addEventListener("change", drawShape);
-        window.onload = showForm;
-
-        function toggleCalculationFields() {
-            const calculationType = document.getElementById("calculationType").value;
-            const formContainer = document.getElementById("form-container");
-        
-            if (calculationType === "none") {
-                formContainer.innerHTML = "";  
-            } else {
-                showForm();
+    
+            function calculate() {
+                const shape = document.getElementById("shape").value;
+                const calculation = document.getElementById("calculation").value;
+                let solution = "";
+    
+                try {
+                    switch(shape) {
+                        case 'triangle': {
+                            const a = parseFloat(document.getElementById("a").value);
+                            const b = parseFloat(document.getElementById("b").value);
+                            const c = parseFloat(document.getElementById("c").value);
+                            const h = parseFloat(document.getElementById("h").value);
+                            
+                            switch(calculation) {
+                                case 'area':
+                                    solution = `S = ½ * a * h = ½ * ${a} * ${h} = ${0.5 * a * h}`;
+                                    break;
+                                case 'perimeter':
+                                    solution = `P = a + b + c = ${a} + ${b} + ${c} = ${a + b + c}`;
+                                    break;
+                                case 'height':
+                                    solution = `h = (2 * S)/a = (2 * ${0.5 * a * h})/${a} = ${h}`;
+                                    break;
+                                case 'median':
+                                    const median = 0.5 * Math.sqrt(2*b**2 + 2*c**2 - a**2);
+                                    solution = `M = ½√(2b² + 2c² - a²) = ${median}`;
+                                    break;
+                            }
+                            break;
+                        }
+                        
+                        case 'rectangle': {
+                            const width = parseFloat(document.getElementById("width").value);
+                            const height = parseFloat(document.getElementById("height").value);
+                            
+                            switch(calculation) {
+                                case 'area':
+                                    solution = `S = width * height = ${width} * ${height} = ${width * height}`;
+                                    break;
+                                case 'perimeter':
+                                    solution = `P = 2*(width + height) = 2*(${width} + ${height}) = ${2*(width + height)}`;
+                                    break;
+                                case 'diagonal':
+                                    solution = `d = √(width² + height²) = ${Math.sqrt(width**2 + height**2)}`;
+                                    break;
+                            }
+                            break;
+                        }
+                        
+                        case 'square': {
+                            const side = parseFloat(document.getElementById("side").value);
+                            
+                            switch(calculation) {
+                                case 'area':
+                                    solution = `S = side² = ${side}² = ${side**2}`;
+                                    break;
+                                case 'perimeter':
+                                    solution = `P = 4*side = 4*${side} = ${4*side}`;
+                                    break;
+                                case 'diagonal':
+                                    solution = `d = side√2 = ${side * Math.sqrt(2)}`;
+                                    break;
+                            }
+                            break;
+                        }
+                        
+                        case 'circle': {
+                            const radius = parseFloat(document.getElementById("radius").value);
+                            
+                            switch(calculation) {
+                                case 'area':
+                                    solution = `S = πr² = π*${radius}² ≈ ${Math.PI * radius**2}`;
+                                    break;
+                                case 'circumference':
+                                    solution = `C = 2πr = 2π*${radius} ≈ ${2 * Math.PI * radius}`;
+                                    break;
+                            }
+                            break;
+                        }
+                        
+                        case 'trapezoid': {
+                            const a_t = parseFloat(document.getElementById("a").value);
+                            const b_t = parseFloat(document.getElementById("b").value);
+                            const h_t = parseFloat(document.getElementById("h").value);
+                            
+                            switch(calculation) {
+                                case 'area':
+                                    solution = `S = ½*(a + b)*h = ½*(${a_t} + ${b_t})*${h_t} = ${0.5*(a_t + b_t)*h_t}`;
+                                    break;
+                                case 'perimeter':
+                                    const side_t = Math.sqrt(((b_t - a_t)/2)**2 + h_t**2);
+                                    solution = `P = a + b + 2*side = ${a_t} + ${b_t} + 2*${side_t} ≈ ${a_t + b_t + 2*side_t}`;
+                                    break;
+                                case 'midline':
+                                    solution = `M = ½*(a + b) = ½*(${a_t} + ${b_t}) = ${0.5*(a_t + b_t)}`;
+                                    break;
+                            }
+                            break;
+                        }
+                        
+                        case 'rhombus': {
+                            const d1 = parseFloat(document.getElementById("d1").value);
+                            const d2 = parseFloat(document.getElementById("d2").value);
+                            const side_r = parseFloat(document.getElementById("side").value);
+                            
+                            switch(calculation) {
+                                case 'area':
+                                    solution = `S = ½*d1*d2 = ½*${d1}*${d2} = ${0.5*d1*d2}`;
+                                    break;
+                                case 'perimeter':
+                                    solution = `P = 4*side = 4*${side_r} = ${4*side_r}`;
+                                    break;
+                                case 'height':
+                                    solution = `h = S / side = ${0.5*d1*d2} / ${side_r} ≈ ${(0.5*d1*d2)/side_r}`;
+                                    break;
+                            }
+                            break;
+                        }
+                        
+                        case 'parallelogram': {
+                            const base = parseFloat(document.getElementById("base").value);
+                            const height_p = parseFloat(document.getElementById("height").value);
+                            const side_p = parseFloat(document.getElementById("side").value);
+                            
+                            switch(calculation) {
+                                case 'area':
+                                    solution = `S = base * height = ${base} * ${height_p} = ${base*height_p}`;
+                                    break;
+                                case 'perimeter':
+                                    solution = `P = 2*(base + side) = 2*(${base} + ${side_p}) = ${2*(base + side_p)}`;
+                                    break;
+                                case 'height':
+                                    solution = `h = S / base = ${base*height_p} / ${base} = ${height_p}`;
+                                    break;
+                            }
+                            break;
+                        }
+                    }
+                } catch(e) {
+                    solution = "Ошибка ввода данных";
+                }
+    
+                document.getElementById("solution").innerText = solution;
+                drawShape();
             }
-        }
-
-    </script>
-
-    {% endblock %}
-
+    
+            window.onload = showForm;
+        </script>
+    {% endblock %}</body></html>
