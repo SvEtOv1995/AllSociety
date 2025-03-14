@@ -133,7 +133,7 @@
 
         #constellation-info-panel {
             position: fixed;
-            top: 20px;
+            top: 175px;
             left: 20px;
             background: rgba(20, 20, 50, 0.9);
             padding: 20px;
@@ -156,6 +156,44 @@
             margin: 5px 0;
             font-size: 16px;
             color: #ffffff;
+        }
+
+        #search-panel {
+            position: fixed;
+            top: 60px;
+            left: 20px;
+            background: rgba(20, 20, 50, 0.9);
+            padding: 15px;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        
+        #search-input {
+            width: 200px;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        #search-results {
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .constellation-label {
+            position: absolute;
+            color: #00ffcc;
+            font-size: 12px;
+            font-family: 'Orbitron', sans-serif;
+            pointer-events: none;
+            z-index: 1000;
         }
 
         /* Стили для планшетов (ширина экрана до 1024px) */
@@ -293,6 +331,11 @@
         <p><strong>Звезды:</strong> <span id="constellation-stars"></span></p>
         <p><strong>Мифология:</strong> <span id="constellation-mythology"></span></p>
         <p><strong>Лучшее время для наблюдения:</strong> <span id="constellation-best-view"></span></p>
+    </div>
+
+    <div id="search-panel">
+        <input type="text" id="search-input" placeholder="Поиск созвездия..." />
+        <div id="search-results"></div>
     </div>
 
     <div id="focus-panel"></div>
@@ -549,13 +592,13 @@
 
         function animate() {
             requestAnimationFrame(animate);
-
+        
             for (let name in planets) {
                 let planet = planets[name];
                 planet.angle += planet.orbitSpeed * 0.005;
                 planet.mesh.position.x = Math.cos(planet.angle) * planet.distance;
                 planet.mesh.position.z = Math.sin(planet.angle) * planet.distance;
-
+        
                 if (focusedPlanet === planet) {
                     const targetPosition = planet.mesh.position.clone().add(new THREE.Vector3(0, 50, 200));
                     camera.position.lerp(targetPosition, 0.05);
@@ -563,7 +606,7 @@
                     camera.lookAt(planet.mesh.position);
                 }
             }
-
+        
             controls.update();
             renderer.render(scene, camera);
         }
@@ -574,7 +617,10 @@
         function exitObservationMode() {
             focusedPlanet = null;
             document.getElementById('info-panel').style.display = 'none';
-            exitButton.style.display = 'none';
+            document.getElementById('constellation-info-panel').style.display = 'none';
+            document.getElementById('exit-observe').style.display = 'none';
+            camera.position.set(0, 300, 1000);
+            controls.target.set(0, 0, 0);
         }
 
         function handlePlanetClick(name) {
@@ -618,6 +664,14 @@
         }
     }
 
+    function focusOnConstellation(constellation) {
+        const center = getConstellationCenter(constellation.points);
+        camera.position.set(center.x * 1.5, center.y * 1.5, center.z * 1.5);
+        controls.target.set(center.x, center.y, center.z);
+        showConstellationInfo(constellation);
+        document.getElementById('exit-observe').style.display = 'block';
+    }
+
     // Функция для создания звезд
     function createStar(x, y, z, size = 1, color = 0xffffff) {
         const starGeometry = new THREE.SphereGeometry(size, 16, 16);
@@ -632,13 +686,13 @@
     function createConstellationLine(points, color = 0xffffff) {
         const lineGeometry = new THREE.BufferGeometry();
         const vertices = [];
-
+    
         points.forEach(point => {
             vertices.push(point.x, point.y, point.z);
         });
-
+    
         lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-
+    
         const lineMaterial = new THREE.LineBasicMaterial({ color, linewidth: 1 });
         const constellationLine = new THREE.Line(lineGeometry, lineMaterial);
         scene.add(constellationLine);
@@ -650,15 +704,13 @@
         const stars = [];
         const lines = [];
     
-        // Создание звезд для созвездия
         points.forEach(point => {
-            const star = createStar(point.x, point.y, point.z, Math.random() * 2 + 1, 0xffffff);
+            const star = createStar(point.x, point.y, point.z);
             stars.push(star);
         });
     
-        // Создание линий созвездия
         const line = createConstellationLine(points);
-        line.userData = { constellation: constellationData }; // Добавляем данные созвездия
+        line.userData = { constellation: constellationData };
         lines.push(line);
     
         return { stars, lines, name: constellationData.name };
@@ -719,46 +771,119 @@
 ];
 
     // Создание созвездий
+    // После создания созвездий
     const constellationObjects = constellations.map(constellation => 
     createConstellation(constellation.points, constellation)
 );
 
-    function showConstellationInfo(constellation) {
-        const infoPanel = document.getElementById('constellation-info-panel');
-        infoPanel.innerHTML = `
-            <h2>${constellation.name}</h2>
-            <p>${constellation.description}</p>
-            <p><strong>Звезды:</strong> ${constellation.stars.join(', ')}</p>
-            <p><strong>Мифология:</strong> ${constellation.mythology}</p>
-            <p><strong>Лучшее время для наблюдения:</strong> ${constellation.bestView}</p>
-        `;
-        infoPanel.style.display = 'block';
-    }
+    // Добавление названий созвездий
+    addConstellationLabels(constellations);
 
-    // Функция для выделения созвездия при наведении
-        function highlightConstellation(constellation, highlight = true) {
-            constellation.lines.forEach(line => {
-                line.material.color.set(highlight ? 0xff0000 : 0xffffff); // Красный цвет при наведении
+    // Настройка поиска
+    setupSearch(constellations);
+
+    function showConstellationInfo(constellation) {
+    const infoPanel = document.getElementById('constellation-info-panel');
+    document.getElementById('constellation-name').innerText = constellation.name;
+    document.getElementById('constellation-description').innerText = constellation.description;
+    document.getElementById('constellation-stars').innerText = constellation.stars.join(', ');
+    document.getElementById('constellation-mythology').innerText = constellation.mythology;
+    document.getElementById('constellation-best-view').innerText = constellation.bestView;
+
+    infoPanel.style.display = 'block';
+}
+
+function addConstellationLabels(constellations) {
+    constellations.forEach(constellation => {
+        const center = getConstellationCenter(constellation.points);
+        const label = document.createElement('div');
+        label.className = 'constellation-label';
+        label.innerText = constellation.name;
+        label.style.left = `${(center.x / window.innerWidth) * 100}%`;
+        label.style.top = `${(center.y / window.innerHeight) * 100}%`;
+        document.body.appendChild(label);
+    });
+}
+
+function getConstellationCenter(points) {
+    const center = new THREE.Vector3();
+    points.forEach(point => center.add(point));
+    center.divideScalar(points.length);
+    const vector = center.clone().project(camera);
+    return {
+        x: (vector.x + 1) / 2 * window.innerWidth,
+        y: (-vector.y + 1) / 2 * window.innerHeight
+    };
+}
+
+function setupSearch(constellations) {
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+        searchResults.innerHTML = '';
+
+        if (query) {
+            constellations.forEach(constellation => {
+                if (constellation.name.toLowerCase().includes(query)) {
+                    const result = document.createElement('div');
+                    result.innerText = constellation.name;
+                    result.style.cursor = 'pointer';
+                    result.style.padding = '5px';
+                    result.style.color = '#00ffcc';
+                    result.addEventListener('click', () => {
+                        focusOnConstellation(constellation);
+                    });
+                    searchResults.appendChild(result);
+                }
             });
         }
+    });
+}
+
+function focusOnConstellation(constellation) {
+    const center = getConstellationCenter(constellation.points);
+    camera.position.set(center.x * 1.5, center.y * 1.5, center.z * 1.5);
+    controls.target.set(center.x, center.y, center.z);
+    showConstellationInfo(constellation);
+}
+
+function highlightConstellation(constellation, highlight = true) {
+    // Подсветка только линий, звезды остаются без изменений
+    constellation.lines.forEach(line => {
+        line.material.color.set(highlight ? 0xff0000 : 0xffffff); // Красный цвет при наведении
+    });
+}
+    // Функция для выделения созвездия при наведении
+    function highlightConstellation(constellation, highlight = true) {
+        constellation.lines.forEach(line => {
+            line.material.color.set(highlight ? 0xff0000 : 0xffffff); // Красный цвет при наведении
+        });
+    }
 
         // Обработчик наведения на созвездие
         window.addEventListener('mousemove', event => {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
+        
             raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(constellationObjects.flatMap(c => c.lines));
-
+            const intersects = raycaster.intersectObjects(constellationObjects.flatMap(c => [...c.lines, ...c.stars]));
+        
             // Убираем выделение со всех созвездий
             constellationObjects.forEach(constellation => {
                 highlightConstellation(constellation, false);
             });
-
+        
             // Выделяем созвездие, на которое наведен курсор
             if (intersects.length > 0) {
-                const hoveredConstellation = intersects[0].object.userData.constellation;
-                highlightConstellation(hoveredConstellation, true);
+                const hoveredObject = intersects[0].object;
+                const hoveredConstellation = constellationObjects.find(c => 
+                    c.lines.includes(hoveredObject) || c.stars.includes(hoveredObject)
+                );
+                if (hoveredConstellation) {
+                    highlightConstellation(hoveredConstellation, true);
+                }
             }
         });
 
@@ -768,55 +893,41 @@
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
         
             raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(constellationObjects.flatMap(c => c.lines));
+            const intersects = raycaster.intersectObjects(constellationObjects.flatMap(c => [...c.lines, ...c.stars]));
         
             if (intersects.length > 0) {
-                const clickedConstellation = intersects[0].object.userData.constellation;
-                handleConstellationClick(clickedConstellation);
+                const clickedObject = intersects[0].object;
+                const clickedConstellation = constellationObjects.find(c => 
+                    c.lines.includes(clickedObject) || c.stars.includes(clickedObject)
+                );
+                if (clickedConstellation) {
+                    handleConstellationClick(clickedConstellation);
+                }
             }
         });
 
-        document.getElementById('close-constellation-info').addEventListener('click', () => {
-            document.getElementById('constellation-info-panel').style.display = 'none';
-        });
+        document.getElementById('exit-observe').addEventListener('click', exitObservationMode);
+generateStars();
 
     // Функция для генерации случайных звезд (фон)
-    function generateStars() {
+    function generateStars(count = 5000) {
         const starGeometry = new THREE.BufferGeometry();
         const starVertices = [];
-        const starColors = [];
-    
-        for (let i = 0; i < 5000; i++) {
+        
+        for (let i = 0; i < count; i++) {
             const x = (Math.random() - 0.5) * 8000;
             const y = (Math.random() - 0.5) * 8000;
             const z = (Math.random() - 0.5) * 8000;
             starVertices.push(x, y, z);
-    
-            const colors = [0xffffff, 0xffd700, 0xadd8e6, 0xff4500];
-            const color = new THREE.Color(colors[Math.floor(Math.random() * colors.length)]);
-            starColors.push(color.r, color.g, color.b);
         }
     
         starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-        starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starColors, 3));
     
-        const starMaterial = new THREE.PointsMaterial({ 
-            vertexColors: true, 
-            size: 1.5, 
-            transparent: true, 
-            opacity: 0.9 
-        });
-    
+        const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 1.5 });
         const stars = new THREE.Points(starGeometry, starMaterial);
         scene.add(stars);
-    
-        function animateStars() {
-            starMaterial.opacity = 0.8 + Math.sin(Date.now() * 0.001) * 0.2;
-            requestAnimationFrame(animateStars);
-        }
-        animateStars();
     }
-
+    
     generateStars(500);
 
     </script>
