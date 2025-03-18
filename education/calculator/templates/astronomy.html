@@ -583,7 +583,11 @@
             document.getElementById('info-distance').innerText = `📏 Расстояние: ${info.distance} млн км`;
             document.getElementById('info-diameter').innerText = `⚪ Диаметр: ${info.diameter} км`;
             document.getElementById('info-temperature').innerText = `🌡 Температура: ${info.temperature}°C`;
+
+        
             document.getElementById('info-panel').style.display = 'flex';
+        
+            // Добавляем обработчик для кнопки просмотра карт
         }
 
         function focusOnPlanet(name) {
@@ -631,6 +635,15 @@
                 planet.angle += planet.orbitSpeed * 0.005;
                 planet.mesh.position.x = Math.cos(planet.angle) * planet.distance;
                 planet.mesh.position.z = Math.sin(planet.angle) * planet.distance;
+        
+                // Вращение колец планеты
+                if (planet.mesh.children.length > 0) {
+                    planet.mesh.children.forEach(child => {
+                        if (child instanceof THREE.Mesh && child.geometry instanceof THREE.RingGeometry) {
+                            child.rotation.y += 0.00005; // Скорость вращения колец
+                        }
+                    });
+                }
         
                 if (focusedPlanet === planet) {
                     const targetPosition = planet.mesh.position.clone().add(new THREE.Vector3(0, 50, 200));
@@ -748,7 +761,7 @@
     }
 
     // Функция для создания звезд
-    function createStar(x, y, z, size = 1, color = 0xffffff) {
+    function createStar(x, y, z, size = 4, color = 0xffffff) {
         const starGeometry = new THREE.SphereGeometry(size, 16, 16);
         const starMaterial = new THREE.MeshBasicMaterial({ color });
         const star = new THREE.Mesh(starGeometry, starMaterial);
@@ -842,7 +855,96 @@
         mythology: "Созвездие связано с мифом о Каллисто, которая была превращена в медведицу.",
         bestView: "Видно круглый год в северном полушарии."
     },
-    // Добавьте остальные созвездия с описанием, звездами, мифологией и временем наблюдения
+    {
+        name: "Лебедь",
+        points: [
+            sphericalToCartesian(skyRadius, 0.4, 0.7),
+            sphericalToCartesian(skyRadius, 0.5, 0.8),
+            sphericalToCartesian(skyRadius, 0.6, 0.7),
+            sphericalToCartesian(skyRadius, 0.7, 0.8),
+            sphericalToCartesian(skyRadius, 0.8, 0.7)
+        ],
+        description: "Лебедь — созвездие северного полушария, напоминающее летящую птицу. Оно содержит яркую звезду Денеб.",
+        stars: ["Денеб", "Альбирео", "Садра"],
+        mythology: "Лебедь ассоциируется с мифом о Зевсе, который превратился в лебедя, чтобы соблазнить Леду.",
+        bestView: "Летние месяцы в северном полушарии."
+    },
+    {
+        name: "Лира",
+        points: [
+            sphericalToCartesian(skyRadius, 0.3, 0.4),
+            sphericalToCartesian(skyRadius, 0.35, 0.45),
+            sphericalToCartesian(skyRadius, 0.4, 0.4),
+            sphericalToCartesian(skyRadius, 0.35, 0.35),
+            sphericalToCartesian(skyRadius, 0.3, 0.4)
+        ],
+        description: "Лира — небольшое, но яркое созвездие, известное благодаря звезде Вега, одной из самых ярких на небе.",
+        stars: ["Вега", "Сулафат", "Шелиак"],
+        mythology: "Лира связана с мифом о музыканте Орфее, чья лира была помещена на небо после его смерти.",
+        bestView: "Летние месяцы в северном полушарии."
+    },
+    {
+        name: "Скорпион",
+        points: [
+            sphericalToCartesian(skyRadius, -0.7, -0.3),
+            sphericalToCartesian(skyRadius, -0.6, -0.4),
+            sphericalToCartesian(skyRadius, -0.5, -0.3),
+            sphericalToCartesian(skyRadius, -0.4, -0.4),
+            sphericalToCartesian(skyRadius, -0.3, -0.3),
+            sphericalToCartesian(skyRadius, -0.4, -0.2),
+            sphericalToCartesian(skyRadius, -0.5, -0.3)
+        ],
+        description: "Скорпион — яркое созвездие, расположенное вблизи центра Млечного Пути. Оно содержит красный сверхгигант Антарес.",
+        stars: ["Антарес", "Шаула", "Саргас"],
+        mythology: "Скорпион связан с мифом о гигантском скорпионе, посланном убить Ориона.",
+        bestView: "Летние месяцы в южном полушарии."
+    },
+    {
+        name: "Пегас",
+        points: [
+            sphericalToCartesian(skyRadius, 0.2, 0.1),
+            sphericalToCartesian(skyRadius, 0.3, 0.2),
+            sphericalToCartesian(skyRadius, 0.4, 0.1),
+            sphericalToCartesian(skyRadius, 0.5, 0.2),
+            sphericalToCartesian(skyRadius, 0.4, 0.0),
+            sphericalToCartesian(skyRadius, 0.3, 0.1),
+            sphericalToCartesian(skyRadius, 0.2, 0.1)
+        ],
+        description: "Пегас — большое созвездие, названное в честь мифического крылатого коня. Оно содержит астеризм Большой Квадрат.",
+        stars: ["Маркаб", "Шеат", "Альгениб"],
+        mythology: "Пегас был рожден из крови Медузы Горгоны и позже стал конем Зевса.",
+        bestView: "Осенние месяцы в северном полушарии."
+    },
+    {
+        name: "Кассиопея",
+        points: [
+            sphericalToCartesian(skyRadius, 0.1, 0.9),
+            sphericalToCartesian(skyRadius, 0.2, 0.8),
+            sphericalToCartesian(skyRadius, 0.3, 0.9),
+            sphericalToCartesian(skyRadius, 0.4, 0.8),
+            sphericalToCartesian(skyRadius, 0.5, 0.9)
+        ],
+        description: "Кассиопея — созвездие северного полушария, легко узнаваемое по своей W-образной форме.",
+        stars: ["Шедар", "Каф", "Нави"],
+        mythology: "Кассиопея была царицей, которая хвасталась своей красотой и была наказана богами.",
+        bestView: "Осенние и зимние месяцы в северном полушарии."
+    },
+    {
+        name: "Дракон",
+        points: [
+            sphericalToCartesian(skyRadius, 0.6, 0.9),
+            sphericalToCartesian(skyRadius, 0.7, 0.8),
+            sphericalToCartesian(skyRadius, 0.8, 0.9),
+            sphericalToCartesian(skyRadius, 0.9, 0.8),
+            sphericalToCartesian(skyRadius, 1.0, 0.9),
+            sphericalToCartesian(skyRadius, 0.9, 1.0),
+            sphericalToCartesian(skyRadius, 0.8, 0.9)
+        ],
+        description: "Дракон — длинное и извилистое созвездие, окружающее Малую Медведицу.",
+        stars: ["Тубан", "Этамин", "Растабан"],
+        mythology: "Дракон связан с мифом о драконе, охранявшем золотые яблоки в саду Гесперид.",
+        bestView: "Круглый год в северном полушарии."
+    }
 ];
 
     // Создание созвездий
