@@ -587,8 +587,39 @@
         }
 
         function focusOnPlanet(name) {
+            const planet = planets[name];
+            if (!planet) return;
+        
+            // Показываем информацию о планете
             showInfo(name);
-            focusedPlanet = planets[name];
+        
+            // Устанавливаем фокус на планету
+            focusedPlanet = planet;
+        
+            // Рассчитываем позицию камеры для приближения к планете
+            const planetPosition = planet.mesh.position.clone();
+            const cameraOffset = new THREE.Vector3(0, 50, 200); // Смещение камеры относительно планеты
+            const targetPosition = planetPosition.add(cameraOffset);
+        
+            // Плавное перемещение камеры к планете
+            new TWEEN.Tween(camera.position)
+                .to(targetPosition, 1000) // Перемещаем камеру к новой позиции
+                .easing(TWEEN.Easing.Quadratic.Out)
+                .start();
+        
+            // Плавное перемещение цели камеры к планете
+            new TWEEN.Tween(controls.target)
+                .to(planetPosition, 1000) // Перемещаем цель камеры к планете
+                .easing(TWEEN.Easing.Quadratic.Out)
+                .start();
+        
+            // Показываем кнопку "Выйти из наблюдения"
+            document.getElementById('exit-observe').style.display = 'block';
+        
+            // Обработчик для кнопки "Выйти из наблюдения"
+            document.getElementById('exit-observe').onclick = () => {
+                exitObservationMode();
+            };
         }
 
         function animate() {
@@ -638,7 +669,7 @@
             document.getElementById('constellation-info-panel').style.display = 'none';
             document.getElementById('exit-observe').style.display = 'none';
         
-            // Сбрасываем фокус на созвездие
+            // Сбрасываем фокус на планету
             focusedPlanet = null;
         }
 
