@@ -878,6 +878,35 @@
         };
     }
 
+    function createMoons(planet, moonsData) {
+        const moons = [];
+        const moonDistance = planet.geometry.parameters.radius * 3; // Расстояние от планеты до спутника
+    
+        moonsData.forEach((moonName, index) => {
+            const moonGeometry = new THREE.SphereGeometry(2, 16, 16); // Размер спутника
+            const moonMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa });
+            const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+    
+            // Позиционируем спутник вокруг планеты
+            const angle = (index / moonsData.length) * Math.PI * 2;
+            moon.position.x = Math.cos(angle) * moonDistance;
+            moon.position.z = Math.sin(angle) * moonDistance;
+    
+            planet.add(moon); // Добавляем спутник к планете
+            moons.push(moon);
+        });
+    
+        return moons;
+    }
+    
+    // В цикле создания планет добавляем спутники
+    planetData.forEach(data => {
+        const planet = planets[data.name].mesh;
+        if (data.moons && data.moons.length > 0) {
+            createMoons(planet, data.moons);
+        }
+    });
+
 function addConstellationLabels(constellations) {
     constellations.forEach(constellation => {
         const center = getConstellationCenter(constellation.points);
@@ -1003,25 +1032,43 @@ function highlightConstellation(constellation, highlight = true) {
 generateStars();
 
     // Функция для генерации случайных звезд (фон)
-    function generateStars(count = 5000) {
+    function generateStars(count = 10000) {
         const starGeometry = new THREE.BufferGeometry();
         const starVertices = [];
-        
+        const starColors = [];
+    
         for (let i = 0; i < count; i++) {
-            const x = (Math.random() - 0.5) * 8000;
-            const y = (Math.random() - 0.5) * 8000;
-            const z = (Math.random() - 0.5) * 8000;
+            const radius = 5000; // Радиус сферы, на которой будут звезды
+            const theta = Math.random() * Math.PI * 2; // Азимут
+            const phi = Math.acos((Math.random() * 2) - 1); // Угол возвышения
+    
+            const x = radius * Math.sin(phi) * Math.cos(theta);
+            const y = radius * Math.sin(phi) * Math.sin(theta);
+            const z = radius * Math.cos(phi);
+    
             starVertices.push(x, y, z);
+    
+            // Добавляем случайный цвет для звезд
+            const color = new THREE.Color();
+            color.setHSL(Math.random(), 0.5, 0.5);
+            starColors.push(color.r, color.g, color.b);
         }
     
         starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+        starGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starColors, 3));
     
-        const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 1.5 });
+        const starMaterial = new THREE.PointsMaterial({ 
+            size: 1.5, 
+            vertexColors: true, 
+            transparent: true, 
+            opacity: 0.8 
+        });
+    
         const stars = new THREE.Points(starGeometry, starMaterial);
         scene.add(stars);
     }
     
-    generateStars(500);
+    generateStars(10000);
 
     </script>
 </body>
