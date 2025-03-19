@@ -4,6 +4,7 @@
 
 {% block content %}
     <h1>Темы по предмету {{ subject.name }}</h1>
+    <h4>Инструменты</h4>
 
     <!-- Buttons Container with Left and Right Buttons -->
     <div class="buttons-container" style="display: contents; justify-content: space-between; align-items: center; background-color: var(--container-bg); padding: 20px;">
@@ -13,7 +14,7 @@
         </a>
         
         <!-- Center-aligned Topics List -->
-        <div class="subject-container" style="display: flex; flex-direction: column; gap: 25px; margin-top: 20px; align-content: flex-end;">
+        <div class="subject-container" style="display: flex; flex-direction: column; gap: 25px; margin-top: 55px; margin-left: 270px;  align-content: flex-end;">
             {% for topic in topics %}
                 <a href="{% url 'lesson_list' topic.id %}" class="button">
                     <h2>{{ topic.name }}</h2>
@@ -91,14 +92,24 @@
         }              
         
         h1 {
-            top: 71px;
-            right: 30%;
+            top: 95px;
+            right: 23%;
         }
 
         h2 {
 
             font-size: 20px;
             color: #fff;
+
+        }
+
+        h4 {
+
+            position: relative;
+            font-size: 25px;
+            color: #fff;
+            top: 80px;
+            right: 31%;
 
         }
 
