@@ -23,9 +23,7 @@
         }
 
         td {
-
            background-color: #757272;
-
         }
         .back-button {
             margin-bottom: 20px;
@@ -69,9 +67,7 @@
         }
 
         .container {
-
             max-width: 950px;
-
         }
 
         /* Уборка лишних с главной страницы SVG */
@@ -104,11 +100,9 @@
         }
 
         h1 {
-
             position: relative;
             top: -20px;
             right: 25%;
-
         }
     </style>
 </head>
@@ -129,101 +123,105 @@
             </thead>
             <tbody>
                 <!-- Понедельник -->
-                <tr>
+                <tr data-day="monday">
                     <td colspan="3" style="background-color: #1b9d92; font-weight: bold;">Понедельник</td>
                 </tr>
-                <tr>
+                <tr data-day="monday">
                     <td><input type="time" name="monday_time_1" value="08:30" required></td>
                     <td><input type="text" name="monday_lesson_1" value="Физра" required></td>
                     <td><button type="button" class="delete-btn" onclick="deleteLesson('monday', 1)">Удалить</button></td>
                 </tr>
-                <tr>
+                <tr data-day="monday">
                     <td><input type="time" name="monday_time_2" value="09:00" required></td>
                     <td><input type="text" name="monday_lesson_2" value="Английский" required></td>
                     <td><button type="button" class="delete-btn" onclick="deleteLesson('monday', 2)">Удалить</button></td>
                 </tr>
                 <!-- Форма для добавления нового урока -->
-                <tr>
+                <tr data-day="monday">
                     <td><input type="time" name="monday_new_time" required></td>
                     <td><input type="text" name="monday_new_lesson" required></td>
                     <td><button type="button" onclick="addLesson('monday')">Добавить</button></td>
                 </tr>
                 
-                <tr>
+                <!-- Вторник -->
+                <tr data-day="tuesday">
                     <td colspan="3" style="background-color: #1b9d92; font-weight: bold;">Вторник</td>
                 </tr>
-                <tr>
+                <tr data-day="tuesday">
                     <td><input type="time" name="tuesday_time_1" value="08:30" required></td>
                     <td><input type="text" name="tuesday_lesson_1" value="Математика" required></td>
                     <td><button type="button" class="delete-btn" onclick="deleteLesson('tuesday', 1)">Удалить</button></td>
                 </tr>
-                <tr>
+                <tr data-day="tuesday">
                     <td><input type="time" name="tuesday_time_2" value="09:00" required></td>
                     <td><input type="text" name="tuesday_lesson_2" value="Русский" required></td>
                     <td><button type="button" class="delete-btn" onclick="deleteLesson('tuesday', 2)">Удалить</button></td>
                 </tr>
                 <!-- Форма для добавления нового урока -->
-                <tr>
+                <tr data-day="tuesday">
                     <td><input type="time" name="tuesday_new_time" required></td>
                     <td><input type="text" name="tuesday_new_lesson" required></td>
                     <td><button type="button" onclick="addLesson('tuesday')">Добавить</button></td>
                 </tr>
                 
-                <tr>
+                <!-- Среда -->
+                <tr data-day="wednesday">
                     <td colspan="3" style="background-color: #1b9d92; font-weight: bold;">Среда</td>
                 </tr>
-                <tr>
+                <tr data-day="wednesday">
                     <td><input type="time" name="wednesday_time_1" value="08:30" required></td>
                     <td><input type="text" name="wednesday_lesson_1" value="Химия" required></td>
                     <td><button type="button" class="delete-btn" onclick="deleteLesson('wednesday', 1)">Удалить</button></td>
                 </tr>
-                <tr>
+                <tr data-day="wednesday">
                     <td><input type="time" name="wednesday_time_2" value="09:00" required></td>
                     <td><input type="text" name="wednesday_lesson_2" value="Биология" required></td>
                     <td><button type="button" class="delete-btn" onclick="deleteLesson('wednesday', 2)">Удалить</button></td>
                 </tr>
                 <!-- Форма для добавления нового урока -->
-                <tr>
+                <tr data-day="wednesday">
                     <td><input type="time" name="wednesday_new_time" required></td>
                     <td><input type="text" name="wednesday_new_lesson" required></td>
                     <td><button type="button" onclick="addLesson('wednesday')">Добавить</button></td>
                 </tr>
                 
-                <tr>
+                <!-- Четверг -->
+                <tr data-day="thursday">
                     <td colspan="3" style="background-color: #1b9d92; font-weight: bold;">Четверг</td>
                 </tr>
-                <tr>
+                <tr data-day="thursday">
                     <td><input type="time" name="thursday_time_1" value="08:30" required></td>
                     <td><input type="text" name="thursday_lesson_1" value="Литература" required></td>
                     <td><button type="button" class="delete-btn" onclick="deleteLesson('thursday', 1)">Удалить</button></td>
                 </tr>
-                <tr>
+                <tr data-day="thursday">
                     <td><input type="time" name="thursday_time_2" value="09:00" required></td>
                     <td><input type="text" name="thursday_lesson_2" value="История" required></td>
                     <td><button type="button" class="delete-btn" onclick="deleteLesson('thursday', 2)">Удалить</button></td>
                 </tr>
                 <!-- Форма для добавления нового урока -->
-                <tr>
+                <tr data-day="thursday">
                     <td><input type="time" name="thursday_new_time" required></td>
                     <td><input type="text" name="thursday_new_lesson" required></td>
                     <td><button type="button" onclick="addLesson('thursday')">Добавить</button></td>
                 </tr>
                 
-                <tr>
+                <!-- Пятница -->
+                <tr data-day="friday">
                     <td colspan="3" style="background-color: #1b9d92; font-weight: bold;">Пятница</td>
                 </tr>
-                <tr>
+                <tr data-day="friday">
                     <td><input type="time" name="friday_time_1" value="08:30" required></td>
                     <td><input type="text" name="friday_lesson_1" value="География" required></td>
                     <td><button type="button" class="delete-btn" onclick="deleteLesson('friday', 1)">Удалить</button></td>
                 </tr>
-                <tr>
+                <tr data-day="friday">
                     <td><input type="time" name="friday_time_2" value="09:00" required></td>
                     <td><input type="text" name="friday_lesson_2" value="Математика" required></td>
                     <td><button type="button" class="delete-btn" onclick="deleteLesson('friday', 2)">Удалить</button></td>
                 </tr>
                 <!-- Форма для добавления нового урока -->
-                <tr>
+                <tr data-day="friday">
                     <td><input type="time" name="friday_new_time" required></td>
                     <td><input type="text" name="friday_new_lesson" required></td>
                     <td><button type="button" onclick="addLesson('friday')">Добавить</button></td>
@@ -251,12 +249,13 @@
             if (timeInput.value && lessonInput.value) {
                 const newRow = document.createElement('tr');
                 newRow.innerHTML = `
-                    <td><input type="time" name="${day}_new_time" value="${timeInput.value}" required></td>
-                    <td><input type="text" name="${day}_new_lesson" value="${lessonInput.value}" required></td>
+                    <td><input type="time" name="${day}_time_new" value="${timeInput.value}" required></td>
+                    <td><input type="text" name="${day}_lesson_new" value="${lessonInput.value}" required></td>
                     <td><button type="button" class="delete-btn" onclick="deleteNewLesson(this)">Удалить</button></td>
                 `;
                 const table = document.querySelector('table tbody');
-                table.insertBefore(newRow, document.querySelector(`tr[data-day='${day}']`));
+                const daySection = document.querySelector(`tr[data-day='${day}']`).parentNode;
+                daySection.insertBefore(newRow, document.querySelector(`tr[data-day='${day}']`).nextSibling);
                 
                 // Очистить поля для ввода нового урока
                 timeInput.value = '';
@@ -268,6 +267,36 @@
         function deleteNewLesson(button) {
             button.closest('tr').remove();
         }
+
+        // Функция для проверки расписания и вывода уведомлений
+        function checkSchedule() {
+            const now = new Date();
+            const currentTime = now.getHours() * 60 + now.getMinutes(); // Текущее время в минутах
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+            let lessonFound = false;
+
+            days.forEach(day => {
+                for (let i = 1; i <= 2; i++) {
+                    const timeInput = document.querySelector(`input[name='${day}_time_${i}']`);
+                    const lessonInput = document.querySelector(`input[name='${day}_lesson_${i}']`);
+                    if (timeInput && timeInput.value && lessonInput && lessonInput.value) {
+                        const [hours, minutes] = timeInput.value.split(':');
+                        const lessonTime = parseInt(hours) * 60 + parseInt(minutes);
+                        if (Math.abs(currentTime - lessonTime) <= 5 && currentTime < lessonTime) {
+                            alert(`Скоро урок: ${lessonInput.value} в ${timeInput.value}`);
+                            lessonFound = true;
+                        }
+                    }
+                }
+            });
+
+            if (!lessonFound) {
+                alert('На ближайшие 5 минут уроков нет.');
+            }
+        }
+
+        // Проверка расписания каждые 5 минут
+        setInterval(checkSchedule, 5 * 60 * 1000);
     </script>
     
 </body>

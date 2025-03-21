@@ -28,6 +28,9 @@ class Topic(models.Model):
         return f"{self.subject.name} - {self.name}"
 
 
+from django.db import models
+import json
+
 class Lesson(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='lessons', verbose_name="Тема")
     title = models.CharField(max_length=255, verbose_name="Название урока")
@@ -36,6 +39,7 @@ class Lesson(models.Model):
     allow_latex = models.BooleanField(default=True, verbose_name="Разрешить LaTeX")
     explanation = models.TextField(blank=True, null=True, verbose_name="Объяснение урока")
     svg_content = models.TextField(blank=True, null=True, verbose_name="SVG-код")
+    board_data = models.TextField(blank=True, null=True, verbose_name="Данные доски")  # Новое поле для хранения данных доски
 
     class Meta:
         ordering = ['topic', 'title']

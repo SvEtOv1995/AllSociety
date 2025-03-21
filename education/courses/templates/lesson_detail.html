@@ -32,6 +32,24 @@
             </div>
         {% endif %}
 
+        <button id="open-board-button" class="button">Открыть доску</button>
+
+        <!-- Доска для рисования -->
+        <div id="drawing-board" style="display: none; margin-top: 20px;">
+            <canvas id="canvas" width="800" height="600" style="border: 1px solid #000; background-color: white;"></canvas>
+            <div class="board-controls">
+                <button id="save-board-button" class="button">Сохранить доску</button>
+                <button id="clear-board-button" class="button">Очистить доску</button>
+                <button id="erase-button" class="button">Ластик</button>
+                <button id="draw-button" class="button active">Рисовать</button>
+                <input type="color" id="color-picker" class="button" value="#000000">
+                <input type="range" id="brush-size" class="button" min="1" max="50" value="5">
+                <button id="add-text-button" class="button">Добавить текст</button>
+                <button id="undo-button" class="button">Отменить</button>
+                <button id="redo-button" class="button">Повторить</button>
+            </div>
+        </div>
+
         <!-- Секция с заданиями -->
         <div class="questions-section">
             <h2>Задания</h2>
@@ -245,7 +263,7 @@
             }
         
             .button {
-                background-color: var(--button-dark-bg);
+                background-color: var(--button-bg);
             }
         
             .button:hover {
@@ -257,5 +275,182 @@
         .center-line, .title-container, .paragraph-container, .h2, .h3, #character-container, .svg-container {
             display: none;
         }
+
+        /* Стили для кнопок */
+
+        /* Стили для доски */
+        #drawing-board {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        #canvas {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background-color: white;
+        }
+
+        .board-controls {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* Стили для input[type="color"] и input[type="range"] */
+        input[type="color"], input[type="range"] {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            width: 100px;
+        }
     </style>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.4/fabric.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = new fabric.Canvas('canvas');
+            const drawingBoard = document.getElementById('drawing-board');
+            const openBoardButton = document.getElementById('open-board-button');
+            const saveBoardButton = document.getElementById('save-board-button');
+            const clearBoardButton = document.getElementById('clear-board-button');
+            const eraseButton = document.getElementById('erase-button');
+            const drawButton = document.getElementById('draw-button');
+            const colorPicker = document.getElementById('color-picker');
+            const brushSize = document.getElementById('brush-size');
+            const addTextButton = document.getElementById('add-text-button');
+            const undoButton = document.getElementById('undo-button');
+            const redoButton = document.getElementById('redo-button');
+    
+            let isErasing = false;
+            let history = [];
+            let historyIndex = -1;
+    
+            // Открытие доски
+            openBoardButton.addEventListener('click', function() {
+                drawingBoard.style.display = 'block';
+            });
+    
+            // Сохранение данных доски
+            saveBoardButton.addEventListener('click', function() {
+                const boardData = JSON.stringify(canvas.toJSON());
+                fetch('{% url "save_board_data" lesson.id %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ board_data: boardData })
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          alert('Доска сохранена!');
+                      } else {
+                          alert('Ошибка при сохранении доски.');
+                      }
+                  });
+            });
+    
+            // Очистка доски
+            clearBoardButton.addEventListener('click', function() {
+                canvas.clear();
+                history = [];
+                historyIndex = -1;
+            });
+    
+            // Режим ластика
+            eraseButton.addEventListener('click', function() {
+                isErasing = true;
+                canvas.isDrawingMode = false; // Отключаем режим рисования
+                canvas.selection = false; // Отключаем выделение объектов
+                canvas.forEachObject(function(obj) {
+                    obj.selectable = false; // Делаем объекты невыделяемыми
+                });
+            });
+    
+            // Режим рисования
+            drawButton.addEventListener('click', function() {
+                isErasing = false;
+                canvas.isDrawingMode = true; // Включаем режим рисования
+                canvas.selection = true; // Включаем выделение объектов
+                canvas.forEachObject(function(obj) {
+                    obj.selectable = true; // Делаем объекты выделяемыми
+                });
+            });
+    
+            // Изменение цвета кисти
+            colorPicker.addEventListener('change', function() {
+                canvas.freeDrawingBrush.color = this.value;
+            });
+    
+            // Изменение размера кисти
+            brushSize.addEventListener('input', function() {
+                canvas.freeDrawingBrush.width = parseInt(this.value, 10);
+            });
+    
+            // Добавление текста
+            addTextButton.addEventListener('click', function() {
+                const text = new fabric.IText('Введите текст', {
+                    left: 100,
+                    top: 100,
+                    fontFamily: 'Arial',
+                    fontSize: 20,
+                    fill: colorPicker.value
+                });
+                canvas.add(text);
+                canvas.setActiveObject(text);
+                canvas.renderAll();
+            });
+    
+            // Управление историей (отмена и повтор)
+            canvas.on('object:added', function() {
+                if (historyIndex < history.length - 1) {
+                    history = history.slice(0, historyIndex + 1);
+                }
+                history.push(JSON.stringify(canvas.toJSON()));
+                historyIndex++;
+            });
+    
+            undoButton.addEventListener('click', function() {
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    canvas.loadFromJSON(history[historyIndex], function() {
+                        canvas.renderAll();
+                    });
+                }
+            });
+    
+            redoButton.addEventListener('click', function() {
+                if (historyIndex < history.length - 1) {
+                    historyIndex++;
+                    canvas.loadFromJSON(history[historyIndex], function() {
+                        canvas.renderAll();
+                    });
+                }
+            });
+    
+            // Обработка кликов для удаления объектов (ластик)
+            canvas.on('mouse:down', function(options) {
+                if (isErasing && options.target) {
+                    canvas.remove(options.target); // Удаляем объект, на который кликнули
+                }
+            });
+    
+            // Загрузка сохраненных данных доски, если они есть
+            {% if lesson.board_data %}
+                canvas.loadFromJSON({{ lesson.board_data|safe }}, function() {
+                    canvas.renderAll(); // Перерисовываем canvas после загрузки данных
+                });
+            {% endif %}
+        });
+    </script>
 {% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Прогресс по урокам - {{ topic }}{% endblock %}
+
+{% block content %}
+    <h1>Прогресс по урокам: {{ topic }}</h1>
+    <div class="lesson-progress-box" style="display: flex; flex-direction: column; align-items: center;">
+        <ul>
+            {% for lesson in lessons %}
+                <li>
+                    <strong>{{ lesson.lesson_name }}</strong> - {% if lesson.completed %}Завершено{% else %}Не завершено{% endif %}
+                    {% if not lesson.completed %}
+                        <a href="{% url 'complete_lesson' lesson.id %}" class="button" style="margin-left: 10px;">✅ Завершить урок</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Кнопка "Вернуться к персонажу" -->
+        <a href="{% url 'character_status' %}" class="button" style="margin-top: 20px;">👤 Вернуться к персонажу</a>
+    </div>
+
+    <style>
+
+        /* Уборка лишних с главной страницы SVG */
+        .center-line {
+            display: none;
+        }  
+
+        .title-container {
+            display: none;
+        }
+
+        .paragraph-container {
+            display: none;
+        }
+
+        .h2 {
+            display: none;
+        }
+
+        .h3 {
+            display: none;
+        }
+
+        #character-container {
+            display: none;
+        }
+
+        .svg-container {
+            display: none;
+        }
+
+    </style>
+{% endblock %}

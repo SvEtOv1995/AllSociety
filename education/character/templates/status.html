@@ -15,6 +15,19 @@
         <!-- Количество пройденных уроков -->
         <p><strong>Пройдено уроков:</strong> {{ lessons_completed }}</p>
 
+        <!-- Прогресс по темам -->
+        <div class="topic-progress" style="margin-top: 20px;">
+            <h3>Прогресс по темам:</h3>
+            <ul>
+                {% for topic, completed in topic_progress.items %}
+                    <li>
+                        <strong>{{ topic }}:</strong> {{ completed }} уроков пройдено
+                        <a href="{% url 'lesson_progress' topic %}" class="button" style="margin-left: 10px;">📖 Просмотреть уроки</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
         <!-- Дополнительная информация о прогрессе -->
         <div class="progress-info" style="text-align: center; margin-top: 20px;">
             <p><strong>Оставшийся опыт до следующего уровня:</strong> {{ remaining_exp }}</p>
@@ -48,6 +61,10 @@
             display: none;
         }
 
+        h1 {
+            display: none;
+        }
+
         .h3 {
             display: none;
         }
@@ -60,10 +77,5 @@
             display: none;
         }
 
-        h1 {
-
-            display: none;
-
-        }
     </style>
 {% endblock %}

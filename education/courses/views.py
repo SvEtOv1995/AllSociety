@@ -5,6 +5,9 @@ from .models import Question, Answer
 from .models import Subject, SubjectCalculator, SubjectNotes
 from django.utils.safestring import mark_safe
 import re
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 def subjects_list(request):
     subjects = Subject.objects.all()
@@ -113,3 +116,17 @@ def subject_notes(request, subject_id):
         notes = None  # Or handle the case when the notes don't exist
     
     return render(request, 'subject_notes.html', {'subject': subject, 'notes': notes})
+
+@csrf_exempt
+def save_board_data(request, lesson_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            board_data = data.get('board_data')
+            lesson = Lesson.objects.get(id=lesson_id)
+            lesson.board_data = board_data
+            lesson.save()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
