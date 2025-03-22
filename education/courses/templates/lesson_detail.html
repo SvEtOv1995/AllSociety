@@ -35,18 +35,15 @@
         <button id="open-board-button" class="button">Открыть доску</button>
 
         <!-- Доска для рисования -->
-        <div id="drawing-board" style="display: none; margin-top: 20px;">
+        <div id="drawing-board" style="display: block; margin-top: 20px;">
             <canvas id="canvas" width="800" height="600" style="border: 1px solid #000; background-color: white;"></canvas>
             <div class="board-controls">
-                <button id="save-board-button" class="button">Сохранить доску</button>
-                <button id="clear-board-button" class="button">Очистить доску</button>
-                <button id="erase-button" class="button">Ластик</button>
                 <button id="draw-button" class="button active">Рисовать</button>
+                <button id="erase-button" class="button">Ластик</button>
                 <input type="color" id="color-picker" class="button" value="#000000">
                 <input type="range" id="brush-size" class="button" min="1" max="50" value="5">
                 <button id="add-text-button" class="button">Добавить текст</button>
-                <button id="undo-button" class="button">Отменить</button>
-                <button id="redo-button" class="button">Повторить</button>
+                <button id="add-image-button" class="button">Добавить изображение</button>
             </div>
         </div>
 
@@ -319,54 +316,22 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const canvas = new fabric.Canvas('canvas');
-            const drawingBoard = document.getElementById('drawing-board');
-            const openBoardButton = document.getElementById('open-board-button');
-            const saveBoardButton = document.getElementById('save-board-button');
-            const clearBoardButton = document.getElementById('clear-board-button');
-            const eraseButton = document.getElementById('erase-button');
             const drawButton = document.getElementById('draw-button');
+            const eraseButton = document.getElementById('erase-button');
             const colorPicker = document.getElementById('color-picker');
             const brushSize = document.getElementById('brush-size');
             const addTextButton = document.getElementById('add-text-button');
-            const undoButton = document.getElementById('undo-button');
-            const redoButton = document.getElementById('redo-button');
-    
+            const addImageButton = document.getElementById('add-image-button');
+        
             let isErasing = false;
-            let history = [];
-            let historyIndex = -1;
-    
-            // Открытие доски
-            openBoardButton.addEventListener('click', function() {
-                drawingBoard.style.display = 'block';
-            });
-    
-            // Сохранение данных доски
-            saveBoardButton.addEventListener('click', function() {
-                const boardData = JSON.stringify(canvas.toJSON());
-                fetch('{% url "save_board_data" lesson.id %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({ board_data: boardData })
-                }).then(response => response.json())
-                  .then(data => {
-                      if (data.success) {
-                          alert('Доска сохранена!');
-                      } else {
-                          alert('Ошибка при сохранении доски.');
-                      }
-                  });
-            });
-    
-            // Очистка доски
-            clearBoardButton.addEventListener('click', function() {
-                canvas.clear();
-                history = [];
-                historyIndex = -1;
-            });
-    
+        
+            // Включаем режим рисования по умолчанию
+            canvas.isDrawingMode = true;
+        
+            // Устанавливаем кисть для рисования
+            canvas.freeDrawingBrush.color = colorPicker.value;
+            canvas.freeDrawingBrush.width = parseInt(brushSize.value, 10);
+        
             // Режим ластика
             eraseButton.addEventListener('click', function() {
                 isErasing = true;
@@ -376,7 +341,7 @@
                     obj.selectable = false; // Делаем объекты невыделяемыми
                 });
             });
-    
+        
             // Режим рисования
             drawButton.addEventListener('click', function() {
                 isErasing = false;
@@ -386,17 +351,17 @@
                     obj.selectable = true; // Делаем объекты выделяемыми
                 });
             });
-    
+        
             // Изменение цвета кисти
             colorPicker.addEventListener('change', function() {
                 canvas.freeDrawingBrush.color = this.value;
             });
-    
+        
             // Изменение размера кисти
             brushSize.addEventListener('input', function() {
                 canvas.freeDrawingBrush.width = parseInt(this.value, 10);
             });
-    
+        
             // Добавление текста
             addTextButton.addEventListener('click', function() {
                 const text = new fabric.IText('Введите текст', {
@@ -410,47 +375,36 @@
                 canvas.setActiveObject(text);
                 canvas.renderAll();
             });
-    
-            // Управление историей (отмена и повтор)
-            canvas.on('object:added', function() {
-                if (historyIndex < history.length - 1) {
-                    history = history.slice(0, historyIndex + 1);
-                }
-                history.push(JSON.stringify(canvas.toJSON()));
-                historyIndex++;
+        
+            // Добавление изображения
+            addImageButton.addEventListener('click', function() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = function(f) {
+                        const img = new Image();
+                        img.src = f.target.result;
+                        img.onload = function() {
+                            const fabricImage = new fabric.Image(img);
+                            fabricImage.scaleToWidth(200); // Масштабируем изображение
+                            canvas.add(fabricImage);
+                            canvas.renderAll();
+                        };
+                    };
+                    reader.readAsDataURL(file);
+                };
+                input.click();
             });
-    
-            undoButton.addEventListener('click', function() {
-                if (historyIndex > 0) {
-                    historyIndex--;
-                    canvas.loadFromJSON(history[historyIndex], function() {
-                        canvas.renderAll();
-                    });
-                }
-            });
-    
-            redoButton.addEventListener('click', function() {
-                if (historyIndex < history.length - 1) {
-                    historyIndex++;
-                    canvas.loadFromJSON(history[historyIndex], function() {
-                        canvas.renderAll();
-                    });
-                }
-            });
-    
+        
             // Обработка кликов для удаления объектов (ластик)
             canvas.on('mouse:down', function(options) {
                 if (isErasing && options.target) {
                     canvas.remove(options.target); // Удаляем объект, на который кликнули
                 }
             });
-    
-            // Загрузка сохраненных данных доски, если они есть
-            {% if lesson.board_data %}
-                canvas.loadFromJSON({{ lesson.board_data|safe }}, function() {
-                    canvas.renderAll(); // Перерисовываем canvas после загрузки данных
-                });
-            {% endif %}
         });
     </script>
 {% endblock %}

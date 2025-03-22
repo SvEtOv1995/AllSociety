@@ -39,7 +39,7 @@ class Lesson(models.Model):
     allow_latex = models.BooleanField(default=True, verbose_name="Разрешить LaTeX")
     explanation = models.TextField(blank=True, null=True, verbose_name="Объяснение урока")
     svg_content = models.TextField(blank=True, null=True, verbose_name="SVG-код")
-    board_data = models.TextField(blank=True, null=True, verbose_name="Данные доски")  # Новое поле для хранения данных доски
+    board_data = models.JSONField(blank=True, null=True)
 
     class Meta:
         ordering = ['topic', 'title']

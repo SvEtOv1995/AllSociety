@@ -130,3 +130,28 @@ def save_board_data(request, lesson_id):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+# Функция для получения данных доски
+def get_board_data(request, lesson_id):
+    try:
+        lesson = Lesson.objects.get(id=lesson_id)
+        return JsonResponse({'board_data': lesson.board_data})
+    except Lesson.DoesNotExist:
+        return JsonResponse({'error': 'Lesson not found'}, status=404)
+
+# Функция для сохранения данных доски
+@csrf_exempt
+def save_board_data(request, lesson_id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            board_data = data.get('board_data')
+            lesson = Lesson.objects.get(id=lesson_id)
+            lesson.board_data = board_data
+            lesson.save()
+            return JsonResponse({'success': True})
+        except Lesson.DoesNotExist:
+            return JsonResponse({'error': 'Lesson not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
