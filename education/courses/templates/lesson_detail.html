@@ -32,20 +32,27 @@
             </div>
         {% endif %}
 
-        <button id="open-board-button" class="button">Открыть доску</button>
+        <button id="toggle-board-button" class="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        </button>
 
-        <!-- Доска для рисования -->
-        <div id="drawing-board" style="display: block; margin-top: 20px;">
-            <canvas id="canvas" width="800" height="600" style="border: 1px solid #000; background-color: white;"></canvas>
+        <!-- Интерактивная доска -->
+        <div id="drawing-board" style="display: none;">
+            <canvas id="canvas" width="800" height="600"></canvas>
             <div class="board-controls">
-                <button id="draw-button" class="button active">Рисовать</button>
-                <button id="erase-button" class="button">Ластик</button>
-                <input type="color" id="color-picker" class="button" value="#000000">
-                <input type="range" id="brush-size" class="button" min="1" max="50" value="5">
-                <button id="add-text-button" class="button">Добавить текст</button>
-                <button id="add-image-button" class="button">Добавить изображение</button>
+                <input type="color" id="color-picker" value="#000000">
+                <input type="range" id="brush-size" min="1" max="50" value="5">
+                <select id="brush-shape">
+                    <option value="round">Круглая кисть</option>
+                    <option value="square">Квадратная кисть</option>
+                </select>
+                <button id="eraser">Ластик</button>
+                <button id="undo">Отменить</button>
+                <button id="save">Сохранить</button>
+                <button id="clear-board">Очистить</button>
             </div>
         </div>
+    </div>
 
         <!-- Секция с заданиями -->
         <div class="questions-section">
@@ -85,7 +92,6 @@
                 {% endfor %}
             </div>
         </div>
-    </div>
 
     <!-- Форма завершения урока -->
     <form id="lesson-form" action="{% url 'add_exp' 10 %}" method="POST">
@@ -260,7 +266,7 @@
             }
         
             .button {
-                background-color: var(--button-bg);
+                background-color: var(--button-dark-bg);
             }
         
             .button:hover {
@@ -273,138 +279,185 @@
             display: none;
         }
 
-        /* Стили для кнопок */
-
         /* Стили для доски */
         #drawing-board {
-            background-color: #f9f9f9;
+            background-color:rgb(10, 71, 45);
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         #canvas {
             border: 2px solid #ddd;
             border-radius: 10px;
-            background-color: white;
+            background-color:rgb(18, 105, 67);
+            margin-bottom: 20px;
         }
 
         .board-controls {
-            margin-top: 10px;
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             align-items: center;
+            justify-content: center;
         }
 
-        /* Стили для input[type="color"] и input[type="range"] */
-        input[type="color"], input[type="range"] {
+        .board-controls button, .board-controls select {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--button-light-bg);
+            color: var(--text-light-color);
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .board-controls button:hover, .board-controls select:hover {
+            background-color: var(--button-light-hover);
+        }
+
+        .board-controls input[type="color"] {
             padding: 5px;
             border-radius: 5px;
             border: 1px solid #ddd;
             cursor: pointer;
+            height: 36px;
         }
 
-        input[type="range"] {
+        .board-controls input[type="range"] {
             width: 100px;
+            cursor: pointer;
+        }
+
+        /* Стили для кнопки открытия/закрытия доски */
+        #toggle-board-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            border-radius: 50%;
+            background-color: var(--button-light-bg);
+            color: var(--text-light-color);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        #toggle-board-button:hover {
+            background-color: var(--button-light-hover);
         }
     </style>
 
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.2.4/fabric.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const canvas = new fabric.Canvas('canvas');
-            const drawButton = document.getElementById('draw-button');
-            const eraseButton = document.getElementById('erase-button');
-            const colorPicker = document.getElementById('color-picker');
-            const brushSize = document.getElementById('brush-size');
-            const addTextButton = document.getElementById('add-text-button');
-            const addImageButton = document.getElementById('add-image-button');
-        
-            let isErasing = false;
-        
-            // Включаем режим рисования по умолчанию
-            canvas.isDrawingMode = true;
-        
-            // Устанавливаем кисть для рисования
-            canvas.freeDrawingBrush.color = colorPicker.value;
-            canvas.freeDrawingBrush.width = parseInt(brushSize.value, 10);
-        
-            // Режим ластика
-            eraseButton.addEventListener('click', function() {
-                isErasing = true;
-                canvas.isDrawingMode = false; // Отключаем режим рисования
-                canvas.selection = false; // Отключаем выделение объектов
-                canvas.forEachObject(function(obj) {
-                    obj.selectable = false; // Делаем объекты невыделяемыми
-                });
-            });
-        
-            // Режим рисования
-            drawButton.addEventListener('click', function() {
-                isErasing = false;
-                canvas.isDrawingMode = true; // Включаем режим рисования
-                canvas.selection = true; // Включаем выделение объектов
-                canvas.forEachObject(function(obj) {
-                    obj.selectable = true; // Делаем объекты выделяемыми
-                });
-            });
-        
-            // Изменение цвета кисти
-            colorPicker.addEventListener('change', function() {
-                canvas.freeDrawingBrush.color = this.value;
-            });
-        
-            // Изменение размера кисти
-            brushSize.addEventListener('input', function() {
-                canvas.freeDrawingBrush.width = parseInt(this.value, 10);
-            });
-        
-            // Добавление текста
-            addTextButton.addEventListener('click', function() {
-                const text = new fabric.IText('Введите текст', {
-                    left: 100,
-                    top: 100,
-                    fontFamily: 'Arial',
-                    fontSize: 20,
-                    fill: colorPicker.value
-                });
-                canvas.add(text);
-                canvas.setActiveObject(text);
-                canvas.renderAll();
-            });
-        
-            // Добавление изображения
-            addImageButton.addEventListener('click', function() {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                input.onchange = function(e) {
-                    const file = e.target.files[0];
-                    const reader = new FileReader();
-                    reader.onload = function(f) {
-                        const img = new Image();
-                        img.src = f.target.result;
-                        img.onload = function() {
-                            const fabricImage = new fabric.Image(img);
-                            fabricImage.scaleToWidth(200); // Масштабируем изображение
-                            canvas.add(fabricImage);
-                            canvas.renderAll();
-                        };
-                    };
-                    reader.readAsDataURL(file);
-                };
-                input.click();
-            });
-        
-            // Обработка кликов для удаления объектов (ластик)
-            canvas.on('mouse:down', function(options) {
-                if (isErasing && options.target) {
-                    canvas.remove(options.target); // Удаляем объект, на который кликнули
-                }
-            });
+        // JavaScript для управления доской
+        const toggleBoardButton = document.getElementById('toggle-board-button');
+        const drawingBoard = document.getElementById('drawing-board');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const colorPicker = document.getElementById('color-picker');
+        const brushSize = document.getElementById('brush-size');
+        const brushShape = document.getElementById('brush-shape');
+        const eraserButton = document.getElementById('eraser');
+        const undoButton = document.getElementById('undo');
+        const saveButton = document.getElementById('save');
+        const clearBoardButton = document.getElementById('clear-board');
+
+        let isDrawing = false;
+        let isErasing = false;
+        let drawingHistory = [];
+        let historyIndex = -1;
+
+        // Открытие/закрытие доски
+        toggleBoardButton.addEventListener('click', () => {
+            if (drawingBoard.style.display === 'none') {
+                drawingBoard.style.display = 'block';
+            } else {
+                drawingBoard.style.display = 'none';
+            }
         });
+
+        // Начало рисования
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+            saveDrawingState();
+        });
+
+        // Рисование
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDrawing) {
+                if (isErasing) {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
+                } else {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.strokeStyle = colorPicker.value;
+                }
+                ctx.lineWidth = brushSize.value;
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+            }
+        });
+
+        // Завершение рисования
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+            ctx.closePath();
+        });
+
+        // Очистка доски
+        clearBoardButton.addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawingHistory = [];
+            historyIndex = -1;
+        });
+
+        // Ластик
+        eraserButton.addEventListener('click', () => {
+            isErasing = !isErasing;
+            eraserButton.classList.toggle('active', isErasing);
+        });
+
+        // Отмена последнего действия
+        undoButton.addEventListener('click', () => {
+            if (historyIndex > 0) {
+                historyIndex--;
+                restoreDrawingState();
+            }
+        });
+
+        // Сохранить изображение
+        saveButton.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'drawing.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+
+        // Сохранение состояния рисунка
+        function saveDrawingState() {
+            if (historyIndex < drawingHistory.length - 1) {
+                drawingHistory.splice(historyIndex + 1);
+            }
+            drawingHistory.push(canvas.toDataURL());
+            historyIndex++;
+        }
+
+        // Восстановление состояния рисунка
+        function restoreDrawingState() {
+            const img = new Image();
+            img.src = drawingHistory[historyIndex];
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+            };
+        }
     </script>
 {% endblock %}
