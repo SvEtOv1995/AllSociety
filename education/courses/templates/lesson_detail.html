@@ -17,9 +17,7 @@
         <!-- Основной контент урока -->
         <div class="lesson-content">
             {% if lesson.allow_latex %}
-                <div class="latex-content">
-                    {{ structured_content|safe }}
-                </div>
+                {{ lesson.get_processed_content }}
             {% else %}
                 <p>{{ lesson.content }}</p>
             {% endif %}
@@ -145,9 +143,10 @@
         }
         
         .lesson-content {
-            font-size: 1.2rem;
-            color: var(--text-color);
+            font-family: 'Playfair Display', serif;
+            color: rgb(253, 253, 253);
             line-height: 1.6;
+            font-size: 1.1rem;
         }
     
         h2 {
@@ -165,42 +164,53 @@
     
         /* Стили для заголовков */
         .lesson-heading {
-            font-size: 24px;
+            font-size: 1.5rem;
             font-weight: bold;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            color: rgb(253, 253, 253);
+            margin: 25px 0 15px 0;
+            color: #7DE2D1;
         }
     
         /* Стили для списков */
         .lesson-list {
             list-style-type: disc;
             padding-left: 20px;
-            margin-bottom: 20px;
+            margin: 15px 0;
         }
-    
+        
         .lesson-list li {
-            font-size: 16px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
     
         /* Стили для математических формул */
         .math {
             padding: 15px;
-            margin: 20px 0;
-            font-size: 36px;
-            color: rgb(139, 255, 255);
+            margin: 10px 0;
+            font-size: 45px;
+            color: rgb(0 255 255);
             font-family: 'Playfair Display', serif;
             position: relative;
         }
     
+        .math-display {
+            display: block;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 1.3rem;
+            color: #00ffff;
+            font-family: 'Times New Roman', serif;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            border-left: 3px solid #7DE2D1;
+        }
+        
         .math-inline {
-            background-color: var(--button-bg);
+            background-color: rgba(125, 226, 209, 0.3);
             border-radius: 4px;
             padding: 0 5px;
-            color: rgb(255, 255, 255);
+            color: #00ccff;
             font-weight: bold;
-            font-size: 20px;
+            font-family: 'Times New Roman', serif;
         }
     
         /* Номера формул */
@@ -232,7 +242,7 @@
     
         /* Стиль для абзацев */
         p.lesson-text {
-            margin-bottom: 1.5em;
+            margin-bottom: 0.5em;
             color: rgb(253, 253, 253);
         }
     

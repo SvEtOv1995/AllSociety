@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.safestring import mark_safe
+import re
 
 
 class Subject(models.Model):
@@ -28,19 +30,51 @@ class Topic(models.Model):
         return f"{self.subject.name} - {self.name}"
 
 
-from django.db import models
-import json
-
 class Lesson(models.Model):
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='lessons', verbose_name="Тема")
-    title = models.CharField(max_length=255, verbose_name="Название урока")
-    content = models.TextField(verbose_name="Содержание")
-    image = models.ImageField(upload_to='lessons/', blank=True, null=True, verbose_name="Изображение")
-    allow_latex = models.BooleanField(default=True, verbose_name="Разрешить LaTeX")
-    explanation = models.TextField(blank=True, null=True, verbose_name="Объяснение урока")
-    svg_content = models.TextField(blank=True, null=True, verbose_name="SVG-код")
-    board_data = models.JSONField(blank=True, null=True)
-
+    topic = models.ForeignKey(
+        Topic, 
+        on_delete=models.CASCADE, 
+        related_name='lessons', 
+        verbose_name="Тема"
+    )
+    title = models.CharField(
+        max_length=255, 
+        verbose_name="Название урока",
+        help_text="Можно использовать базовые LaTeX-команды: $формула$ для встроенных формул, $$формула$$ для вынесенных"
+    )
+    content = models.TextField(
+        verbose_name="Содержание",
+        help_text="Полная поддержка LaTeX. Используйте $$...$$ для формул и $...$ для встроенных выражений"
+    )
+    image = models.ImageField(
+        upload_to='lessons/', 
+        blank=True, 
+        null=True, 
+        verbose_name="Изображение"
+    )
+    allow_latex = models.BooleanField(
+        default=True, 
+        verbose_name="Разрешить LaTeX во всех полях",
+        help_text="Если отмечено, LaTeX будет обрабатываться во всех текстовых полях урока"
+    )
+    explanation = models.TextField(
+        blank=True, 
+        null=True, 
+        verbose_name="Объяснение урока",
+        help_text="Поддержка LaTeX. Используйте стандартные математические окружения"
+    )
+    svg_content = models.TextField(
+        blank=True, 
+        null=True, 
+        verbose_name="SVG-код",
+        help_text="SVG с возможностью вставки LaTeX через <text> элементы"
+    )
+    board_data = models.JSONField(
+        blank=True, 
+        null=True,
+        verbose_name="Данные доски",
+        help_text="JSON с сохраненными рисунками, может содержать LaTeX-подписи"
+    )
     class Meta:
         ordering = ['topic', 'title']
         verbose_name = "Урок"
@@ -49,6 +83,39 @@ class Lesson(models.Model):
     def __str__(self):
         return f"{self.topic.name} - {self.title}"
 
+    def save(self, *args, **kwargs):
+        """
+        Автоматическая обработка LaTeX при сохранении, если allow_latex=True
+        """
+        if self.allow_latex:
+            # Здесь можно добавить предварительную обработку полей
+            # например, экранирование специальных символов
+            pass
+        super().save(*args, **kwargs)
+
+    @property
+    def latex_fields(self):
+        """
+        Возвращает список полей, в которых возможна обработка LaTeX
+        """
+        return ['title', 'content', 'explanation', 'svg_content']
+    
+    def get_processed_content(self):
+        if not self.allow_latex:
+            return self.content
+            
+        # Обработка LaTeX формул
+        processed = re.sub(
+            r'\$\$(.*?)\$\$', 
+            r'<div class="math-display">\1</div>', 
+            self.content
+        )
+        processed = re.sub(
+            r'\$(.*?)\$', 
+            r'<span class="math-inline">\1</span>', 
+            processed
+        )
+        return mark_safe(processed)
 
 class Question(models.Model):
     lesson = models.ForeignKey(Lesson, related_name='questions', on_delete=models.CASCADE, verbose_name="Урок")
