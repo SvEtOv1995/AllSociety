@@ -1,93 +1,378 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <p>Выберите нужный калькулятор:</p>
-    <div class="buttons">
-        <a href="{% url 'algebra' %}" class="button">Калькулятор Алгебры</a>
-        <a href="{% url 'geometry' %}" class="button">Калькулятор Геометрии</a>
-        <a href="{% url 'fizika' %}" class="button">Калькулятор по Физике</a>
-        <a href="{% url 'periodic_table' %}" class="button">Калькулятор по Химии</a>
-        <a href="{% url 'astronomy' %}" class="button">Интерактивная Астрономия
+<div class="nexus-container">
+    <div class="nexus-header">
+        <p class="nexus-subtitle">Интерактивные инструменты для решения задач</p>
+        <div class="nexus-pulse"></div>
+    </div>
+
+    <div class="nexus-grid">
+        <!-- Алгебра -->
+        <a href="{% url 'algebra' %}" class="nexus-card algebra-card">
+            <div class="nexus-card-bg"></div>
+            <div class="nexus-card-content">
+                <div class="nexus-icon">∫</div>
+                <h3>Алгебра</h3>
+                <p>Уравнения, матрицы, функции</p>
+                <div class="nexus-hover-effect"></div>
+            </div>
+            <div class="nexus-card-border"></div>
+        </a>
+
+        <!-- Геометрия -->
+        <a href="{% url 'geometry' %}" class="nexus-card geometry-card">
+            <div class="nexus-card-bg"></div>
+            <div class="nexus-card-content">
+                <div class="nexus-icon">△</div>
+                <h3>Геометрия</h3>
+                <p>Фигуры, площади, объёмы</p>
+                <div class="nexus-hover-effect"></div>
+            </div>
+            <div class="nexus-card-border"></div>
+        </a>
+
+        <!-- Физика -->
+        <a href="{% url 'fizika' %}" class="nexus-card physics-card">
+            <div class="nexus-card-bg"></div>
+            <div class="nexus-card-content">
+                <div class="nexus-icon">⚡</div>
+                <h3>Физика</h3>
+                <p>Механика, электричество</p>
+                <div class="nexus-hover-effect"></div>
+            </div>
+            <div class="nexus-card-border"></div>
+        </a>
+
+        <!-- Химия -->
+        <a href="{% url 'periodic_table' %}" class="nexus-card chemistry-card">
+            <div class="nexus-card-bg"></div>
+            <div class="nexus-card-content">
+                <div class="nexus-icon">⚗️</div>
+                <h3>Химия</h3>
+                <p>Элементы, реакции</p>
+                <div class="nexus-hover-effect"></div>
+            </div>
+            <div class="nexus-card-border"></div>
+        </a>
+
+        <!-- Астрономия -->
+        <a href="{% url 'astronomy' %}" class="nexus-card astronomy-card">
+            <div class="nexus-card-bg"></div>
+            <div class="nexus-card-content">
+                <div class="nexus-icon">🌌</div>
+                <h3>Астрономия</h3>
+                <p>Планеты, звёзды, космос</p>
+                <div class="nexus-hover-effect"></div>
+            </div>
+            <div class="nexus-card-border"></div>
         </a>
     </div>
-    
-    <div class="content">
 
-        <a href="{% url 'subjects_list' %}" class="button subjects-button" style="margin-top: 20px;">📚 Вернуться к предметам</a>
-        
+    <div class="nexus-footer">
+        <a href="{% url 'subjects_list' %}" class="nexus-back-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 12H4M4 12L10 6M4 12L10 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Все предметы</span>
+        </a>
     </div>
-    <style>
+</div>
 
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 10px;
-            align-items: center;
-        }
+<style>
+    /* Стили для скрытия лишних элементов */
+    .center-line,
+    .title-container,
+    .paragraph-container,
+    .h2,
+    .h3,
+    #character-container,
+    .svg-container {
+        display: none !important;
+    }
 
-        .buttons button {
-            width: 150px; /* ширина кнопки */
-            height: 50px; /* высота кнопки */
-            font-size: 14px; /* размер шрифта */
-        }
+    /* Основные стили */
+    :root {
+        --nexus-primary: #6e45e2;
+        --nexus-secondary: #88d3ce;
+        --nexus-dark: #1a1a2e;
+        --nexus-light: #f8f9fa;
+        --nexus-algebra: #ff6b6b;
+        --nexus-geometry: #4ecdc4;
+        --nexus-physics: #ff9e2c;
+        --nexus-chemistry: #a162e8;
+        --nexus-astronomy: #0d6efd;
+    }
 
-        p {
+    .nexus-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
-            font-size: 26px;
-            color:rgb(255, 255, 255);
+    .nexus-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        position: relative;
+    }
 
-        }
+    .nexus-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #6e45e2, #88d3ce);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+    }
 
-        /* Уборка лишних с главной страницы SVG */
-        .center-line {
-            display: none;
-        }  
+    .nexus-highlight {
+        position: relative;
+        display: inline-block;
+    }
 
-        .title-container {
-            display: none;
-        }
+    .nexus-highlight::after {
+        content: '';
+        position: absolute;
+        bottom: 5px;
+        left: 0;
+        width: 100%;
+        height: 12px;
+        background: rgba(110, 69, 226, 0.3);
+        z-index: -1;
+        border-radius: 4px;
+    }
 
-        .paragraph-container {
-            display: none;
-        }
+    .nexus-subtitle {
+        font-size: 2.2rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2rem;
+    }
 
-        .h2 {
-            display: none;
-        }
+    .nexus-pulse {
+        position: absolute;
+        top: -50px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(110, 69, 226, 0.15) 0%, rgba(110, 69, 226, 0) 70%);
+        border-radius: 50%;
+        z-index: -1;
+        animation: pulse 6s infinite alternate;
+    }
 
-        .h3 {
-            display: none;
-        }
+    @keyframes pulse {
+        0% { transform: translateX(-50%) scale(1); opacity: 0.5; }
+        100% { transform: translateX(-50%) scale(1.2); opacity: 0.8; }
+    }
 
-        #character-container {
-            display: none;
-        }
+    .nexus-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 4rem;
+    }
 
-        .svg-container {
-            display: none;
-        }
+    .nexus-card {
+        position: relative;
+        height: 280px;
+        border-radius: 16px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        isolation: isolate;
+    }
 
-    </style>
-    <script>
-        function showSlide(slideNumber) {
-            let slides = document.querySelectorAll('.slider');
-            slides.forEach(slide => slide.classList.remove('active'));
-            document.getElementById('slide' + slideNumber).classList.add('active');
-        }
+    .nexus-card-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--nexus-dark), rgba(26, 26, 46, 0.7));
+        z-index: -2;
+    }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            fetch("get_entries?category=algebra")
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("algebra-content").innerHTML = data.map(entry => `<div class='math-block'><h3>${entry.title}</h3><p>\(${entry.content}\)</p></div>`).join('');
-                });
+    .nexus-card-border {
+        position: absolute;
+        inset: 0;
+        border-radius: 16px;
+        padding: 2px;
+        background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .nexus-card-content {
+        padding: 2rem;
+        text-align: center;
+        color: white;
+        position: relative;
+        z-index: 1;
+        width: 100%;
+    }
+
+    .nexus-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .nexus-card h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .nexus-card p {
+        font-size: 1rem;
+        opacity: 0.8;
+        margin-bottom: 0;
+    }
+
+    .nexus-hover-effect {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 0;
+    }
+
+    /* Цветовые схемы для карточек */
+    .algebra-card .nexus-icon { color: var(--nexus-algebra); }
+    .geometry-card .nexus-icon { color: var(--nexus-geometry); }
+    .physics-card .nexus-icon { color: var(--nexus-physics); }
+    .chemistry-card .nexus-icon { color: var(--nexus-chemistry); }
+    .astronomy-card .nexus-icon { color: var(--nexus-astronomy); }
+
+    .algebra-card:hover .nexus-card-bg { background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(255, 107, 107, 0.15)); }
+    .geometry-card:hover .nexus-card-bg { background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(78, 205, 196, 0.15)); }
+    .physics-card:hover .nexus-card-bg { background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(255, 158, 44, 0.15)); }
+    .chemistry-card:hover .nexus-card-bg { background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(161, 98, 232, 0.15)); }
+    .astronomy-card:hover .nexus-card-bg { background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(13, 110, 253, 0.15)); }
+
+    /* Эффекты при наведении */
+    .nexus-card:hover {
+        transform: translateY(-10px) scale(1.02);
+    }
+
+    .nexus-card:hover .nexus-icon {
+        transform: scale(1.1);
+    }
+
+    .nexus-card:hover .nexus-hover-effect {
+        opacity: 1;
+    }
+
+    /* Футер */
+    .nexus-footer {
+        margin-top: auto;
+        text-align: center;
+        padding-top: 3rem;
+    }
+
+    .nexus-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 24px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 50px;
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .nexus-back-btn svg {
+        transition: transform 0.3s ease;
+    }
+
+    .nexus-back-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .nexus-back-btn:hover svg {
+        transform: translateX(-4px);
+    }
+
+    /* Анимации */
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    /* Адаптивность */
+    @media (max-width: 1200px) {
+        .nexus-title { font-size: 3rem; }
+        .nexus-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    }
+
+    @media (max-width: 768px) {
+        .nexus-title { font-size: 2.5rem; }
+        .nexus-subtitle { font-size: 1rem; }
+        .nexus-card { height: 240px; }
+        .nexus-icon { font-size: 3rem; }
+        .nexus-card h3 { font-size: 1.5rem; }
+    }
+
+    @media (max-width: 576px) {
+        .nexus-title { font-size: 2rem; }
+        .nexus-grid { grid-template-columns: 1fr; }
+        .nexus-header { margin-bottom: 2rem; }
+    }
+</style>
+
+<script>
+    // Анимация hover-эффектов
+    document.querySelectorAll('.nexus-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
             
-            fetch("get_entries?category=geometry")
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("geometry-content").innerHTML = data.map(entry => `<div class='math-block'><h3>${entry.title}</h3><p>\(${entry.content}\)</p></div>`).join('');
-                });
+            const hoverEffect = card.querySelector('.nexus-hover-effect');
+            hoverEffect.style.left = `${x - 100}px`;
+            hoverEffect.style.top = `${y - 100}px`;
         });
-    </script>
+    });
+
+    // Оригинальные скрипты
+    function showSlide(slideNumber) {
+        let slides = document.querySelectorAll('.slider');
+        slides.forEach(slide => slide.classList.remove('active'));
+        document.getElementById('slide' + slideNumber).classList.add('active');
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch("get_entries?category=algebra")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("algebra-content").innerHTML = data.map(entry => `<div class='math-block'><h3>${entry.title}</h3><p>\(${entry.content}\)</p></div>`).join('');
+            });
+        
+        fetch("get_entries?category=geometry")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("geometry-content").innerHTML = data.map(entry => `<div class='math-block'><h3>${entry.title}</h3><p>\(${entry.content}\)</p></div>`).join('');
+            });
+    });
+</script>
 {% endblock %}
