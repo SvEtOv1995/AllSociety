@@ -123,166 +123,199 @@
             font-family: 'Playfair Display', serif;
         }
         
-        .lesson-container {
-            background-color: var(--bg-color);
-            border-radius: 40px;
-            padding: 30px;
-            box-shadow: var(--shadow-light);
-            max-width: 1300px;
-            margin: 0 auto;
-        }
-        
-        .lesson-title {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--text-color);
-            margin-bottom: 126px;
-            position: fixed;
-            top: 170px;
-            left: 91%;
-        }
-        
-        .lesson-content {
-            font-family: 'Playfair Display', serif;
-            color: rgb(253, 253, 253);
-            line-height: 1.6;
-            font-size: 1.1rem;
-        }
-    
-        h2 {
-            font-size: 2rem;
-            color: white;
-        }
-        
-        /* Стили для контента урока */
-        .lesson-text {
-            font-size: 20px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            color: #333;
-        }
-    
-        /* Стили для заголовков */
-        .lesson-heading {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin: 25px 0 15px 0;
-            color: #7DE2D1;
-        }
-    
-        /* Стили для списков */
-        .lesson-list {
-            list-style-type: disc;
-            padding-left: 20px;
-            margin: 15px 0;
-        }
-        
-        .lesson-list li {
-            margin-bottom: 8px;
-        }
-    
-        /* Стили для математических формул */
-        .math {
-            padding: 15px;
-            margin: 10px 0;
-            font-size: 45px;
-            color: rgb(0 255 255);
-            font-family: 'Playfair Display', serif;
-            position: relative;
-        }
-    
-        .math-display {
-            display: block;
-            padding: 15px;
-            margin: 20px 0;
-            font-size: 1.3rem;
-            color: #00ffff;
-            font-family: 'Times New Roman', serif;
-            text-align: center;
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 5px;
-            border-left: 3px solid #7DE2D1;
-        }
-        
-        .math-inline {
-            background-color: rgba(125, 226, 209, 0.3);
-            border-radius: 4px;
-            padding: 0 5px;
-            color: #00ccff;
-            font-weight: bold;
-            font-family: 'Times New Roman', serif;
-        }
-    
-        /* Номера формул */
-        .math-number {
-            font-size: 18px;
-            position: absolute;
-            top: -10px;
-            right: 10px;
-            color: #3498db;
-            font-weight: bold;
-        }
-    
-        /* Стили для номеров формул в виде ссылок */
-        .math-number a {
-            text-decoration: none;
-            color: #3498db;
-        }
-    
-        .math-number a:hover {
-            text-decoration: underline;
-        }
-    
-        /* Стили для улучшения восприятия текста */
-        .lesson-text {
-            text-align: justify;
-            font-family: 'Playfair Display', serif;
-            color: rgb(253, 253, 253);
-        }
-    
-        /* Стиль для абзацев */
-        p.lesson-text {
-            margin-bottom: 0.5em;
-            color: rgb(253, 253, 253);
-        }
-    
-        /* Стили для больших заголовков, чтобы выделить номер формулы */
-        .math-title {
-            font-size: 26px;
-            font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            color: #34495e;
-        }
-    
-        /* 🌙 Темный режим */
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: var(--bg-dark-color);
-                color: var(--text-dark-color);
-            }
-        
+            /* Основные стили контейнера */
             .lesson-container {
-                background-color: var(--container-dark-bg);
-                box-shadow: var(--shadow-dark);
+                background-color: var(--bg-color);
+                border-radius: 37px;
+                padding: 122px;
+                box-shadow: var(--shadow-light);
+                max-width: 1129px;
+                margin: 0 auto;
             }
-        
+            
             .lesson-title {
-                color: var(--text-dark-color);
+                font-size: 2rem;
+                font-weight: bold;
+                color: var(--text-color);
+                margin-bottom: 30px;
             }
-        
+            
             .lesson-content {
-                color: var(--text-dark-color);
+                font-family: 'Playfair Display', serif;
+                color: #f5f5f5;
+                line-height: 1.6;
+                font-size: 1.1rem;
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+                text-align: left;
             }
         
-            .button {
-                background-color: var(--button-dark-bg);
+            /* Заголовки */
+            h2 {
+                font-size: 1.8rem;
+                color: white;
+                margin: 1.5rem 0 1rem 0;
+            }
+            
+            .lesson-heading {
+                font-size: 1.5rem;
+                font-weight: bold;
+                margin: 1.2rem 0 0.8rem 0;
+                color: #7DE2D1;
             }
         
-            .button:hover {
-                background-color: var(--button-dark-hover);
+            /* Текст и абзацы */
+            .lesson-text {
+                font-size: 1rem;
+                line-height: 1.6;
+                margin: 0.8rem 0;
+                color: #f5f5f5;
+                text-align: left;
             }
-        }        
+            
+            p.lesson-text {
+                margin-bottom: 0.8rem;
+            }
+        
+            /* Списки */
+            .lesson-list {
+                list-style-type: disc;
+                padding-left: 1.2rem;
+                margin: 0.8rem 0;
+            }
+            
+            .lesson-list li {
+                margin-bottom: 0.5rem;
+                padding-left: 0.5rem;
+            }
+        
+            /* Математические формулы */
+            .math {
+                padding: 10px;
+                margin: 0.8rem 0;
+                font-size: 1.3rem;
+                color: #00ffff;
+                font-family: 'Times New Roman', serif;
+                position: relative;
+                text-align: left;
+            }
+            
+            .math-display {
+                display: block;
+                font-size: 1.3rem;
+                color: #00ffff;
+                font-family: 'Times New Roman', serif;
+                margin: 0.8rem 0;
+                padding: 0.8rem;
+                background-color: rgba(0, 0, 0, 0.15);
+                border-radius: 8px;
+                text-align: left;
+                max-width: 100%;
+            }
+            
+            .math-inline {
+                background-color: rgba(0, 255, 213, 0.69);
+                border-radius: 4px;
+                padding: 0.1rem 0.3rem;
+                color: #00ccff;
+                font-weight: bold;
+                font-family: 'Times New Roman', serif;
+            }
+            
+            .math-number {
+                font-size: 0.9rem;
+                position: absolute;
+                top: -8px;
+                right: 8px;
+                color: #3498db;
+                font-weight: bold;
+            }
+            
+            .math-number a {
+                text-decoration: none;
+                color: #3498db;
+            }
+            
+            .math-number a:hover {
+                text-decoration: underline;
+            }
+            
+            .math-title {
+                font-size: 1.3rem;
+                font-weight: bold;
+                margin: 1rem 0 0.8rem 0;
+                color: #7DE2D1;
+            }
+        
+            /* Блоки с определениями и формулами */
+            .definition-block {
+                background-color: rgba(10, 71, 45, 0.2);
+                padding: 0.8rem;
+                border-radius: 8px;
+                margin: 0.8rem 0;
+                border-left: 3px solid #7DE2D1;
+            }
+            
+            .formula-block {
+                background-color: rgba(18, 105, 67, 0.2);
+                padding: 0.8rem;
+                margin: 0.8rem 0;
+                border-radius: 8px;
+                text-align: left;
+            }
+            
+            .formula-explanation {
+                font-style: italic;
+                color: #DDECE6;
+                margin: 0.5rem 0 0 1rem;
+                font-size: 0.9rem;
+            }
+            
+            /* Выводы и примеры */
+            .conclusion-block, .examples-block {
+                background-color: rgba(66, 169, 178, 0.15);
+                padding: 0.8rem;
+                border-radius: 8px;
+                margin: 0.8rem 0;
+            }
+        
+            /* Темная тема */
+            @media (prefers-color-scheme: dark) {
+                body {
+                    background-color: var(--bg-dark-color);
+                    color: var(--text-dark-color);
+                }
+            
+                .lesson-container {
+                    background-color: var(--container-dark-bg);
+                    box-shadow: var(--shadow-dark);
+                }
+            
+                .lesson-title, .lesson-content {
+                    color: var(--text-dark-color);
+                }
+            
+                .button {
+                    background-color: var(--button-dark-bg);
+                }
+            
+                .button:hover {
+                    background-color: var(--button-dark-hover);
+                }
+                
+                .definition-block {
+                    background-color: rgba(10, 71, 45, 0.3);
+                }
+                
+                .formula-block {
+                    background-color: rgba(18, 105, 67, 0.3);
+                }
+                
+                .math-display {
+                    background-color: rgba(0, 0, 0, 0.25);
+                }
+            }
     
         /* Уборка лишних элементов */
         .center-line, .title-container, .paragraph-container, .h2, .h3, #character-container, .svg-container {
@@ -362,6 +395,112 @@
         #toggle-board-button:hover {
             background-color: var(--button-light-hover);
         }
+
+        /* Заголовки разделов */
+    .latex-heading {
+        color: #7DE2D1;
+        font-size: 2rem;
+        margin: 2.5rem 0 1.5rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid rgba(125, 226, 209, 0.3);
+        font-weight: 700;
+        text-align: left;
+    }
+
+    /* Подзаголовки */
+    .latex-subheading {
+        color: #F9AC67;
+        font-size: 1.4rem;
+        margin: 2rem 0 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        text-align: left;
+    }
+
+    /* Блоки с определениями */
+    .definition-block {
+        background-color: rgba(10, 71, 45, 0.25);
+        padding: 1.2rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+        border-left: 4px solid #7DE2D1;
+        text-align: left;
+    }
+
+    /* Формулы */
+    .formula-block {
+        background-color: rgba(18, 105, 67, 0.3);
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid rgba(125, 226, 209, 0.5);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Пояснения к формулам */
+    .formula-explanation {
+        font-style: italic;
+        color: #DDECE6;
+        margin: 1rem 0 0 2rem;
+        font-size: 1.25rem;
+        text-align: left;
+    }
+
+    /* Списки */
+    .latex-list {
+        margin: 0.5rem 0;
+        padding-left: 1rem;
+    }
+
+    .latex-list li {
+        margin-bottom: 1rem;
+        line-height: 1.7;
+        position: relative;
+        list-style-type: none;
+    }
+
+    .latex-list li:before {
+        content: "•";
+        color: #7DE2D1;
+        font-weight: bold;
+        display: inline-block;
+        width: 1em;
+        margin-left: -1em;
+    }
+
+    /* Блоки выводов */
+    .conclusion-block {
+        background-color: rgba(10, 71, 45, 0.35);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 2rem 0;
+        text-align: left;
+    }
+
+    /* Примеры из жизни */
+    .examples-block {
+        background-color: rgba(66, 169, 178, 0.25);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 2rem 0;
+        text-align: left;
+    }
+
+    /* Элементы списков */
+    .list-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .list-icon {
+        margin-right: 0.8rem;
+        color: #F9AC67;
+        font-size: 1.2rem;
+    }
+        
     </style>
 
     <script>
@@ -469,5 +608,122 @@
                 ctx.drawImage(img, 0, 0);
             };
         }
+            /**
+             * Форматирует текст урока с учетом LaTeX-формул и структуры
+             */
+             function formatLessonContent() {
+                const contentElement = document.querySelector('.lesson-content');
+                if (!contentElement) return;
+        
+                let content = contentElement.innerHTML;
+                
+                // Обработка основных заголовков
+                content = content.replace(/\$\$(.*?)\$\$/g, 
+                    '<h3 class="latex-heading">$1</h3>');
+                
+                // Обработка подзаголовков
+                content = content.replace(/([📌📝🔍])\s*(.*?):/g, 
+                    '<h4 class="latex-subheading"><span>$1</span>$2:</h4>');
+                
+                // Обработка определений
+                content = content.replace(/\*\*(.*?)\*\* — (.*?)(?=<br>|\n|$)/g, 
+                    '<div class="definition-block"><strong>$1</strong> — $2</div>');
+                
+                // Обработка формул
+                content = content.replace(/<p>\$\$(.*?)\$\$<\/p>/g, 
+                    '<div class="formula-block">$$$1$$</div>');
+                
+                // Обработка пояснений к формулам
+                content = content.replace(/где:(.*?)(?=<br><br>|\n\n|$)/gs, 
+                    '<div class="formula-explanation">где:$1</div>');
+                
+                // Обработка выводов
+                content = content.replace(/Выводы:(.*?)(?=<br><br>|\n\n|$)/gs, 
+                    '<div class="conclusion-block"><h4>Выводы:</h4>$1</div>');
+                
+                // Обработка примеров
+                content = content.replace(/🔍 Примеры в жизни:(.*?)(?=<br><br>|\n\n|$)/gs, 
+                    '<div class="examples-block"><h4>Примеры в жизни:</h4>$1</div>');
+                
+                // Обработка списков
+                content = content.replace(/(\d+\.)(.*?)(?=<br>|\n|$)/g, 
+                    '<li>$1$2</li>');
+                content = content.replace(/<li>.*?<\/li>/gs, 
+                    '<ul class="latex-list">$&</ul>');
+                
+                contentElement.innerHTML = content;
+            }
+        
+            /**
+             * Добавляет стили для LaTeX-контента
+             */
+            function addLatexStyles() {
+                const style = document.createElement('style');
+                style.textContent = `
+                    .latex-heading {
+                        color: #7DE2D1;
+                        font-size: 1.5rem;
+                        margin: 1.5rem 0 1rem 0;
+                        border-bottom: 2px solid rgba(125, 226, 209, 0.3);
+                        padding-bottom: 0.5rem;
+                    }
+                    
+                    .latex-inline {
+                        background-color: rgba(125, 226, 209, 0.3);
+                        border-radius: 4px;
+                        padding: 0 5px;
+                        color: #00ccff;
+                        font-family: 'Times New Roman', serif;
+                        font-weight: bold;
+                    }
+                    
+                    .latex-list-item {
+                        margin: 0.8rem 0;
+                        padding-left: 1.5rem;
+                        position: relative;
+                        line-height: 1.6;
+                    }
+                    
+                    .list-number {
+                        position: absolute;
+                        left: 0;
+                        font-weight: bold;
+                        color: #7DE2D1;
+                    }
+                    
+                    .list-icon {
+                        position: absolute;
+                        left: 0;
+                    }
+                    
+                    .latex-conclusion {
+                        background-color: rgba(10, 71, 45, 0.3);
+                        padding: 0.8rem;
+                        border-radius: 8px;
+                        margin: 1rem 0;
+                        border-left: 3px solid #7DE2D1;
+                    }
+                    
+                    .conclusion-icon {
+                        color: #7DE2D1;
+                        margin-right: 0.5rem;
+                    }
+                    
+                    strong {
+                        color: #7DE2D1;
+                    }
+                    
+                    em {
+                        color: #F9AC67;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        
+            // Запуск при загрузке страницы
+            document.addEventListener('DOMContentLoaded', () => {
+                formatLessonContent();
+                addLatexStyles();
+            });
     </script>
 {% endblock %}
