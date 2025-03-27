@@ -90,7 +90,7 @@
 
     /* Новая цветовая палитра */
     :root {
-        --bg-color: rgb(76, 145, 173);
+        --bg-color: rgb(31, 169, 184);
         --text-color: #ffffff;
         --button-bg: rgb(114, 205, 189);
         --button-hover: #29A0B1;
@@ -98,7 +98,7 @@
         --shadow-color: rgba(0, 0, 0, 0.25);
         --shadow-strong: 0px 6px 20px rgba(0, 0, 0, 0.4);
         
-        --bg-dark-color: #3A3F58;
+        --bg-dark-color:rgb(63, 70, 107);
         --text-dark-color: #ffffff;
         --button-dark-bg: #19465d;
         --button-dark-hover: #EE6A59;
@@ -113,6 +113,7 @@
     }
 
     .topics-app {
+        display: contents;
         max-width: 1200px;
         margin: 0 auto;
         padding: 2rem 1.5rem;
@@ -417,7 +418,7 @@
     /* Темная тема */
     @media (prefers-color-scheme: dark) {
         .topics-app {
-            background-color: var(--bg-dark-color);
+            background-color: var(--bg-color);
             color: var(--text-dark-color);
         }
         
@@ -430,12 +431,12 @@
         }
         
         .section-title {
-            color: var(--accent-color);
+            color: white;
         }
         
         .tool-card,
         .topic-card {
-            background: var(--container-dark-bg);
+            background: var(--bg-color);
             color: var(--text-dark-color);
             box-shadow: var(--shadow-dark-color);
         }
@@ -470,7 +471,7 @@
         }
         
         .tool-description {
-            color: #adb5bd;
+            color:rgb(255, 255, 255);
         }
         
         .topic-image-wrapper {
