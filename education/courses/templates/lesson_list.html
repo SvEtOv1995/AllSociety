@@ -3,94 +3,219 @@
 {% block title %}Уроки - AllSociety{% endblock %}
 
 {% block content %}
-    <h1>Уроки по теме {{ topic.name }}</h1>
-    <div class="subjects-container" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
-        {% for lesson in lessons %}
-            <a href="{% url 'lesson_detail' lesson.id %}" class="button" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background-color: rgba(173, 216, 230, 0.6); border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
-                {{ lesson.title }}
+<div class="lessons-container">
+    <div class="lessons-header">
+        <div class="header-content">
+            <h1 class="lessons-title">Уроки по теме <span>"{{ topic.name }}"</span></h1>
+            <p class="lessons-count">{{ lessons|length }} уроков доступно</p>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'topic_list' topic.subject.id %}" class="back-button">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Назад к темам
             </a>
+        </div>
+    </div>
+
+    <div class="lessons-grid">
+        {% for lesson in lessons %}
+        <a href="{% url 'lesson_detail' lesson.id %}" class="lesson-card">
+            <div class="card-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 2.5a9.5 9.5 0 1 0 9.5 9.5"/>
+                    <path d="M16 8v5h5"/>
+                    <path d="M12 12v-1a2 2 0 0 1 2-2h1"/>
+                </svg>
+            </div>
+            <div class="card-content">
+                <h3>{{ lesson.title }}</h3>
+                <p>Урок {{ forloop.counter }} из {{ lessons|length }}</p>
+            </div>
+            <div class="card-arrow">
+                <svg width="20" height="20" viewBox="0 0 24 24" color="white" fill="none" stroke="currentColor">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </div>
+        </a>
         {% endfor %}
     </div>
-    
-    <br>
-    
-    <a href="{% url 'topic_list' topic.subject.id %}" class="button" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background-color: rgba(173, 216, 230, 0.6); border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;">
-        Назад
-    </a>
+</div>
 
-    <style>
+<style>
+    /* Основные стили */
+    .lessons-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+    }
 
-        .subjects-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
+    /* Шапка страницы */
+    .lessons-header {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-bottom: 9.5rem;
+    }
+
+    .header-content {
+        text-align: center;
+    }
+
+    .lessons-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .lessons-title span {
+        color: #ffffff;
+        position: relative;
+        left: -50%;
+        top: -52px;
+    }
+
+    .lessons-count {
+        font-size: 1rem;
+        color: var(--text-light-color);
+        opacity: 0.8;
+    }
+
+    .header-actions {
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Карточки уроков */
+    .lessons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .lesson-card {
+        display: flex;
+        align-items: center;
+        background: var(--bg-color);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: white;
+        border: 1px solid var(--card-border);
+    }
+
+    .lesson-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        border-color: #7DE2D1;
+    }
+
+    .card-icon {
+        margin-right: 1.2rem;
+        color: #7DE2D1;
+    }
+
+    .card-content {
+        flex: 1;
+    }
+
+    .card-content h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0.3rem;
+        font-weight: 600;
+    }
+
+    .card-content p {
+        font-size: 0.9rem;
+        color: #ffffff;
+        opacity: 0.7;
+    }
+
+    .card-arrow {
+        margin-left: 1rem;
+        color: var(--text-light-color);
+    }
+
+    /* Кнопка "Назад" */
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 1.5rem;
+        background: var(--card-bg);
+        border-radius: 12px;
+        color: var(--text-color);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--card-border);
+    }
+
+    .back-button:hover {
+        background: var(--card-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Переменные для темы */
+    :root {
+        --card-bg: rgba(255, 255, 255, 0.8);
+        --card-hover: rgba(255, 255, 255, 0.9);
+        --card-border: rgba(0, 0, 0, 0.08);
+        --text-color: #2A2A2A;
+        --text-light-color: #6B7280;
+    }
+
+    /* Темная тема */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --card-bg: rgba(42, 42, 42, 0.6);
+            --card-hover: rgba(42, 42, 42, 0.8);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-color: #DDECE6;
+            --text-light-color: #9CA3AF;
         }
-    
-        .subjects-container .button {
-            position: relative;
-            left: auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 10px; /* Уменьшены боковые отступы */
-            background-color: rgba(173, 216, 230, 0.6); /* Прозрачный голубой цвет */
-            border-radius: 15px; /* Округление углов */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Легкая тень */
-            transition: all 0.3s ease;
-            width: 35%; /* Если нужно, можно задать фиксированную ширину, например: width: 150px; */
-        }        
-    
-        .subjects-container .button:hover {
-            background-color: rgba(173, 216, 230, 0.8); /* Более интенсивный голубой при наведении */
-            transform: translateY(-4px);
-            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+
+        .lesson-card:hover {
+            border-color: #29A0B1;
         }
 
-        .button {
-
-            position: relative;
-            left: 35%;
-
-            width: 30%;
-
+        .card-icon {
+            color: #29A0B1;
         }
+    }
 
-        h1 {
+    /* Анимации */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-            position: relative;
-            top: -10px;
-            right: 35%;
+    .lesson-card {
+        animation: fadeIn 0.4s ease forwards;
+        opacity: 0;
+    }
 
-        }
+    .lesson-card:nth-child(1) { animation-delay: 0.1s; }
+    .lesson-card:nth-child(2) { animation-delay: 0.2s; }
+    .lesson-card:nth-child(3) { animation-delay: 0.3s; }
+    .lesson-card:nth-child(4) { animation-delay: 0.4s; }
+    /* и так далее... */
 
-        /* Уборка лишних с главной страницы SVG */
-        .center-line {
-            display: none;
-        }  
-
-        .title-container {
-            display: none;
-        }
-
-        .paragraph-container {
-            display: none;
-        }
-
-        .h2 {
-            display: none;
-        }
-
-        .h3 {
-            display: none;
-        }
-
-        #character-container {
-            display: none;
-        }
-
-        .svg-container {
-            display: none;
-        }
-    </style>
+    /* Удаление лишних элементов */
+    .center-line,
+    .title-container,
+    .paragraph-container,
+    .h2,
+    .h3,
+    #character-container,
+    .svg-container {
+        display: none;
+    }
+</style>
 {% endblock %}

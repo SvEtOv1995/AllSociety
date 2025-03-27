@@ -3,143 +3,527 @@
 {% block title %}Темы - AllSociety{% endblock %}
 
 {% block content %}
-    <h1>Темы по предмету {{ subject.name }}</h1>
-    <h4>Инструменты</h4>
+<div class="topics-app">
+    <!-- Шапка с названием предмета -->
+    <header class="subject-header">
+        <div class="subject-header-content">
+            <h1 class="subject-title">{{ subject.name }}</h1>
+            <p class="subject-description">Изучайте темы и используйте инструменты для обучения</p>
+        </div>
+    </header>
 
-    <!-- Buttons Container with Left and Right Buttons -->
-    <div class="buttons-container" style="display: contents; justify-content: space-between; align-items: center; background-color: var(--container-bg); padding: 20px;">
-        <!-- Left-aligned Button for Calculator -->
-        <a href="{% url 'subject_calculator' subject.id %}" class="button calculator-button">
-            Калькулятор по предмету
-        </a>
-        
-        <!-- Center-aligned Topics List -->
-        <div class="subject-container" style="display: flex; flex-direction: column; gap: 25px; margin-top: 55px; margin-left: 270px;  align-content: flex-end;">
+    <!-- Инструменты предмета -->
+    <section class="subject-tools-section">
+        <h2 class="section-title">Инструменты обучения</h2>
+        <div class="tools-grid">
+            <a href="{% url 'subject_calculator' subject.id %}" class="tool-card calculator-tool">
+                <div class="tool-icon-wrapper">
+                    <svg viewBox="0 0 24 24" class="tool-icon">
+                        <path d="M5 2h14a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm2 2v2h2V4H7zm4 0v2h2V4h-2zm4 0v2h2V4h-2zm-8 4v2h2V8H7zm4 0v2h2V8h-2zm4 0v2h2V8h-2zm-8 4v2h2v-2H7zm4 0v2h2v-2h-2zm4 0v2h2v-2h-2zm-8 4v2h2v-2H7zm8 0v2h2v-2h-2z"/>
+                    </svg>
+                </div>
+                <h3 class="tool-title">Калькулятор</h3>
+                <p class="tool-description">Специальный калькулятор для предмета</p>
+                <div class="tool-hover-effect"></div>
+            </a>
+
+            <a href="{% url 'subject_notes' subject.id %}" class="tool-card notes-tool">
+                <div class="tool-icon-wrapper">
+                    <svg viewBox="0 0 24 24" class="tool-icon">
+                        <path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h10v2H7V7zm0 4h10v2H7v-2zm0 4h7v2H7v-2z"/>
+                    </svg>
+                </div>
+                <h3 class="tool-title">Конспект</h3>
+                <p class="tool-description">Все материалы по предмету</p>
+                <div class="tool-hover-effect"></div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Список тем -->
+    <section class="topics-section">
+        <h2 class="section-title">Темы для изучения</h2>
+        <div class="topics-grid">
             {% for topic in topics %}
-                <a href="{% url 'lesson_list' topic.id %}" class="button">
-                    <h2>{{ topic.name }}</h2>
-                    {% if topic.image %}
-                        <img src="{{ topic.image.url }}" alt="Иконка" class="small-icon" style="width: 40px; height: 40px; object-fit: cover; border-radius: 40%;">
-                    {% endif %}
-                </a>
+            <a href="{% url 'lesson_list' topic.id %}" class="topic-card">
+                {% if topic.image %}
+                <div class="topic-image-wrapper">
+                    <img src="{{ topic.image.url }}" alt="{{ topic.name }}" class="topic-image">
+                </div>
+                {% else %}
+                <div class="topic-image-wrapper default-image">
+                    <svg viewBox="0 0 24 24" class="default-icon">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                    </svg>
+                </div>
+                {% endif %}
+                <h3 class="topic-title">{{ topic.name }}</h3>
+                <div class="topic-arrow">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/>
+                    </svg>
+                </div>
+                <div class="topic-hover-effect"></div>
+            </a>
             {% endfor %}
         </div>
+    </section>
 
-        <!-- Right-aligned Button for Notes -->
-        <a href="{% url 'subject_notes' subject.id %}" class="button notes-button">
-            Конспект по предмету
+    <!-- Кнопка назад -->
+    <div class="back-button-container">
+        <a href="{% url 'subjects_list' %}" class="back-button">
+            <svg viewBox="0 0 24 24" class="back-icon">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+            </svg>
+            <span>Вернуться к предметам</span>
         </a>
     </div>
+</div>
 
-    <br>
-    
-    <a href="{% url 'subjects_list' %}" class="button" style=" position: relative; left: 57%; display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; background-color: rgba(173, 216, 230, 0.6); border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; width: 30%;">
-        Назад
-    </a>
+<style>
+    /* Уборка лишних элементов */
+    .center-line, .title-container, .paragraph-container,
+    .h2, .h3, #character-container, .svg-container {
+        display: none !important;
+    }
 
-    <style>
+    /* Новая цветовая палитра */
+    :root {
+        --bg-color: rgb(76, 145, 173);
+        --text-color: #ffffff;
+        --button-bg: rgb(114, 205, 189);
+        --button-hover: #29A0B1;
+        --container-bg: white;
+        --shadow-color: rgba(0, 0, 0, 0.25);
+        --shadow-strong: 0px 6px 20px rgba(0, 0, 0, 0.4);
+        
+        --bg-dark-color: #3A3F58;
+        --text-dark-color: #ffffff;
+        --button-dark-bg: #19465d;
+        --button-dark-hover: #EE6A59;
+        --container-dark-bg: #292929;
+        --shadow-dark-color: rgba(255, 255, 255, 0.2);
+        --shadow-dark-strong: 0px 6px 25px rgba(255, 255, 255, 0.3);
+        
+        /* Дополнительные переменные */
+        --border-radius: 12px;
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        --accent-color: #72CDBD;
+    }
 
-        .subject-container {
-            display: flex;
-            flex-direction: row; /* Располагаем элементы в ряд */
-            flex-wrap: wrap; /* Если места не хватает, элементы могут переноситься */
-            gap: 15px;
-            padding: 10px;
-            border-radius: 10px; /* Скругленные углы */
-            position: relative;
-            top: -2px;
+    .topics-app {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* Шапка предмета */
+    .subject-header {
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--border-radius);
+        background: var(--bg-color);
+        padding: 3rem 1rem;
+        color: var(--text-color);
+        box-shadow: var(--shadow-strong);
+    }
+
+    .subject-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(76, 145, 173, 0.9), rgba(41, 160, 177, 0.9));
+        z-index: 1;
+    }
+
+    .subject-header-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .subject-title {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .subject-description {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Секции */
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: white;
+        font-weight: 600;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(to right, var(--button-bg), var(--button-hover));
+        border-radius: 3px;
+    }
+
+    /* Инструменты */
+    .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .tool-card {
+        position: relative;
+        background: var(--bg-color);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        text-decoration: none;
+        color: var(--bg-color);
+        transition: var(--transition);
+        box-shadow: var(--shadow-color);
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.05);
+        z-index: 1;
+    }
+
+    .tool-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-strong);
+    }
+
+    .calculator-tool {
+        border-top: 4px solid var(--button-bg);
+        color: white;
+    }
+
+    .notes-tool {
+        border-top: 4px solid var(--button-bg);
+        color: white;
+    }
+
+    .tool-icon-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        background: rgb(255 255 255 / 31%);
+    }
+
+    .notes-tool .tool-icon-wrapper {
+        background: rgb(255 255 255 / 41%);
+    }
+
+    .tool-icon {
+        width: 30px;
+        height: 30px;
+        fill: currentColor;
+    }
+
+    .calculator-tool .tool-icon {
+        color: var(--button-hover);
+    }
+
+    .notes-tool .tool-icon {
+        color: var(--button-hover);
+    }
+
+    .tool-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .tool-description {
+        font-size: 0.9rem;
+        color:rgb(255, 255, 255);
+        margin-bottom: 0;
+    }
+
+    .tool-hover-effect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(114,205,189,0.1), rgba(41,160,177,0.1));
+        opacity: 0;
+        transition: var(--transition);
+        z-index: -1;
+    }
+
+    .tool-card:hover .tool-hover-effect {
+        opacity: 1;
+    }
+
+    /* Темы */
+    .topics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .topic-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: var(--button-bg);
+        border-radius: var(--border-radius);
+        padding: 1.25rem;
+        text-decoration: none;
+        color: var(--bg-color);
+        transition: var(--transition);
+        box-shadow: var(--shadow-color);
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.05);
+        z-index: 1;
+    }
+
+    .topic-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-strong);
+    }
+
+    .topic-image-wrapper {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 1rem;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(76, 145, 173, 0.1);
+        overflow: hidden;
+    }
+
+    .default-image {
+        background: linear-gradient(135deg, rgba(76, 145, 173, 0.1), rgba(114, 205, 189, 0.1));
+    }
+
+    .default-icon {
+        width: 24px;
+        height: 24px;
+        fill: var(--bg-color);
+        opacity: 0.7;
+    }
+
+    .topic-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .topic-title {
+        flex-grow: 1;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin: 0;
+        color: white;
+    }
+
+    .topic-arrow {
+        width: 24px;
+        height: 24px;
+        margin-left: 0.5rem;
+        flex-shrink: 0;
+    }
+
+    .topic-arrow svg {
+        width: 100%;
+        height: 100%;
+        fill: var(--bg-color);
+        opacity: 0.6;
+        transition: var(--transition);
+    }
+
+    .topic-card:hover .topic-arrow svg {
+        opacity: 1;
+        fill: var(--button-hover);
+        transform: translateX(3px);
+    }
+
+    .topic-hover-effect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(114,205,189,0.05), rgba(41,160,177,0.05));
+        opacity: 0;
+        transition: var(--transition);
+        z-index: -1;
+    }
+
+    .topic-card:hover .topic-hover-effect {
+        opacity: 1;
+    }
+
+    /* Кнопка назад */
+    .back-button-container {
+        text-align: center;
+        margin-top: 3rem;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--button-bg);
+        border-radius: 2rem;
+        text-decoration: none;
+        color: var(--text-color);
+        font-weight: 500;
+        transition: var(--transition);
+        box-shadow: var(--shadow-color);
+        border: none;
+        cursor: pointer;
+    }
+
+    .back-button:hover {
+        background: var(--button-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-strong);
+    }
+
+    .back-icon {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+    }
+
+    /* Темная тема */
+    @media (prefers-color-scheme: dark) {
+        .topics-app {
+            background-color: var(--bg-dark-color);
+            color: var(--text-dark-color);
         }
         
-        .subject-container a {
-            font-size: 16px;
-            text-decoration: none;
-            color: var(--text-color); /* Цвет текста */
+        .subject-header {
+            background: var(--bg-dark-color);
         }
         
-        .subject-container .button {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 20px;
-            background-color: var(--button-bg);
-            color: var(--container-bg);
-            border-radius: 30px; /* Скругленные углы кнопки */
-            box-shadow: var(--shadow-color);
-            transition: all 0.3s ease;
-            flex-direction: row;
+        .subject-header::before {
+            background: linear-gradient(135deg, rgba(58, 63, 88, 0.9), rgba(25, 70, 93, 0.9));
         }
         
-        .subject-container .button:hover {
-            background-color: var(--button-hover);
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-strong);
+        .section-title {
+            color: var(--accent-color);
         }
         
-        .small-icon {
-            width: 45px;
-            height: 45px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-right: 10px; /* Отступ между иконкой и текстом */
-        } 
-
-        .buttons-container {
-            width: 100%;
-            padding: 20px;
-            border-radius: 15px; /* Округление углов */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Легкая тень */
-            /* Убрали background-color и backdrop-filter */
-        }              
+        .tool-card,
+        .topic-card {
+            background: var(--container-dark-bg);
+            color: var(--text-dark-color);
+            box-shadow: var(--shadow-dark-color);
+        }
         
-        h1 {
-            top: 95px;
-            right: 23%;
+        .tool-card:hover,
+        .topic-card:hover {
+            box-shadow: var(--shadow-dark-strong);
         }
-
-        h2 {
-
-            font-size: 20px;
-            color: #fff;
-
+        
+        .calculator-tool {
+            border-top-color: var(--button-dark-bg);
         }
-
-        h4 {
-
-            position: relative;
-            font-size: 25px;
-            color: #fff;
-            top: 80px;
-            right: 31%;
-
+        
+        .notes-tool {
+            border-top-color: var(--button-dark-hover);
         }
-
-        /* Уборка лишних с главной страницы SVG */
-        .center-line {
-            display: none;
-        }  
-
-        .title-container {
-            display: none;
+        
+        .tool-icon-wrapper {
+            background: rgba(25, 70, 93, 0.2);
         }
-
-        .paragraph-container {
-            display: none;
+        
+        .notes-tool .tool-icon-wrapper {
+            background: rgba(238, 106, 89, 0.2);
         }
-
-        .h2 {
-            display: none;
+        
+        .calculator-tool .tool-icon {
+            color: var(--button-dark-bg);
         }
-
-        .h3 {
-            display: none;
+        
+        .notes-tool .tool-icon {
+            color: var(--button-dark-hover);
         }
-
-        #character-container {
-            display: none;
+        
+        .tool-description {
+            color: #adb5bd;
         }
-
-        .svg-container {
-            display: none;
+        
+        .topic-image-wrapper {
+            background: rgba(58, 63, 88, 0.3);
         }
-    </style>
+        
+        .default-image {
+            background: linear-gradient(135deg, rgba(58, 63, 88, 0.3), rgba(25, 70, 93, 0.3));
+        }
+        
+        .default-icon {
+            fill: var(--text-dark-color);
+        }
+        
+        .topic-arrow svg {
+            fill: var(--text-dark-color);
+        }
+        
+        .back-button {
+            background: var(--button-dark-bg);
+        }
+        
+        .back-button:hover {
+            background: var(--button-dark-hover);
+        }
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .subject-title {
+            font-size: 2rem;
+        }
+        
+        .tools-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .topic-card {
+            padding: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .topics-app {
+            padding: 1.5rem 1rem;
+        }
+        
+        .subject-header {
+            padding: 2rem 1rem;
+        }
+        
+        .subject-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
 {% endblock %}
