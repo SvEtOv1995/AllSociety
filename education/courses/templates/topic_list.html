@@ -160,6 +160,24 @@
         opacity: 0.9;
         max-width: 600px;
         margin: 0 auto;
+        background: linear-gradient(90deg, #ffffff, #6ec3f4, #ffa64d);
+        background-size: 200% auto;
+        color: transparent;
+        background-clip: text;
+        -webkit-background-clip: text;
+        animation: gradientText 4s ease infinite;
+    }
+
+    @keyframes gradientText {
+        0% {
+            background-position: 0% center;
+        }
+        50% {
+            background-position: 100% center;
+        }
+        100% {
+            background-position: 0% center;
+        }
     }
 
     /* Секции */
