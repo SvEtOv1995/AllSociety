@@ -1,0 +1,57 @@
+[
+    {
+        "model": "achievements.achievement",
+        "pk": 1,
+        "fields": {
+            "name": "Первый шаг",
+            "description": "Пройдите свой первый урок",
+            "icon": "football-ball",
+            "points": 10,
+            "condition": "lessons_completed=1"
+        }
+    },
+    {
+        "model": "achievements.achievement",
+        "pk": 2,
+        "fields": {
+            "name": "Ученик",
+            "description": "Пройдите 5 уроков",
+            "icon": "book-reader",
+            "points": 20,
+            "condition": "lessons_completed=5"
+        }
+    },
+    {
+        "model": "achievements.achievement",
+        "pk": 3,
+        "fields": {
+            "name": "Знаток",
+            "description": "Пройдите 10 уроков",
+            "icon": "graduation-cap",
+            "points": 30,
+            "condition": "lessons_completed=10"
+        }
+    },
+    {
+        "model": "achievements.achievement",
+        "pk": 4,
+        "fields": {
+            "name": "Тематический эксперт",
+            "description": "Завершите одну тему полностью",
+            "icon": "star",
+            "points": 40,
+            "condition": "topics_completed=1"
+        }
+    },
+    {
+        "model": "achievements.achievement",
+        "pk": 5,
+        "fields": {
+            "name": "Последовательность",
+            "description": "Заходите в приложение 3 дня подряд",
+            "icon": "calendar-check",
+            "points": 15,
+            "condition": "login_streak=3"
+        }
+    }
+]

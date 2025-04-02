@@ -34,3 +34,31 @@ class LessonProgress(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.topic} - {self.lesson_name} - {'Завершено' if self.completed else 'Не завершено'}"
+
+class Achievement(models.Model):
+    name = models.CharField(max_length=100, verbose_name="Название")
+    description = models.TextField(verbose_name="Описание")
+    icon = models.CharField(max_length=50, help_text="Имя иконки из Font Awesome")
+    points = models.PositiveIntegerField(default=10, verbose_name="Баллы")
+    condition = models.CharField(max_length=100, help_text="Условие получения (например: lessons_completed=5)")
+
+    class Meta:
+        verbose_name = "Достижение"
+        verbose_name_plural = "Достижения"
+
+    def __str__(self):
+        return self.name
+
+class UserAchievement(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='achievements')
+    achievement = models.ForeignKey(Achievement, on_delete=models.CASCADE)
+    date_achieved = models.DateTimeField(auto_now_add=True)
+    is_seen = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('user', 'achievement')
+        verbose_name = "Достижение пользователя"
+        verbose_name_plural = "Достижения пользователей"
+
+    def __str__(self):
+        return f"{self.user.username} - {self.achievement.name}"

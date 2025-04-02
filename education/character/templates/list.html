@@ -1,0 +1,441 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Мои достижения{% endblock %}
+
+{% block content %}
+<div class="achievements-page">
+    <!-- Заголовок с анимацией -->
+    <header class="achievements-header">
+        <h1 class="main-heading">
+            <span class="text-gradient">Мои достижения</span>
+        </h1>
+        <div class="header-decoration"></div>
+    </header>
+
+    <!-- Статистика -->
+    <section class="achievements-stats">
+        <div class="stats-container">
+            <div class="stat-item highlight">
+                <div class="stat-value">{{ user_achievements|length }}</div>
+                <div class="stat-label">Получено</div>
+                <div class="stat-icon">🏅</div>
+            </div>
+            
+            <div class="stat-item highlight">
+                <div class="stat-value">{{ total_points }}</div>
+                <div class="stat-label">Баллов</div>
+                <div class="stat-icon">⭐</div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-value">{{ achievements|length }}</div>
+                <div class="stat-label">Доступно</div>
+                <div class="stat-icon">📜</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Фильтры -->
+    <div class="achievements-filters">
+        <button class="filter-btn active" data-filter="all">Все</button>
+        <button class="filter-btn" data-filter="achieved">Полученные</button>
+        <button class="filter-btn" data-filter="locked">Не полученные</button>
+        <a href="{% url 'character_status' %}" class="button">📚 Вернуться к персонажу</a>
+    </div>
+
+    <!-- Список достижений -->
+    <section class="achievements-grid">
+        {% for item in achievements %}
+        <div class="achievement-card {% if item.achieved %}achieved{% else %}locked{% endif %}" 
+             data-filter="{% if item.achieved %}achieved{% else %}locked{% endif %}">
+            <div class="card-badge">
+                {% if item.achieved %}
+                <span class="badge-icon">✓</span>
+                {% else %}
+                <span class="badge-icon">?</span>
+                {% endif %}
+            </div>
+            
+            <div class="card-icon">
+                <i class="fas fa-{{ item.achievement.icon }}"></i>
+            </div>
+            
+            <div class="card-content">
+                <h3 class="card-title">{{ item.achievement.name }}</h3>
+                <p class="card-description">{{ item.achievement.description }}</p>
+                
+                <div class="card-meta">
+                    <span class="meta-points">{{ item.achievement.points }} баллов</span>
+                    {% if item.achieved %}
+                    <span class="meta-date">Получено: {{ item.date_achieved|date:"d.m.Y" }}</span>
+                    {% else %}
+                    <span class="meta-condition">{{ item.achievement.get_condition_display }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            
+            <a href="{% url 'achievement_detail' item.achievement.id %}" class="card-link">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+        {% endfor %}
+    </section>
+
+    <!-- Пустое состояние -->
+    <div class="empty-state" style="display: none;">
+        <div class="empty-icon">📭</div>
+        <h3>Нет достижений</h3>
+        <p>Вы пока не получили ни одного достижения в этой категории</p>
+    </div>
+</div>
+
+<style>
+    /* Основные стили */
+    :root {
+        --bg-color:rgb(76, 145, 173); /* Light mode background */
+        --text-color: #ffffff; /* Text color */
+        --button-bg:rgb(114, 205, 189); /* Light mode button background */
+        --button-hover: #29A0B1; /* Light mode button hover */
+        --container-bg: white; /* Light container background */
+        --shadow-color: rgba(0, 0, 0, 0.25);
+        --shadow-strong: 0px 6px 20px rgba(0, 0, 0, 0.4);
+        
+        --bg-dark-color: #3A3F58; /* Dark mode background */
+        --text-dark-color: #ffffff; /* Dark text color */
+        --button-dark-bg: #19465d; /* Dark mode button background */
+        --button-dark-hover: #EE6A59; /* Dark mode button hover */
+        --container-dark-bg: #292929; /* Dark mode container background */
+        --shadow-dark-color: rgba(255, 255, 255, 0.2);
+        --shadow-dark-strong: 0px 6px 25px rgba(255, 255, 255, 0.3);
+    }
+    
+    .achievements-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    /* Шапка */
+    .achievements-header {
+        text-align: center;
+        margin-bottom: 30px;
+        position: relative;
+    }
+    
+    .main-heading {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .text-gradient {
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .header-decoration {
+        height: 4px;
+        width: 100px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        margin: 0 auto;
+        border-radius: 2px;
+    }
+    
+    /* Статистика */
+    .achievements-stats {
+        margin-bottom: 30px;
+    }
+    
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+    }
+    
+    .stat-item {
+        background: var(--button-bg);
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-item.highlight {
+        background: var(--button-bg);
+        color: white;
+    }
+    
+    .stat-item:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    .stat-icon {
+        font-size: 1.8rem;
+    }
+    
+    /* Фильтры */
+    .achievements-filters {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+        background: var(--light-gray);
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    
+    .filter-btn.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    /* Сетка достижений */
+    .achievements-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    /* Карточка достижения */
+    .achievement-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .achievement-card.achieved {
+        border-left: 4px solid var(--success);
+    }
+    
+    .achievement-card.locked {
+        opacity: 0.8;
+        border-left: 4px solid var(--gray);
+    }
+    
+    .achievement-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    
+    .card-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+    
+    .achieved .card-badge {
+        background: var(--success);
+        color: white;
+    }
+    
+    .locked .card-badge {
+        background: var(--gray);
+        color: white;
+    }
+    
+    .card-icon {
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 15px;
+    }
+    
+    .locked .card-icon {
+        color: var(--gray);
+    }
+    
+    .card-content {
+        flex: 1;
+    }
+    
+    .card-title {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+        color: var(--dark);
+    }
+    
+    .card-description {
+        color: var(--gray);
+        margin-bottom: 15px;
+        font-size: 0.95rem;
+    }
+    
+    .card-meta {
+        margin-top: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+    }
+    
+    .meta-points {
+        background: var(--light-gray);
+        padding: 3px 8px;
+        border-radius: 10px;
+        font-weight: bold;
+        color: var(--primary);
+    }
+    
+    .locked .meta-points {
+        color: var(--gray);
+    }
+    
+    .meta-date, .meta-condition {
+        color: var(--gray);
+        font-size: 0.8rem;
+    }
+    
+    .card-link {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        color: var(--primary);
+        font-size: 0.9rem;
+    }
+    
+    /* Пустое состояние */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-top: 20px;
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        opacity: 0.5;
+    }
+
+    /* Уборка лишних с главной страницы SVG */
+    .center-line {
+        display: none;
+    }  
+
+    .title-container {
+        display: none;
+    }
+
+    .paragraph-container {
+        display: none;
+    }
+
+    .h2 {
+        display: none;
+    }
+
+    .h3 {
+        display: none;
+    }
+
+    #character-container {
+        display: none;
+    }
+
+    .svg-container {
+        display: none;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .main-heading {
+            font-size: 2rem;
+        }
+        
+        .stats-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .achievements-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Фильтрация достижений
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const achievementCards = document.querySelectorAll('.achievement-card');
+        const emptyState = document.querySelector('.empty-state');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Удаляем активный класс у всех кнопок
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Добавляем активный класс текущей кнопке
+                this.classList.add('active');
+                
+                const filter = this.dataset.filter;
+                let visibleCards = 0;
+                
+                // Фильтруем карточки
+                achievementCards.forEach(card => {
+                    if (filter === 'all' || card.dataset.filter === filter) {
+                        card.style.display = 'flex';
+                        visibleCards++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Показываем/скрываем пустое состояние
+                if (visibleCards === 0) {
+                    emptyState.style.display = 'block';
+                } else {
+                    emptyState.style.display = 'none';
+                }
+            });
+        });
+        
+        // Анимация при загрузке
+        achievementCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease ' + (index * 0.1) + 's';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    });
+</script>
+{% endblock %}

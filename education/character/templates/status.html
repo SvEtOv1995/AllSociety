@@ -1,81 +1,783 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Мой персонаж{% endblock %}
+{% block title %}Мой прогресс{% endblock %}
 
 {% block content %}
-    <h1>Мой персонаж</h1>
-    <div class="character-box" style="display: flex; flex-direction: column; align-items: center;">
-        <img src="{% static 'images/character_super.png' %}" id="character-img" alt="Персонаж" style="max-width: 300px; margin-bottom: 20px;">
+<div class="character-dashboard">
+    <!-- Анимированный заголовок -->
+    <h1 class="gradient-title">Мой учебный профиль</h1>
+    
+    <!-- Основная карточка персонажа -->
+    <div class="character-main-card glassmorphism">
+        <div class="character-display">
+            <!-- Анимированный персонаж -->
+            <div class="character-avatar">
+                <img src="{% static 'images/character_super.png' %}" 
+                     alt="Аватар персонажа"
+                     class="avatar-img floating">
+                <div class="level-bubble pulse">{{ progress.level }}</div>
+            </div>
+            
+            <!-- Прогресс-бар с анимацией -->
+            <div class="progress-container">
+                <div class="progress-info">
+                    <h3 class="progress-label">Смарт-коины</h3>
+                    <h3 class="progress-value">{{ progress.exp }} / 50</h3>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ progress.exp_percentage }}%"
+                         data-percentage="{{ progress.exp_percentage }}"></div>
+                </div>
+                <div class="progress-remaining">
+                    До следующего уровня: {{ remaining_exp }} коинов
+                </div>
+            </div>
+        </div>
         
-        <!-- Информация о уровне и опыте -->
-        <p><strong>Уровень:</strong> {{ progress.level }}</p>
-        <p><strong>Смарт-коин:</strong> {{ progress.exp }} / 50</p>
-
-        <!-- Количество пройденных уроков -->
-        <p><strong>Пройдено уроков:</strong> {{ lessons_completed }}</p>
-
-        <!-- Прогресс по темам -->
-        <div class="topic-progress" style="margin-top: 20px;">
-            <h3>Прогресс по темам:</h3>
-            <ul>
-                {% for topic, completed in topic_progress.items %}
-                    <li>
-                        <strong>{{ topic }}:</strong> {{ completed }} уроков пройдено
-                        <a href="{% url 'lesson_progress' topic %}" class="button" style="margin-left: 10px;">📖 Просмотреть уроки</a>
-                    </li>
-                {% endfor %}
-            </ul>
+        <!-- Статистика в виде инфографики -->
+        <div class="stats-grid">
+            <div class="stat-card neumorphism">
+                <div class="stat-icon">📚</div>
+                <div class="stat-data">
+                    <div class="stat-number">{{ lessons_completed }}</div>
+                    <div class="stat-name">уроков пройдено</div>
+                </div>
+            </div>
+            
+            <div class="stat-card neumorphism">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-data">
+                    <div class="stat-number">{{ study_hours|default:"0" }}</div>
+                    <div class="stat-name">часов обучения</div>
+                </div>
+            </div>
+            
+            <div class="stat-card neumorphism">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-data">
+                    <div class="stat-number">{{ achievements|length }}</div>
+                    <div class="stat-name">достижений</div>
+                </div>
+            </div>
         </div>
-
-        <!-- Дополнительная информация о прогрессе -->
-        <div class="progress-info" style="text-align: center; margin-top: 20px;">
-            <p><strong>Оставшийся опыт до следующего уровня:</strong> {{ remaining_exp }}</p>
-        </div>
-
-        <!-- Кнопка "Вернуться к предметам" -->
-        <a href="{% url 'subjects_list' %}" class="button subjects-button" style="margin-top: 20px;">📚 Вернуться к предметам</a>
-
-        <!-- Кнопка "Перейти к расписанию" -->
-        <a href="{% url 'schedule' %}" class="button schedule-button" style="margin-top: 20px; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-            📅 Перейти к расписанию
-        </a>
     </div>
+    
+    <!-- Прогресс по темам с интерактивными элементами -->
+    <section class="topics-section">
+        <h2 class="section-title slide-in">Мой прогресс по темам <span class="badge">{{ topic_progress|length }}</span></h2>
+        
+        <div class="topics-accordion">
+            {% for topic, data in topic_progress.items %}
+            <div class="topic-item">
+                <input type="checkbox" id="topic-{{ forloop.counter }}" class="topic-toggle">
+                <label for="topic-{{ forloop.counter }}" class="topic-header">
+                    <div class="topic-title">
+                        <span class="topic-name">{{ topic }}</span>
+                        <span class="topic-stats">
+                            <span class="completed">{{ data.completed }}</span>/<span class="total">{{ data.total }}</span> уроков
+                        </span>
+                    </div>
+                    <div class="topic-progress">
+                        <div class="progress-track" style="--progress: {{ data.percentage }}%"></div>
+                    </div>
+                    <div class="topic-toggle-icon">▶</div>
+                </label>
+                
+                <div class="topic-content">
+                    <div class="topic-details">
+                        <div class="topic-milestones">
+                            {% for milestone in data.milestones %}
+                            <div class="milestone {% if milestone.completed %}completed{% endif %}">
+                                <span class="milestone-icon">
+                                    {% if milestone.completed %}✓{% else %}○{% endif %}
+                                </span>
+                                {{ milestone.name }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <a href="{% url 'lesson_progress' topic %}" class="btn btn-outline">
+                            Продолжить обучение ➔
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    
+    <!-- Быстрые действия -->
+    <!-- В секции быстрых действий -->
+<div class="quick-actions">
+    <a href="{% url 'subjects_list' %}" class="action-btn gradient-bg">
+        <span class="action-icon">📚</span>
+        <span class="action-text">Все предметы</span>
+    </a>
+    <a href="{% url 'schedule' %}" class="action-btn gradient-bg">
+        <span class="action-icon">📅</span>
+        <span class="action-text">Расписание</span>
+    </a>
+    <a href="{% url 'achievements_list' %}" class="action-btn gradient-bg">
+        <span class="action-icon">🏆</span>
+        <span class="action-text">Достижения</span>
+    </a>
+</div>
+</div>
 
-    <style>
-
-        /* Уборка лишних с главной страницы SVG */
-        .center-line {
-            display: none;
-        }  
-
-        .title-container {
-            display: none;
+<style>
+    /* Базовые настройки */
+    :root {
+        --bg-color:rgb(76, 145, 173); /* Light mode background */
+        --text-color: #ffffff; /* Text color */
+        --button-bg:rgb(114, 205, 189); /* Light mode button background */
+        --button-hover: #29A0B1; /* Light mode button hover */
+        --container-bg: white; /* Light container background */
+        --shadow-color: rgba(0, 0, 0, 0.25);
+        --shadow-strong: 0px 6px 20px rgba(0, 0, 0, 0.4);
+        
+        --bg-dark-color: #3A3F58; /* Dark mode background */
+        --text-dark-color: #ffffff; /* Dark text color */
+        --button-dark-bg: #19465d; /* Dark mode button background */
+        --button-dark-hover: #EE6A59; /* Dark mode button hover */
+        --container-dark-bg: #292929; /* Dark mode container background */
+        --shadow-dark-color: rgba(255, 255, 255, 0.2);
+        --shadow-dark-strong: 0px 6px 25px rgba(255, 255, 255, 0.3);
+    }
+    
+    
+    /* Основной контейнер */
+    .character-dashboard {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    /* Анимированный заголовок */
+    .gradient-title {
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: gradientShift 8s ease infinite;
+        background-size: 200% 200%;
+    }
+    
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    /* Стили карточки персонажа */
+    .character-main-card {
+        background: var(--light);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .glassmorphism {
+        background: var(--glass);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .character-display {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    /* Аватар персонажа */
+    .character-avatar {
+        position: relative;
+        flex: 0 0 auto;
+    }
+    
+    .avatar-img {
+        width: 180px;
+        height: 180px;
+        object-fit: contain;
+        border-radius: 50%;
+        border: 5px solid white;
+        box-shadow: inset 0px 1px 20px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .floating {
+        animation: floating 3s ease-in-out infinite;
+    }
+    
+    @keyframes floating {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
+    
+    .level-bubble {
+        position: absolute;
+        bottom: 10px;
+        right: -42px;
+        width: 50px;
+        height: 50px;
+        background: var(--accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        border: 3px solid white;
+        box-shadow: inset 0px -1px 20px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .pulse {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    /* Прогресс бар */
+    .progress-container {
+        flex: 1;
+        min-width: 300px;
+    }
+    
+    .progress-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--dark);
+    }
+    
+    .progress-bar {
+        height: 20px;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--success));
+        border-radius: 10px;
+        transition: width 1s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.1) 0%,
+            rgba(255, 255, 255, 0.3) 50%,
+            rgba(255, 255, 255, 0.1) 100%
+        );
+        animation: shimmer 2s infinite linear;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    
+    .progress-remaining {
+        font-size: 0.8rem;
+        color: #666;
+        text-align: right;
+    }
+    
+    /* Статистика */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .stat-card {
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+    
+    .neumorphism {
+        background: var(--light);
+        box-shadow: 8px 8px 16px #d9d9d9, -8px -8px 16px #ffffff;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--primary);
+        margin-bottom: 0.3rem;
+    }
+    
+    .stat-name {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    /* Секция тем */
+    .topics-section {
+        margin: 3rem 0;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        color: var(--dark);
+        position: relative;
+        display: inline-block;
+    }
+    
+    .slide-in {
+        animation: slideIn 0.5s ease-out forwards;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    
+    @keyframes slideIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
-
-        .paragraph-container {
-            display: none;
+    }
+    
+    .badge {
+        display: inline-block;
+        background: var(--accent);
+        color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 50px;
+        font-size: 1rem;
+        margin-left: 0.5rem;
+        vertical-align: middle;
+    }
+    
+    /* Аккордеон тем */
+    .topics-accordion {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    
+    .topic-item {
+        margin-bottom: 1rem;
+    }
+    
+    .topic-toggle {
+        display: none;
+    }
+    
+    .topic-header {
+        display: block;
+        padding: 1.5rem;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    .topic-header:hover {
+        background: #f8f9fa;
+    }
+    
+    .topic-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .topic-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--dark);
+    }
+    
+    .topic-stats {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .completed {
+        color: var(--success);
+        font-weight: bold;
+    }
+    
+    .topic-progress {
+        height: 6px;
+        background: #eee;
+        border-radius: 3px;
+        margin: 1rem 0;
+        overflow: hidden;
+    }
+    
+    .progress-track {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--success));
+        width: var(--progress);
+        border-radius: 3px;
+        position: relative;
+    }
+    
+    .topic-toggle-icon {
+        position: absolute;
+        right: 1.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: transform 0.3s ease;
+    }
+    
+    .topic-toggle:checked ~ .topic-header .topic-toggle-icon {
+        transform: translateY(-50%) rotate(90deg);
+    }
+    
+    .topic-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background: white;
+        border-radius: 0 0 12px 12px;
+    }
+    
+    .topic-toggle:checked ~ .topic-content {
+        max-height: 500px;
+    }
+    
+    .topic-details {
+        padding: 1.5rem;
+        padding-top: 0;
+    }
+    
+    .topic-milestones {
+        margin-bottom: 1.5rem;
+    }
+    
+    .milestone {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .milestone.completed {
+        color: #666;
+    }
+    
+    .milestone-icon {
+        margin-right: 0.8rem;
+        font-size: 1.2rem;
+    }
+    
+    .milestone.completed .milestone-icon {
+        color: var(--success);
+    }
+    
+    /* Кнопки */
+    .btn {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-align: center;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-outline {
+        border: 2px solid var(--primary);
+        color: var(--primary);
+        background: transparent;
+    }
+    
+    .btn-outline:hover {
+        background: var(--primary);
+        color: white;
+    }
+    
+    /* Быстрые действия */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 3rem;
+    }
+    
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-decoration: none;
+        color: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .gradient-bg {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .action-icon {
+        font-size: 1.5rem;
+        margin-right: 1rem;
+        position: relative;
+        lefr: 50%;
+    }
+    
+    .action-text {
+        font-size: 1.5rem;
+        font-weight: 400;
+        position: relative;
+        lefr: 50%;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .character-display {
+            flex-direction: column;
         }
-
-        .h2 {
-            display: none;
+        
+        .progress-container {
+            width: 100%;
         }
-
-        h1 {
-            display: none;
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
         }
-
-        .h3 {
-            display: none;
+        
+        .quick-actions {
+            grid-template-columns: 1fr;
         }
+    }
+    
+    /* Скрытие ненужных элементов */
+    .center-line,
+    .title-container,
+    .paragraph-container,
+    .h2,
+    .h3,
+    #character-container,
+    .svg-container {
+        display: none !important;
+    }
 
-        #character-container {
-            display: none;
-        }
+    /* Achievements Styles */
+.achievements-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
 
-        .svg-container {
-            display: none;
-        }
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
 
-    </style>
+.achievement-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.achievement-card.achieved {
+    border-left: 4px solid #4CAF50;
+}
+
+.achievement-card.locked {
+    opacity: 0.7;
+    border-left: 4px solid #9E9E9E;
+}
+
+.achievement-icon {
+    font-size: 2rem;
+    color: #4CAF50;
+    margin-bottom: 1rem;
+}
+
+.achievement-card.locked .achievement-icon {
+    color: #9E9E9E;
+}
+
+.achievement-content h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.achievement-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.points {
+    color: #FFC107;
+    font-weight: bold;
+}
+
+.date {
+    color: #9E9E9E;
+}
+
+/* Detail page styles */
+.achievement-detail {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.achievement-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.achievement-icon.big {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.achievement-icon.big.achieved {
+    color: #4CAF50;
+}
+
+.achievement-icon.big.locked {
+    color: #9E9E9E;
+}
+
+.description {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.achievement-points {
+    display: inline-block;
+    background: #FFC107;
+    color: white;
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-top: 1rem;
+}
+
+.progress-container {
+    margin-top: 2rem;
+}
+
+.progress-bar {
+    height: 10px;
+    background: #eee;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #4CAF50;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    text-align: center;
+    color: #666;
+}
+
+.success-message {
+    background: #E8F5E9;
+    color: #2E7D32;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.back-button {
+    display: inline-block;
+    margin-top: 2rem;
+    color: #2196F3;
+    text-decoration: none;
+}
+
+.back-button:hover {
+    text-decoration: underline;
+}
+</style>
+
+<script>
+    // Анимация прогресс-бара при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressFill = document.querySelector('.progress-fill');
+        const percentage = progressFill.getAttribute('data-percentage');
+        progressFill.style.width = '0%';
+        
+        setTimeout(() => {
+            progressFill.style.width = percentage + '%';
+        }, 300);
+        
+        // Анимация для элементов статистики
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transitionDelay = `${index * 0.1}s`;
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 500 + index * 100);
+        });
+    });
+</script>
 {% endblock %}

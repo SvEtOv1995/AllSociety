@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ achievement.name }}{% endblock %}
+
+{% block content %}
+<div class="achievement-detail">
+    <div class="achievement-header">
+        <div class="achievement-icon big {% if user_has %}achieved{% else %}locked{% endif %}">
+            <i class="fas fa-{{ achievement.icon }}"></i>
+        </div>
+        <h1>{{ achievement.name }}</h1>
+        <p class="description">{{ achievement.description }}</p>
+        <div class="achievement-points">{{ achievement.points }} баллов</div>
+    </div>
+    
+    <div class="achievement-progress">
+        <h3>Как получить:</h3>
+        <p>{{ achievement.get_condition_display }}</p>
+        
+        {% if user_has %}
+        <div class="success-message">
+            <i class="fas fa-check-circle"></i> Вы получили это достижение!
+        </div>
+        {% else %}
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ progress }}%"></div>
+            </div>
+            <div class="progress-text">{{ current }}/{{ target }}</div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <a href="{% url 'achievements_list' %}" class="back-button">
+        <i class="fas fa-arrow-left"></i> Назад к списку достижений
+    </a>
+</div>
+{% endblock %}

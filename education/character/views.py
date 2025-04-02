@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import CharacterProgress, LessonProgress
+from .models import CharacterProgress, LessonProgress, Achievement, UserAchievement
 
 @login_required
 def character_status(request):
@@ -49,3 +49,42 @@ def complete_lesson(request, lesson_id):
         progress, created = CharacterProgress.objects.get_or_create(user=request.user)
         progress.add_experience(10)  # Добавляем 10 опыта за завершенный урок
     return redirect("lesson_progress", topic=lesson.topic)
+
+@login_required
+def achievements_list(request):
+    # Все возможные достижения
+    all_achievements = Achievement.objects.all()
+    
+    # Достижения текущего пользователя
+    user_achievements = UserAchievement.objects.filter(user=request.user).select_related('achievement')
+    
+    # Создаем список всех достижений с отметкой о получении
+    achievements = []
+    for achievement in all_achievements:
+        achieved = user_achievements.filter(achievement=achievement).exists()
+        achievements.append({
+            'achievement': achievement,
+            'achieved': achieved,
+            'date_achieved': user_achievements.filter(achievement=achievement).first().date_achieved if achieved else None
+        })
+    
+    # Помечаем новые достижения как просмотренные
+    UserAchievement.objects.filter(user=request.user, is_seen=False).update(is_seen=True)
+    
+    return render(request, 'list.html', {
+        'achievements': achievements,
+        'total_points': sum(ua.achievement.points for ua in user_achievements)
+    })
+
+@login_required
+def achievement_detail(request, achievement_id):
+    achievement = get_object_or_404(Achievement, id=achievement_id)
+    user_has = UserAchievement.objects.filter(
+        user=request.user, 
+        achievement=achievement
+    ).exists()
+    
+    return render(request, 'detail.html', {
+        'achievement': achievement,
+        'user_has': user_has
+    })
