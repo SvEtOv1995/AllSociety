@@ -1,58 +1,185 @@
 {% extends 'base.html' %}
 
-{% block title %}Калькулятор{% endblock %}
+{% block title %}Профессиональный алгебраический калькулятор{% endblock %}
 
 {% block content %}
-
-    <style>
-
-        /* Стили для калькулятора */
-        .calculator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 380px;
-            height: 457px;
-            padding: 20px;
-            border-radius: 20px;
-            background: var(--bg-color);
-            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
-        }
+<style>
+    root {
+        --bg-color:rgb(76, 145, 173); /* Light mode background */
+        --text-color: #ffffff; /* Text color */
+        --button-bg:rgb(114, 205, 189); /* Light mode button background */
+        --button-hover: #29A0B1; /* Light mode button hover */
+        --container-bg: white; /* Light container background */
+        --shadow-color: rgba(0, 0, 0, 0.25);
+        --shadow-strong: 0px 6px 20px rgba(0, 0, 0, 0.4);
         
+        --bg-dark-color: #3A3F58; /* Dark mode background */
+        --text-dark-color: #ffffff; /* Dark text color */
+        --button-dark-bg: #19465d; /* Dark mode button background */
+        --button-dark-hover: #EE6A59; /* Dark mode button hover */
+        --container-dark-bg: #292929; /* Dark mode container background */
+        --shadow-dark-color: rgba(255, 255, 255, 0.2);
+        --shadow-dark-strong: 0px 6px 25px rgba(255, 255, 255, 0.3);
+    }
 
-        /* Стили для дисплея калькулятора */
-        .display {
-            width: 100%;
-            height: 90px;
-            text-align: right;
-            font-size: 24px;
-            margin-bottom: 10px;
-            padding: 5px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            white-space: nowrap;
-            overflow: hidden;
-            background:var(--bg-color);
-            box-shadow: inset 1px 1px 20px 20px rgba(0, 0, 0, 0.2);
-        }
 
-        h1 {
-            right: 44%;
-            top: 84px;
-        }
+.calculator-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
 
-        /* Стили для футера */
-        footer {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #666;
-        }
+.calculator {
+    padding: 30px;
+    border-radius: 25px;
+    background: var(--bg-color);
+    box-shadow: 0 15px 35px var(--shadow);
+    margin-bottom: 30px;
+}
 
-        /* Уборка лишних с главной страницы SVG */
+.display {
+    height: 100px;
+    padding: 20px;
+    margin-bottom: 25px;
+    background: #000;
+    border-radius: 15px;
+    font-size: 2.2em;
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    border: 2px solid #333;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 18px;
+    border: none;
+    border-radius: 12px;
+    background: var(--button-bg);
+    color: var(--text);
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background: var(--button-hover);
+    transform: translateY(-3px);
+}
+
+.button-accent {
+    background: var(--accent);
+    font-weight: bold;
+}
+
+.history-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 5px 15px var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.history-panel {
+    position: fixed;
+    bottom: 110px;
+    right: 30px;
+    width: 300px;
+    max-height: 400px;
+    background: var(--bg-color);
+    border-radius: 20px;
+    padding: 15px;
+    box-shadow: 0 10px 25px var(--shadow);
+    display: none;
+    z-index: 99;
+    overflow-y: auto;
+}
+
+.graph-section {
+    padding: 30px;
+    background: var(--bg-color);
+    border-radius: 25px;
+    margin-top: 30px;
+}
+
+.graph-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.graph-help {
+    background: #2d2d2d;
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 25px;
+}
+
+input[type="text"], input[type="number"] {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: #333;
+    color: white;
+    width: 100%;
+    font-size: 1em;
+}
+
+.history-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #333;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.result {
+    color: var(--accent);
+    font-weight: bold;
+}
+
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.tab {
+    padding: 10px 20px;
+    background: #2d2d2d;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.tab.active {
+    background: var(--accent);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Уборка лишних с главной страницы SVG */
         .center-line {
             display: none;
         }  
@@ -81,294 +208,282 @@
             display: none;
         }
 
-    </style>
-    <h1>Калькулятор</h1>
+</style>
+
+<div class="calculator-container">
     <div class="calculator">
-        <div id="display" class="display"></div>
-        <div class="buttons" id="buttons-container">
+        <div class="display" id="display"></div>
+        
+        <div class="buttons">
             <button onclick="clearDisplay()">C</button>
-            <button onclick="appendValue('1')">1</button>
-            <button onclick="appendValue('2')">2</button>
-            <button onclick="appendValue('3')">3</button>
-            <button onclick="appendValue('4')">4</button>
-            <button onclick="appendValue('5')">5</button>
-            <button onclick="appendValue('6')">6</button>
+            <button onclick="insertFunction('sin(')">sin</button>
+            <button onclick="insertFunction('cos(')">cos</button>
+            <button onclick="insertFunction('tan(')">tan</button>
+            <button onclick="appendValue('^')">xʸ</button>
+            
             <button onclick="appendValue('7')">7</button>
             <button onclick="appendValue('8')">8</button>
             <button onclick="appendValue('9')">9</button>
-            <button onclick="appendValue('0')">0</button>
-            <button onclick="calculate()">=</button>
-            <button onclick="appendValue('+')">+</button>
-            <button onclick="appendValue('*')">×</button>
-            <button onclick="appendValue('-')">-</button>
-            <button onclick="appendValue('.')">.</button>
-            <button onclick="appendFraction()">Дробь</button>
             <button onclick="appendValue('√(')">√</button>
-            <button onclick="appendValue('sin(')">sin</button>
-            <button onclick="appendValue('tan(')">tg</button>
-            <button onclick="appendValue('ctg(')">ctg</button>
-            <button onclick="appendValue('x')">x</button>
-            <button onclick="appendValue('y')">y</button>
-            <button onclick="appendValue('{')">{</button>
+            <button onclick="appendValue('π')">π</button>
+            
+            <button onclick="appendValue('4')">4</button>
+            <button onclick="appendValue('5')">5</button>
+            <button onclick="appendValue('6')">6</button>
             <button onclick="appendValue('(')">(</button>
             <button onclick="appendValue(')')">)</button>
-            <button onclick="solveQuadratic()">уравнение(D)</button>
-            <button onclick="solveInequality()">неравенство</button>
-            <button onclick="solveSystemInequalities()">сис.неравенств</button>
-            <button onclick="toggleAdvancedMode()">Расш.</button>
+            
+            <button onclick="appendValue('1')">1</button>
+            <button onclick="appendValue('2')">2</button>
+            <button onclick="appendValue('3')">3</button>
+            <button onclick="insertFunction('log(')">log</button>
+            <button onclick="insertFunction('ln(')">ln</button>
+            
+            <button onclick="appendValue('0')">0</button>
+            <button onclick="appendValue('.')">.</button>
+            <button onclick="appendValue('e')">e</button>
+            <button class="button-accent" onclick="calculate()">=</button>
+            <button onclick="appendValue(', ')">,</button>
         </div>
+
         <a href="{% url 'index' %}" class="button">📚 Вернуться на главную</a>
     </div>
 
-    <script>
-        let advancedMode = false;
-
-        function appendValue(value) {
-            document.getElementById("display").innerText += value;
-        }
-
-        function clearDisplay() {
-            document.getElementById("display").innerText = "";
-        }
-
-        let isEnteringNumerator = true;
-
-        function appendFraction() {
-            let display = document.getElementById("display");
+    <div class="graph-section">
+        <h2>📈 Построение графиков</h2>
         
-            let fractionId = `fraction-${document.querySelectorAll(".fraction").length}`;
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('graph-tab')">Графики</div>
+            <div class="tab" onclick="switchTab('help-tab')">Помощь</div>
+        </div>
         
-            display.innerHTML += `
-                <div class="fraction" style="display: inline-block; text-align: center; margin: 5px;">
-                    <span contenteditable="true" id="${fractionId}-numerator" style="display: block; min-width: 20px;">1</span>
-                    <span style="border-top: 2px solid black; display: block; width: 100%;"></span>
-                    <span contenteditable="true" id="${fractionId}-denominator" style="display: block; min-width: 20px;">2</span>
+        <div class="tab-content active" id="graph-tab">
+            <div class="graph-controls">
+                <div>
+                    <input type="text" id="funcInput" placeholder="y = x^2">
+                    <button class="button-accent" onclick="addFunction()" style="margin-top: 10px;">Добавить функцию</button>
                 </div>
-                <span class="fraction-space" style="display: inline-block; min-width: 20px; margin-left: 10px;" contenteditable="true"></span>
-            `;
-        }
-
-        function roundNumber(num) {
-            return Math.round(num * 100) / 100;
-        }        
-        
-        function calculateFractions() {
-            let fractions = document.querySelectorAll(".fraction");
-            let results = [];
-        
-            fractions.forEach(fraction => {
-                let numerator = parseFloat(fraction.querySelector("span:nth-child(1)").innerText) || 0;
-                let denominator = parseFloat(fraction.querySelector("span:nth-child(3)").innerText) || 1;
-        
-                let value = numerator / denominator;
-                results.push(Math.round(value * 100) / 100);
-            });
-        
-            document.getElementById("display").innerHTML += `<br>Результат: ${results.join(", ")}`;
-        }
-        
-        function appendFractionValue(value) {
-            let numerator = document.getElementById("numerator");
-            let denominator = document.getElementById("denominator");
-
-            if (!numerator.innerText) {
-                numerator.innerText = value;
-            } else if (!denominator.innerText) {
-                denominator.innerText = value;
-                isEnteringNumerator = true;
-                calculateFraction(); // После ввода знаменателя сразу считаем дробь
-            } else {
-                alert("Дробь уже введена!");
-            }
-        }
-
-        function calculateFraction() {
-            let numerator = parseFloat(document.getElementById("numerator").innerText) || 0;
-            let denominator = parseFloat(document.getElementById("denominator").innerText) || 1;
-
-            let result = numerator / denominator;
-            document.getElementById("display").innerHTML += `<br>Результат: ${result.toFixed(10)}`;
-        }
-
-        function calculate() {
-            try {
-                let expression = document.getElementById("display").innerText;
-                expression = expression.replace(/√\(([^)]+)\)/g, 'Math.sqrt($1)')
-                                      .replace(/sin\(([^)]+)\)/g, 'Math.sin($1 * Math.PI / 180)')
-                                      .replace(/cos\(([^)]+)\)/g, 'Math.cos($1 * Math.PI / 180)')
-                                      .replace(/tan\(([^)]+)\)/g, 'Math.tan($1 * Math.PI / 180)')
-                                      .replace(/ctg\(([^)]+)\)/g, '(1 / Math.tan($1 * Math.PI / 180))')
-                                      .replace(/(\d)(\()/g, '$1*(')
-                                      .replace(/\^/g, '**');
-                let result = eval(expression);
-                document.getElementById("display").innerText = `Результат: ${parseFloat(result.toFixed(10))}`;
-            } catch (e) {
-                alert("Ошибка в вычислении!");
-            }
-        }
-
-        function solveQuadratic() {
-            let display = document.getElementById("display");
-        
-            display.innerHTML = `
-                <div style="font-size: 20px; margin: 5px;">
-                    <span contenteditable="true" id="a">1</span>x² 
-                    <span contenteditable="true" id="signB">+</span> 
-                    <span contenteditable="true" id="b">15</span>x 
-                    <span contenteditable="true" id="signC">-</span> 
-                    <span contenteditable="true" id="c">14</span> = 0
+                <div>
+                    <input type="number" id="xMin" value="-10" placeholder="X min">
+                    <input type="number" id="xMax" value="10" placeholder="X max" style="margin-top: 10px;">
                 </div>
-                <button onclick="updateQuadratic()">Рассчитать</button>
-                <div id="quadraticResult"></div>
-            `;
-        }
+            </div>
+            <canvas id="graphCanvas" width="740" height="400"></canvas>
+        </div>
         
-        function updateQuadratic() {
-            let a = parseFloat(document.getElementById("a").innerText) || 1;
-            let signB = document.getElementById("signB").innerText.trim();
-            let b = parseFloat(document.getElementById("b").innerText) || 0;
-            let signC = document.getElementById("signC").innerText.trim();
-            let c = parseFloat(document.getElementById("c").innerText) || 0;
-        
-            if (signB === "-") b = -b;
-            if (signC === "-") c = -c;
-        
-            let D = b ** 2 - 4 * a * c;
-            let result;
-        
-            if (D < 0) {
-                result = `D = ${D}, нет действительных корней`;
-            } else if (D === 0) {
-                let x = (-b / (2 * a)).toFixed(5);
-                result = `x = ${x}`;
-            } else {
-                let x1 = (-b + Math.sqrt(D)) / (2 * a);
-                let x2 = (-b - Math.sqrt(D)) / (2 * a);
-                result = `x₁ = ${x1.toFixed(5)}, x₂ = ${x2.toFixed(5)}`;
-            }
-        
-            document.getElementById("quadraticResult").innerText = result;
-        }        
-        
-        function solveInequality() {
-            let display = document.getElementById("display");
-        
-            display.innerHTML = `
-                <div style="font-size: 20px; margin: 5px;">
-                    <span contenteditable="true" id="a">1</span>x 
-                    <span contenteditable="true" id="sign">+</span> 
-                    <span contenteditable="true" id="b">5</span> 
-                    <span contenteditable="true" id="ineqSign">&lt;</span> 
-                    <span contenteditable="true" id="c">10</span>
-                </div>
-                <button onclick="updateInequality()">Рассчитать</button>
-                <div id="inequalityResult"></div>
-            `;
-        }
-        
-        function updateInequality() {
-            let a = parseFloat(document.getElementById("a").innerText) || 1;
-            let sign = document.getElementById("sign").innerText.trim();
-            let b = parseFloat(document.getElementById("b").innerText) || 0;
-            let ineqSign = document.getElementById("ineqSign").innerText.trim();
-            let c = parseFloat(document.getElementById("c").innerText) || 0;
-        
-            if (sign === "-") b = -b;
-        
-            let result;
-            let x = (c - b) / a;
-        
-            result = `x ${ineqSign} ${x.toFixed(5)}`;
-        
-            document.getElementById("inequalityResult").innerText = result;
-        }
-        
-        function solveSystemInequalities() {
-            let display = document.getElementById("display");
-        
-            display.innerHTML = `
-                <div style="display: flex; align-items: center;">
-                    <span style="font-size: 50px; margin-right: 5px;">{</span>
-                    <div>
-                        <div style="font-size: 20px;">
-                            <span contenteditable="true" id="a1">2</span>x 
-                            <span contenteditable="true" id="sign1">+</span> 
-                            <span contenteditable="true" id="b1">3</span> 
-                            <span contenteditable="true" id="ineqSign1">&lt;</span> 
-                            <span contenteditable="true" id="c1">12</span>
-                        </div>
-                        <div style="font-size: 20px;">
-                            <span contenteditable="true" id="a2">1</span>x 
-                            <span contenteditable="true" id="sign2">-</span> 
-                            <span contenteditable="true" id="b2">4</span> 
-                            <span contenteditable="true" id="ineqSign2">&gt;</span> 
-                            <span contenteditable="true" id="c2">5</span>
-                        </div>
-                    </div>
-                </div>
-                <button onclick="updateSystemInequalities()">Рассчитать</button>
-                <div id="systemInequalityResult"></div>
-            `;
-        }
-        
-        function updateSystemInequalities() {
-            let a1 = parseFloat(document.getElementById("a1").innerText) || 1;
-            let sign1 = document.getElementById("sign1").innerText.trim();
-            let b1 = parseFloat(document.getElementById("b1").innerText) || 0;
-            let ineqSign1 = document.getElementById("ineqSign1").innerText.trim();
-            let c1 = parseFloat(document.getElementById("c1").innerText) || 0;
-        
-            let a2 = parseFloat(document.getElementById("a2").innerText) || 1;
-            let sign2 = document.getElementById("sign2").innerText.trim();
-            let b2 = parseFloat(document.getElementById("b2").innerText) || 0;
-            let ineqSign2 = document.getElementById("ineqSign2").innerText.trim();
-            let c2 = parseFloat(document.getElementById("c2").innerText) || 0;
-        
-            if (sign1 === "-") b1 = -b1;
-            if (sign2 === "-") b2 = -b2;
-        
-            let x1 = roundNumber((c1 - b1) / a1);
-            let x2 = roundNumber((c2 - b2) / a2);
-        
-            let intersection = `[${Math.min(x1, x2)} ; ${Math.max(x1, x2)}]`;
-        
-            document.getElementById("systemInequalityResult").innerText = `Решение: x ∈ ${intersection}`;
-        }
-        
-        function formatExpression(expression) {
-            return expression.replace(/√(\d+)/g, 'Math.sqrt($1)')
-                             .replace(/sin(\d+)/g, 'Math.sin($1 * Math.PI / 180)')
-                             .replace(/cos(\d+)/g, 'Math.cos($1 * Math.PI / 180)')
-                             .replace(/tan(\d+)/g, 'Math.tan($1 * Math.PI / 180)')
-                             .replace(/ctg(\d+)/g, '(1 / Math.tan($1 * Math.PI / 180))')
-                             .replace(/(\d)(\()/g, '$1*(')
-                             .replace(/\^/g, '**');
-        }        
+        <div class="tab-content" id="help-tab">
+            <div class="graph-help">
+                <h3>Как работать с графиками:</h3>
+                <ol>
+                    <li>Введите функцию в формате <code>y = выражение</code></li>
+                    <li>Укажите диапазон значений X</li>
+                    <li>Нажмите "Добавить функцию" для построения</li>
+                    <li>Для записи в тетрадь используйте шаблон:<br>
+                        <em>1. Функция: y = x²<br>
+                        2. Область определения: x ∈ [-10; 10]<br>
+                        3. Характерные точки: (0,0), (1,1), (-1,1)</em>
+                    </li>
+                </ol>
+                
+                <h3 style="margin-top: 20px;">Примеры функций:</h3>
+                <ul>
+                    <li><code>y = x^2</code> - парабола</li>
+                    <li><code>y = sin(x)</code> - синусоида</li>
+                    <li><code>y = 2*x + 3</code> - линейная функция</li>
+                    <li><code>y = sqrt(x)</code> - квадратный корень</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 
-        function solveEquation() {
-            let expression = document.getElementById("display").innerText;
+<div class="history-btn" onclick="toggleHistory()">🕒</div>
+<div class="history-panel" id="historyPanel">
+    <h4>История операций</h4>
+    <div id="historyContent"></div>
+</div>
+
+<script>
+// Основные переменные
+let history = [];
+let functions = [];
+let cursorPosition = 0;
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('display').addEventListener('keyup', function(e) {
+        cursorPosition = e.target.selectionStart;
+    });
+    document.getElementById('display').addEventListener('click', function(e) {
+        cursorPosition = e.target.selectionStart;
+    });
+});
+
+// Основные функции калькулятора
+function appendValue(value) {
+    const display = document.getElementById('display');
+    display.textContent += value;
+}
+
+function clearDisplay() {
+    document.getElementById('display').textContent = '';
+}
+
+function insertFunction(func) {
+    const display = document.getElementById('display');
+    const currentText = display.textContent;
+    const newText = currentText.slice(0, cursorPosition) + func + ')' + currentText.slice(cursorPosition);
+    display.textContent = newText;
+    
+    // Устанавливаем курсор перед закрывающей скобкой
+    setTimeout(() => {
+        display.focus();
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.setStart(display.childNodes[0], cursorPosition + func.length);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        cursorPosition += func.length;
+    }, 0);
+}
+
+function calculate() {
+    try {
+        const display = document.getElementById('display');
+        let expr = display.textContent
+            .replace(/√\(/g, 'Math.sqrt(')
+            .replace(/\^/g, '**')
+            .replace(/sin\(/g, 'Math.sin(')
+            .replace(/cos\(/g, 'Math.cos(')
+            .replace(/tan\(/g, 'Math.tan(')
+            .replace(/log\(/g, 'Math.log10(')
+            .replace(/ln\(/g, 'Math.log(')
+            .replace(/π/g, Math.PI)
+            .replace(/e/g, Math.E);
+
+        const result = eval(expr);
+        const formattedResult = Number.isInteger(result) ? result.toString() : result.toFixed(4);
         
-            if (!expression.includes("=")) {
-                alert("Добавьте `=` для решения уравнения!");
-                return;
+        display.textContent = formattedResult;
+        addToHistory(expr, formattedResult);
+    } catch(e) {
+        alert('Ошибка вычисления: ' + e.message);
+    }
+}
+
+// История операций
+function addToHistory(expr, result) {
+    history.unshift({expr, result});
+    if (history.length > 10) history.pop();
+    updateHistory();
+}
+
+function updateHistory() {
+    const historyContent = document.getElementById('historyContent');
+    historyContent.innerHTML = history.map(item => `
+        <div class="history-item">
+            <div>${item.expr}</div>
+            <div class="result">= ${item.result}</div>
+        </div>
+    `).join('');
+}
+
+function toggleHistory() {
+    const panel = document.getElementById('historyPanel');
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+}
+
+// Система графиков
+function addFunction() {
+    const funcInput = document.getElementById('funcInput');
+    const func = funcInput.value.trim();
+    
+    if (func && func.includes('=')) {
+        functions.push(func);
+        funcInput.value = '';
+        drawGraph();
+    } else {
+        alert('Введите функцию в формате "y = выражение"');
+    }
+}
+
+function drawGraph() {
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    const xMin = parseFloat(document.getElementById('xMin').value) || -10;
+    const xMax = parseFloat(document.getElementById('xMax').value) || 10;
+    
+    // Очистка холста
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Рисование осей
+    ctx.strokeStyle = '#666';
+    ctx.lineWidth = 1;
+    
+    // Ось Y
+    ctx.beginPath();
+    ctx.moveTo(canvas.width/2, 0);
+    ctx.lineTo(canvas.width/2, canvas.height);
+    ctx.stroke();
+    
+    // Ось X
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height/2);
+    ctx.lineTo(canvas.width, canvas.height/2);
+    ctx.stroke();
+    
+    // Рисование графиков
+    const colors = ['#4dabf7', '#ff6b6b', '#32CD32', '#FFA500', '#9370DB'];
+    const scaleX = canvas.width / (xMax - xMin);
+    const scaleY = canvas.height / 20; // 10 единиц вверх и вниз
+    
+    functions.forEach((func, i) => {
+        try {
+            const funcBody = func.split('=')[1].trim();
+            const fn = new Function('x', `return ${funcBody}`);
+            
+            ctx.beginPath();
+            ctx.strokeStyle = colors[i % colors.length];
+            ctx.lineWidth = 2;
+            
+            let firstPoint = true;
+            for (let x = xMin; x <= xMax; x += 0.1) {
+                try {
+                    const y = -fn(x) * scaleY + canvas.height/2;
+                    const canvasX = (x - xMin) * scaleX;
+                    
+                    if (firstPoint) {
+                        ctx.moveTo(canvasX, y);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(canvasX, y);
+                    }
+                } catch(e) {}
             }
-        
-            let sides = expression.split("=");
-            let left = sides[0].trim();
-            let right = roundNumber(parseFloat(sides[1].trim()));
-        
-            let match = left.match(/(-?\d*)x\s*([+-]\s*\d*)?/);
-        
-            if (!match) {
-                alert("Некорректный формат уравнения!");
-                return;
-            }
-        
-            let a = parseFloat(match[1]) || 1;
-            let b = parseFloat(match[2]) || 0;
-        
-            let x = roundNumber((right - b) / a);
-            document.getElementById("display").innerText = `x = ${x}`;
-        }        
-    </script>
+            
+            ctx.stroke();
+            
+            // Подпись графика
+            ctx.fillStyle = colors[i % colors.length];
+            ctx.fillText(func, 10, 20 + i * 20);
+        } catch(e) {
+            console.error('Ошибка при построении графика:', e);
+        }
+    });
+}
+
+// Система вкладок
+function switchTab(tabId) {
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+}
+</script>
 {% endblock %}
